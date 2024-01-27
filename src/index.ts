@@ -1,5 +1,5 @@
 import express from "express";
-import {apiRouter} from "./api/router";
+import router from "./api/router.index";
 import {WebApiConfig} from "./config/web.config";
 
 class App {
@@ -21,7 +21,8 @@ class App {
   }
 
   public async init(): Promise<void> {
-    this._router.use("api", apiRouter);
+    this._router.use("/api", router);
+    console.log(JSON.stringify(this._router.stack));
 
     this._router.listen(this._port);
   }

@@ -1,15 +1,16 @@
-import {Injectable} from "@nestjs/common";
 import {User} from "../../domain/entities/User";
-import UserModel from "../models/UserModel";
+import UserModel from "../models/user.model";
 
 export interface IUserRepository {
   createBatch(users: User[]): Promise<User[]>;
 }
 
-@Injectable()
 export class UserRepository implements IUserRepository {
   public async createBatch(users: User[]): Promise<User[]> {
-    const createdUsers = await UserModel.bulkCreate(users, {returning: true});
+    const createdUsers = await UserModel.bulkCreate(
+      users.map((user) => user.getForBatchCreate()),
+      {returning: true, ignoreDuplicates: true}
+    );
 
     return createdUsers.map((user) => new User(user.toJSON()));
   }

@@ -54,4 +54,11 @@ export class User implements ITimestampable {
   get deletedAt(): Date | undefined {
     return this._deletedAt;
   }
+
+  public getForBatchCreate(): IUser {
+    return {
+      email: this._email,
+      password: this._password || undefined,
+    };
+  }
 }

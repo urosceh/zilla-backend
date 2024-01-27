@@ -9,7 +9,7 @@
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/node_modules/.bin/ts-node",
-      "args": ["${workspaceFolder}/src/App.ts"],
+      "args": ["${workspaceFolder}/src/index.ts"],
       "envFile": "${workspaceFolder}/.env"
     }
   ]

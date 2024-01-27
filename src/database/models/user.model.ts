@@ -70,7 +70,7 @@ UserModel.init(
   },
   {
     sequelize: sequelize,
-    modelName: "zilla_user",
+    tableName: "zilla_user",
     timestamps: true,
     paranoid: true,
   }

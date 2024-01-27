@@ -4,15 +4,8 @@ import {User} from "../entities/User";
 export class UserService {
   constructor(private _userRepository: IUserRepository) {}
 
-  public async createUsers(): Promise<User[]> {
-    const users = [
-      {
-        email: "pera@gmail.com",
-      },
-      {
-        email: "steva@gmail.com",
-      },
-    ].map((user) => new User(user));
+  public async createUsers(emails: string[]): Promise<User[]> {
+    const users: User[] = emails.map((email) => new User({email, password: "123456"}));
 
     return this._userRepository.createBatch(users);
   }

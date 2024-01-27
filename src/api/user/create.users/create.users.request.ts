@@ -1,9 +1,13 @@
 import {Request} from "express";
 
 export class CreateUsersRequest {
-  private emails: string[];
+  private _emails: string[];
 
   constructor(requset: Request) {
-    this.emails = requset.body.emails;
+    this._emails = requset.body.emails;
+  }
+
+  public get emails(): string[] {
+    return this._emails;
   }
 }
