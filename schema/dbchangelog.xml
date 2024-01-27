@@ -3,5 +3,14 @@
     xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
     xmlns:pro="http://www.liquibase.org/xml/ns/pro"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
-    <include file="./migrations/test.sql" relativeToChangelogFile="true" />
+    <include file="migrations/base/0_extensions.sql" relativeToChangelogFile="true" />
+    <include file="migrations/base/1_zilla_user_table.sql" relativeToChangelogFile="true" />
+    <include file="migrations/base/2_admin_user_table.sql" relativeToChangelogFile="true" />
+    <include file="migrations/base/3_project_table.sql" relativeToChangelogFile="true" />
+    <include file="migrations/base/4_user_project_access_table.sql" relativeToChangelogFile="true" />
+    <include file="migrations/base/5_sprint_table.sql" relativeToChangelogFile="true" />
+    <include file="migrations/base/6_status_table.sql" relativeToChangelogFile="true" />
+    <include file="migrations/base/7_issue_type_table.sql" relativeToChangelogFile="true" />
+    <include file="migrations/base/8_issue_table.sql" relativeToChangelogFile="true" />
+    <include file="migrations/base/9_comment_table.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>
