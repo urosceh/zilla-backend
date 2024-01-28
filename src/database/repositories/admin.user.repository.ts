@@ -1,12 +1,13 @@
+import {User} from "../../domain/entities/User";
 import AdminUserModel from "../models/admin.user.model";
 import UserModel from "../models/user.model";
 
 export interface IAdminUserRepository {
-  makeAdmin(userId: string): Promise<void>;
+  makeAdmin(userId: string): Promise<User>;
 }
 
 export class AdminUserRepository implements IAdminUserRepository {
-  public async makeAdmin(userId: string): Promise<any> {
+  public async makeAdmin(userId: string): Promise<User> {
     const transaction = await AdminUserModel.sequelize!.transaction();
 
     try {
@@ -29,11 +30,14 @@ export class AdminUserRepository implements IAdminUserRepository {
             as: "user",
           },
         ],
-        transaction,
       });
 
+      if (!user) {
+        throw new Error("User not found");
+      }
+
       await transaction.commit();
-      return user;
+      return new User(user.user);
     } catch (error) {
       // create error handling function
       await transaction.rollback();
