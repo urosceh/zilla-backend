@@ -9,9 +9,9 @@ export class CreateUsersController extends AbstractController {
   }
 
   protected async process(req: Request, res: Response): Promise<Response> {
-    const createUsersRequest = new CreateUsersRequest(req);
+    const request = new CreateUsersRequest(req);
 
-    const users = await this._userService.createUsers(createUsersRequest.emails);
+    const users = await this._userService.createUsers(request.emails);
 
     return res.json(users);
   }

@@ -6,4 +6,5 @@ CREATE TABLE IF NOT EXISTS "project" (
     project_key TEXT NOT NULL UNIQUE,
     manager_id UUID NOT NULL REFERENCES "zilla_user"(user_id),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

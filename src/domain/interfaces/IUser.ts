@@ -1,10 +1,9 @@
-export interface IUser {
+import {ITimestampable} from "./ITimestampable";
+
+export interface IUser extends ITimestampable {
   userId?: string;
   email: string;
   password?: string;
   firstName?: string;
   lastName?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-  deletedAt?: Date;
 }

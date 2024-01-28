@@ -8,7 +8,7 @@ export interface IUserRepository {
 export class UserRepository implements IUserRepository {
   public async createBatch(users: User[]): Promise<User[]> {
     const createdUsers = await UserModel.bulkCreate(
-      users.map((user) => user.getForBatchCreate()),
+      users.map((user) => user.getForCreate()),
       {returning: true, ignoreDuplicates: true}
     );
 
