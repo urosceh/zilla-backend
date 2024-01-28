@@ -12,6 +12,17 @@ export function bodySchemaValidationMiddleware(schema: Joi.Schema) {
   };
 }
 
+export function paramsSchemaValidationMiddleware(schema: Joi.Schema) {
+  return (request: Request, response: Response, next: NextFunction) => {
+    const result = checkSchema(request.params, schema);
+    if (result.errors || !result.value) {
+      return result.errors ? next(result.errors) : next(new Error("Invalid params"));
+    }
+    request.params = result.value;
+    return next();
+  };
+}
+
 function checkSchema(data: any, schema: Joi.Schema) {
   const result = schema.validate(data);
   let errors;

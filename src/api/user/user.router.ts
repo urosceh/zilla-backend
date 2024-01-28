@@ -7,6 +7,7 @@ import {createUsersBodySchema} from "./create.users/create.users.validation";
 const createUsersController = new CreateUsersController(userService);
 
 const userRouter = express.Router();
+
 userRouter.post(
   "/create-batch",
   bodySchemaValidationMiddleware(createUsersBodySchema),
