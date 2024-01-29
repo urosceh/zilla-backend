@@ -1,6 +1,7 @@
 import {DataTypes, Model} from "sequelize";
-import {IProject} from "../../domain/interfaces/IProject";
 import sequelize from "../sequelize";
+import ProjectModel from "./project.model";
+import UserModel from "./user.model";
 
 type UserProjectAccessAttributes = {
   id: number;
@@ -14,7 +15,8 @@ class UserProjectAccessModel extends Model<UserProjectAccessAttributes, UserProj
   declare id: number | undefined;
   declare userId: string;
   declare projectKey: string;
-  declare project: IProject;
+  declare project?: ProjectModel;
+  declare user?: UserModel;
 }
 
 UserProjectAccessModel.init(
@@ -30,6 +32,10 @@ UserProjectAccessModel.init(
       type: DataTypes.UUIDV4,
       field: "user_id",
       allowNull: false,
+      references: {
+        model: "user",
+        key: "user_id",
+      },
     },
     projectKey: {
       type: DataTypes.STRING,
@@ -47,3 +53,24 @@ UserProjectAccessModel.init(
     sequelize: sequelize,
   }
 );
+
+UserProjectAccessModel.belongsTo(ProjectModel, {
+  targetKey: "projectKey",
+  foreignKey: {
+    name: "project_key",
+  },
+  as: "project",
+  onDelete: "CASCADE",
+  onUpdate: "RESTRICT",
+});
+UserProjectAccessModel.belongsTo(UserModel, {
+  targetKey: "userId",
+  foreignKey: {
+    name: "user_id",
+  },
+  as: "user",
+  onDelete: "CASCADE",
+  onUpdate: "RESTRICT",
+});
+
+export default UserProjectAccessModel;

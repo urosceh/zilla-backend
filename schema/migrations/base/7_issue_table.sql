@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS "issue" (
   status_id INTEGER NOT NULL REFERENCES "issue_status"(id),
   summary TEXT NOT NULL UNIQUE,
   details TEXT NULL,
-  sprint_id UUID NULL REFERENCES "sprint"(sprint_id),
+  sprint_id INTEGER NULL REFERENCES "sprint"(sprint_id),
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   deleted_at TIMESTAMP NULL

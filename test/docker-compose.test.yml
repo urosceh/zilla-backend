@@ -1,0 +1,31 @@
+version: "3"
+services:
+  postgres-test:
+    build:
+      context: .
+      dockerfile: ./test.Dockerfile
+    image: zilla/postgres
+    container_name: zilla-postgres-test
+    restart: always
+    ports:
+      - "5451:5451"
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=zilla
+      - PGPORT=5451
+
+  migrations-test:
+    image: liquibase/liquibase:4.25-alpine
+    container_name: zilla-migrations-test
+    environment:
+      - LIQUIBASE_COMMAND_CHANGELOG_FILE=dbchangelog.xml
+      - LIQUIBASE_COMMAND_UPDATE_URL=jdbc:postgresql://postgres-test:5451/zilla
+      - LIQUIBASE_COMMAND_USERNAME=user
+      - LIQUIBASE_COMMAND_PASSWORD=pass
+      - LIQUIBASE_LOG_LEVEL=info
+    volumes:
+      - ../schema:/liquibase/changelog/
+    command: update
+    depends_on:
+      - postgres-test

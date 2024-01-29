@@ -9,7 +9,7 @@
     <include file="migrations/base/3_project_table.sql" relativeToChangelogFile="true" />
     <include file="migrations/base/4_user_project_access_table.sql" relativeToChangelogFile="true" />
     <include file="migrations/base/5_sprint_table.sql" relativeToChangelogFile="true" />
-    <include file="migrations/base/6_status_table.sql" relativeToChangelogFile="true" />
+    <include file="migrations/base/6_issue_status_table.sql" relativeToChangelogFile="true" />
     <include file="migrations/base/7_issue_table.sql" relativeToChangelogFile="true" />
     <!-- <include file="migrations/base/8_comment_table.sql" relativeToChangelogFile="true" /> -->
 </databaseChangeLog>
