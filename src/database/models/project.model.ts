@@ -11,6 +11,7 @@ type ProjectAttributes = {
   managerId: string;
   createdAt: Date;
   updatedAt: Date;
+  deletedAt: Date | null;
 };
 
 type ProjectCreationAttributes = Pick<ProjectAttributes, "projectName" | "projectKey" | "managerId">;
@@ -67,6 +68,10 @@ ProjectModel.init(
       field: "updated_at",
       allowNull: false,
       defaultValue: DataTypes.NOW,
+    },
+    deletedAt: {
+      type: DataTypes.DATE,
+      field: "deleted_at",
     },
   },
   {

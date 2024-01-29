@@ -14,7 +14,7 @@ type UserAttributes = {
   deletedAt: Date | undefined;
 };
 
-type UserCreationAttributes = Pick<UserAttributes, "email">;
+type UserCreationAttributes = Pick<UserAttributes, "email" | "password">;
 
 class UserModel extends Model<UserAttributes, UserCreationAttributes> implements IUser {
   declare userId: string | undefined;

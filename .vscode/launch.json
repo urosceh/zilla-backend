@@ -11,6 +11,15 @@
       "program": "${workspaceFolder}/node_modules/.bin/ts-node",
       "args": ["${workspaceFolder}/src/index.ts"],
       "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "name": "Run Test File",
+      "type": "node",
+      "request": "launch",
+      "args": ["--test", "--require", "ts-node/register", "${file}"],
+      "envFile": "${workspaceFolder}/test/.env",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
     }
   ]
 }
