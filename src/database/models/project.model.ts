@@ -1,6 +1,4 @@
 import {DataTypes, Model} from "sequelize";
-import {IProject} from "../../domain/interfaces/IProject";
-import {IUser} from "../../domain/interfaces/IUser";
 import sequelize from "../sequelize";
 import UserModel from "./user.model";
 
@@ -16,15 +14,15 @@ type ProjectAttributes = {
 
 type ProjectCreationAttributes = Pick<ProjectAttributes, "projectName" | "projectKey" | "managerId">;
 
-class ProjectModel extends Model<ProjectAttributes, ProjectCreationAttributes> implements IProject {
-  declare projectId: string | undefined;
+class ProjectModel extends Model<ProjectAttributes, ProjectCreationAttributes> {
+  declare projectId: string;
   declare projectName: string;
   declare projectKey: string;
   declare managerId: string;
-  declare createdAt: Date | undefined;
-  declare updatedAt: Date | undefined;
-  declare deletedAt: Date | undefined;
-  declare manager: IUser;
+  declare createdAt: Date;
+  declare updatedAt: Date;
+  declare deletedAt: Date | null;
+  declare manager: UserModel;
 }
 
 ProjectModel.init(
@@ -72,12 +70,14 @@ ProjectModel.init(
     deletedAt: {
       type: DataTypes.DATE,
       field: "deleted_at",
+      allowNull: true,
     },
   },
   {
     tableName: "project",
     timestamps: true,
     sequelize: sequelize,
+    paranoid: true,
   }
 );
 

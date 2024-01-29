@@ -1,30 +1,29 @@
 import {genSaltSync, hashSync} from "bcrypt";
 import {DataTypes, Model} from "sequelize";
-import {IUser} from "../../domain/interfaces/IUser";
 import sequelize from "../sequelize";
 
 type UserAttributes = {
   userId: string;
   email: string;
   password: string;
-  firstName: string | undefined;
-  lastName: string | undefined;
+  firstName: string | null;
+  lastName: string | null;
   createdAt: Date;
   updatedAt: Date;
-  deletedAt: Date | undefined;
+  deletedAt: Date | null;
 };
 
-type UserCreationAttributes = Pick<UserAttributes, "email" | "password">;
+export type UserCreationAttributes = Pick<UserAttributes, "email" | "password">;
 
-class UserModel extends Model<UserAttributes, UserCreationAttributes> implements IUser {
-  declare userId: string | undefined;
+class UserModel extends Model<UserAttributes, UserCreationAttributes> {
+  declare userId: string;
   declare email: string;
-  declare password: string | undefined;
-  declare firstName: string | undefined;
-  declare lastName: string | undefined;
-  declare createdAt: Date | undefined;
-  declare updatedAt: Date | undefined;
-  declare deletedAt: Date | undefined;
+  declare password: string;
+  declare firstName: string | null;
+  declare lastName: string | null;
+  declare createdAt: Date;
+  declare updatedAt: Date;
+  declare deletedAt: Date | null;
 }
 
 UserModel.init(

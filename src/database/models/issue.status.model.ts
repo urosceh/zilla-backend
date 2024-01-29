@@ -1,20 +1,19 @@
 import {DataTypes, Model} from "sequelize";
-import {IStatus} from "../../domain/interfaces/IStatus";
 import sequelize from "../sequelize";
 
-type StatusAttributes = {
+export type IssueStatusAttributes = {
   id: number;
   statusName: string;
 };
 
-type StatusCreationAttributes = Pick<StatusAttributes, "statusName">;
+export type IssueStatusCreationAttributes = Pick<IssueStatusAttributes, "statusName">;
 
-class StatusModel extends Model<StatusAttributes, StatusCreationAttributes> implements IStatus {
-  declare id: number | undefined;
+class IssueStatusModel extends Model<IssueStatusAttributes, IssueStatusCreationAttributes> {
+  declare id: number;
   declare statusName: string;
 }
 
-StatusModel.init(
+IssueStatusModel.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -31,8 +30,10 @@ StatusModel.init(
     },
   },
   {
-    tableName: "status",
+    tableName: "issue_status",
     timestamps: false,
     sequelize: sequelize,
   }
 );
+
+export default IssueStatusModel;

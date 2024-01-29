@@ -17,7 +17,7 @@
       "type": "node",
       "request": "launch",
       "args": ["--test", "--require", "ts-node/register", "${file}"],
-      "envFile": "${workspaceFolder}/test/.env",
+      "envFile": "${workspaceFolder}/test/test.env",
       "console": "integratedTerminal",
       "cwd": "${workspaceFolder}"
     }

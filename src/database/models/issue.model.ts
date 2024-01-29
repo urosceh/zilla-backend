@@ -1,44 +1,43 @@
 import {DataTypes, Model} from "sequelize";
-import {IIssue} from "../../domain/interfaces/IIssue";
-import {IProject} from "../../domain/interfaces/IProject";
-import {ISprint} from "../../domain/interfaces/ISprint";
-import {IStatus} from "../../domain/interfaces/IStatus";
-import {IUser} from "../../domain/interfaces/IUser";
 import sequelize from "../sequelize";
+import IssueStatusModel from "./issue.status.model";
+import ProjectModel from "./project.model";
+import SprintModel from "./sprint.model";
+import UserModel from "./user.model";
 
 type IssueAttributes = {
   issueId: string;
   projectId: string;
   reporterId: string;
-  assigneeId: string;
-  statusId: number;
+  assigneeId: string | null;
+  issueStatusId: number;
   sprintId: number | null;
   summary: string;
-  details: string;
+  details: string | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
 };
 
-type IssueCreationAttributes = Pick<IssueAttributes, "projectId" | "reporterId" | "summary">;
+type IssueCreationAttributes = Pick<IssueAttributes, "projectId" | "reporterId" | "summary" | "issueStatusId">;
 
-class IssueModel extends Model<IssueAttributes, IssueCreationAttributes> implements IIssue {
-  declare issueId: string | undefined;
+class IssueModel extends Model<IssueAttributes, IssueCreationAttributes> {
+  declare issueId: string;
   declare projectId: string;
   declare reporterId: string;
-  declare assigneeId: string;
+  declare assigneeId: string | null;
   declare statusId: number;
   declare sprintId: number | null;
   declare summary: string;
-  declare details: string;
-  declare createdAt: Date | undefined;
-  declare updatedAt: Date | undefined;
-  declare deletedAt: Date | undefined;
-  declare reporter: IUser;
-  declare assignee: IUser;
-  declare project: IProject;
-  declare status: IStatus;
-  declare sprint: ISprint;
+  declare details: string | null;
+  declare createdAt: Date;
+  declare updatedAt: Date;
+  declare deletedAt: Date | null;
+  declare reporter?: UserModel;
+  declare assignee?: UserModel | null;
+  declare project?: ProjectModel;
+  declare issueStatus?: IssueStatusModel;
+  declare sprint?: SprintModel | null;
 }
 
 IssueModel.init(
@@ -77,10 +76,10 @@ IssueModel.init(
         key: "user_id",
       },
     },
-    statusId: {
+    issueStatusId: {
       type: DataTypes.INTEGER,
       field: "status_id",
-      allowNull: true,
+      allowNull: false,
       references: {
         model: "status",
         key: "status_id",
@@ -128,5 +127,41 @@ IssueModel.init(
     sequelize: sequelize,
   }
 );
+
+IssueModel.belongsTo(UserModel, {
+  targetKey: "userId",
+  foreignKey: {
+    name: "reporterId",
+  },
+  as: "reporter",
+});
+IssueModel.belongsTo(UserModel, {
+  targetKey: "userId",
+  foreignKey: {
+    name: "assigneeId",
+  },
+  as: "assignee",
+});
+IssueModel.belongsTo(ProjectModel, {
+  targetKey: "projectId",
+  foreignKey: {
+    name: "projectId",
+  },
+  as: "project",
+});
+IssueModel.belongsTo(IssueStatusModel, {
+  targetKey: "id",
+  foreignKey: {
+    name: "issueStatusId",
+  },
+  as: "issueStatus",
+});
+IssueModel.belongsTo(SprintModel, {
+  targetKey: "sprintId",
+  foreignKey: {
+    name: "sprintId",
+  },
+  as: "sprint",
+});
 
 export default IssueModel;

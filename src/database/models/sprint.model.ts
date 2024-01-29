@@ -1,6 +1,6 @@
 import {DataTypes, Model} from "sequelize";
-import {ISprint} from "../../domain/interfaces/ISprint";
 import sequelize from "../sequelize";
+import ProjectModel from "./project.model";
 
 type SprintAttributes = {
   sprintId: number;
@@ -12,12 +12,13 @@ type SprintAttributes = {
 
 type SprintCreationAttributes = Pick<SprintAttributes, "sprintName" | "projectId" | "startOfSprint" | "endOfSprint">;
 
-class SprintModel extends Model<SprintAttributes, SprintCreationAttributes> implements ISprint {
-  declare sprintId: number | undefined;
+class SprintModel extends Model<SprintAttributes, SprintCreationAttributes> {
+  declare sprintId: number;
   declare sprintName: string;
   declare projectId: string;
   declare startOfSprint: Date;
   declare endOfSprint: Date;
+  declare project?: ProjectModel;
 }
 
 SprintModel.init(
@@ -60,3 +61,15 @@ SprintModel.init(
     sequelize: sequelize,
   }
 );
+
+SprintModel.belongsTo(ProjectModel, {
+  targetKey: "projectId",
+  foreignKey: {
+    name: "project_id",
+  },
+  as: "project",
+  onDelete: "CASCADE",
+  onUpdate: "RESTRICT",
+});
+
+export default SprintModel;

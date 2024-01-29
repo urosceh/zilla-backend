@@ -1,15 +1,19 @@
 import {QueryOptions, QueryTypes, Sequelize} from "sequelize";
-import sequelize from "../../../src/database/sequelize";
+import sequelize from "../../../../src/database/sequelize";
 
 export abstract class AbstractWrapper {
   protected abstract tableName: string;
+  protected abstract associatedTableNames: string[];
   private _sequelize: Sequelize = sequelize;
 
   public async cleanup() {
-    await this._sequelize.query(`DELETE FROM ${this.tableName} WHERE TRUE`);
+    await Promise.all([
+      this._sequelize.query(`DELETE FROM ${this.tableName} WHERE TRUE`),
+      ...this.associatedTableNames.map((tableName) => this._sequelize.query(`DELETE FROM ${tableName} WHERE TRUE`)),
+    ]);
   }
 
-  protected async rawSelect(query: string, options?: QueryOptions) {
+  protected async rawSelect(query: string, options?: QueryOptions): Promise<any[]> {
     return await this._sequelize.query(query, {...options, type: QueryTypes.SELECT});
   }
 

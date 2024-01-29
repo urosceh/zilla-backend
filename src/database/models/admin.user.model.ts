@@ -1,6 +1,5 @@
 import {DataTypes, Model} from "sequelize";
 import {IAdminUser} from "../../domain/interfaces/IAdminUser";
-import {IUser} from "../../domain/interfaces/IUser";
 import sequelize from "../sequelize";
 import UserModel from "./user.model";
 
@@ -8,16 +7,15 @@ export type AdminUserAttributes = {
   id: number;
   userId: string;
   createdAt: Date;
-  user?: UserModel;
 };
 
 type AdminUserCreationAttributes = Pick<AdminUserAttributes, "userId">;
 
 class AdminUserModel extends Model<AdminUserAttributes, AdminUserCreationAttributes> implements IAdminUser {
-  declare id: number | undefined;
+  declare id: number;
   declare userId: string;
-  declare createdAt: Date | undefined;
-  declare user: IUser;
+  declare createdAt: Date;
+  declare user?: UserModel;
 }
 
 AdminUserModel.init(

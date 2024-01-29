@@ -3,7 +3,7 @@ import test, {after, describe} from "node:test";
 import UserModel from "../../../src/database/models/user.model";
 import {UserWrapper} from "../wrappers/user.wrapper";
 
-describe("User model integration tests", () => {
+describe("UserModel Integration Tests", () => {
   const userWrapper = new UserWrapper();
 
   after(async () => {
@@ -11,13 +11,15 @@ describe("User model integration tests", () => {
   });
 
   test("should create and paraniod delete a user", async () => {
-    // Create a user
     const user = await UserModel.create({
       email: "john.doe@gmail.com",
       password: "password",
     });
 
     assert.ok(!!user.userId);
+    assert.ok(!!user.createdAt);
+    assert.ok(!!user.updatedAt);
+    assert.ok(!!user.password);
     assert.equal(user.email, "john.doe@gmail.com");
 
     // Paraniod delete the user
