@@ -1,28 +1,28 @@
-import {IssueWithDetails} from "../types/IssueWithDetails";
+import IssueModel from "../../database/models/issue.model";
 import {Sprint} from "./Sprint";
 import {Status} from "./Status";
 import {User} from "./User";
 
 export class Issue {
-  private _issueId: string | null;
+  private _issueId: string;
   private _projectId: string;
-  private _reporter: User;
+  private _reporter: User | undefined;
   private _assignee: User | null;
   private _sprint: Sprint | null;
-  private _status: Status;
+  private _status: Status | undefined;
   private _summary: string;
   private _details: string | null;
-  private _createdAt?: Date;
-  private _updatedAt?: Date;
-  private _deletedAt?: Date;
+  private _createdAt: Date;
+  private _updatedAt: Date;
+  private _deletedAt: Date | null;
 
-  constructor(issue: IssueWithDetails) {
-    this._issueId = issue.issueId || null;
+  constructor(issue: IssueModel) {
+    this._issueId = issue.issueId;
     this._projectId = issue.projectId;
-    this._reporter = new User(issue.reporter);
-    this._assignee = new User(issue.assignee);
-    this._sprint = new Sprint(issue.sprint);
-    this._status = new Status(issue.status);
+    this._reporter = issue.reporter ? new User(issue.reporter) : undefined;
+    this._assignee = issue.assignee ? new User(issue.assignee) : null;
+    this._sprint = issue.sprint ? new Sprint(issue.sprint) : null;
+    this._status = issue.issueStatus ? new Status(issue.issueStatus) : undefined;
     this._summary = issue.summary;
     this._details = issue.details;
     this._createdAt = issue.createdAt;
