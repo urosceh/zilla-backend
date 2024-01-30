@@ -12,7 +12,9 @@
   },
   "scripts": {
     "build": "tsc -p .",
-    "start": "tsc -p . && node ./build/index.js"
+    "start": "tsc -p . && node ./build/index.js",
+    "test": "ts-node ./test/ node --import tsx --test $(find ./test -name \"*.itest.ts\")",
+    "test-all": "ts-node ./test/test.index.ts"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",

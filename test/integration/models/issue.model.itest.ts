@@ -1,5 +1,5 @@
 import assert from "node:assert";
-import test, {after, describe} from "node:test";
+import test, {after, before, describe} from "node:test";
 import IssueModel from "../../../src/database/models/issue.model";
 import ProjectModel from "../../../src/database/models/project.model";
 import UserModel from "../../../src/database/models/user.model";
@@ -8,21 +8,21 @@ import {IssueWrapper} from "../wrappers/issue.wrapper";
 describe("IssueModel Integration Tests", () => {
   const issueWrapper = new IssueWrapper();
 
-  after(async () => {
-    await issueWrapper.cleanup();
+  const issueIds: string[] = [];
+
+  before(async () => {
+    await issueWrapper.setup();
   });
 
-  test("should create and delete an issue", async () => {
-    const reporter = await UserModel.create({
-      email: "john.doe@gmail.com",
-      password: "password",
-    });
+  after(async () => {
+    await issueWrapper.cleanup(issueIds);
+  });
 
-    const project = await ProjectModel.create({
-      projectName: "Test Project",
-      projectKey: "TEST",
-      managerId: reporter.userId,
-    });
+  test("should create and paranoid delete an issue", async () => {
+    const reporter: UserModel = issueWrapper.testUserModels.find((user) => user.email === "john.doe@gmail.com")!;
+    const project: ProjectModel = issueWrapper.testProjectModels.find((project) => project.projectKey === "PJC1")!;
+
+    console.log(project);
 
     const createdIssue = await IssueModel.create({
       projectId: project.projectId,
@@ -58,5 +58,19 @@ describe("IssueModel Integration Tests", () => {
     assert.ok(issue.project instanceof ProjectModel);
     assert.ok(issue.project.manager instanceof UserModel);
     assert.ok(issue.reporter instanceof UserModel);
+
+    issueIds.push(issue.issueId);
+
+    await issue.destroy();
+
+    const deletedIssue = await IssueModel.findOne({
+      where: {
+        issueId: createdIssue.issueId,
+      },
+      paranoid: false,
+    });
+
+    assert.ok(!!deletedIssue);
+    assert.ok(!!deletedIssue.deletedAt);
   });
 });
