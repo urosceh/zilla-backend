@@ -11,7 +11,7 @@ export class ProjectRepository implements IProjectRepository {
     const transaction = await ProjectModel.sequelize!.transaction();
 
     try {
-      const newProject: any = await ProjectModel.create(project, {
+      const newProject = await ProjectModel.create(project, {
         transaction,
       });
 

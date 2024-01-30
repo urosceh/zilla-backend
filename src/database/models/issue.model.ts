@@ -1,7 +1,6 @@
 import {DataTypes, Model} from "sequelize";
 import {IssueStatus} from "../../domain/entities/IssueStatus";
 import sequelize from "../sequelize";
-import IssueStatusModel from "./issue.status.model";
 import ProjectModel from "./project.model";
 import SprintModel from "./sprint.model";
 import UserModel from "./user.model";
@@ -22,7 +21,7 @@ export type IssueAttributes = {
 
 export type IssueCreationAttributes = Pick<IssueAttributes, "projectId" | "reporterId" | "summary">;
 
-export type IssueOrderAttributes = Pick<IssueAttributes, "createdAt" | "updatedAt">;
+export type IssueOrderAttributes = keyof Pick<IssueAttributes, "createdAt" | "updatedAt">;
 
 class IssueModel extends Model<IssueAttributes, IssueCreationAttributes> {
   declare issueId: string;
@@ -146,12 +145,6 @@ IssueModel.belongsTo(SprintModel, {
   targetKey: "sprintId",
   foreignKey: "sprint_id",
   as: "sprint",
-});
-
-IssueModel.hasOne(IssueStatusModel, {
-  sourceKey: "issueStatusId",
-  foreignKey: "id",
-  as: "issueStatus",
 });
 
 SprintModel.hasMany(IssueModel, {

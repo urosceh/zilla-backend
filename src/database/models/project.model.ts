@@ -83,9 +83,7 @@ ProjectModel.init(
 
 ProjectModel.belongsTo(UserModel, {
   targetKey: "userId",
-  foreignKey: {
-    name: "manager_id",
-  },
+  foreignKey: "manager_id",
   as: "manager",
   onDelete: "RESTRICT",
   onUpdate: "RESTRICT",

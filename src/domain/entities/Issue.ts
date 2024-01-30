@@ -7,8 +7,8 @@ export class Issue {
   private _issueId: string;
   private _projectId: string;
   private _reporter: User | undefined;
-  private _assignee: User | null;
-  private _sprint: Sprint | null;
+  private _assignee: User | null | undefined;
+  private _sprint: Sprint | null | undefined;
   private _status: IssueStatus;
   private _summary: string;
   private _details: string | null;
@@ -20,8 +20,8 @@ export class Issue {
     this._issueId = issue.issueId;
     this._projectId = issue.projectId;
     this._reporter = issue.reporter ? new User(issue.reporter) : undefined;
-    this._assignee = issue.assignee ? new User(issue.assignee) : null;
-    this._sprint = issue.sprint ? new Sprint(issue.sprint) : null;
+    this._assignee = issue.assignee ? new User(issue.assignee) : undefined;
+    this._sprint = issue.sprint ? new Sprint(issue.sprint) : issue.sprint;
     this._status = issue.issueStatus;
     this._summary = issue.summary;
     this._details = issue.details;

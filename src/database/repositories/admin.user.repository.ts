@@ -30,6 +30,7 @@ export class AdminUserRepository implements IAdminUserRepository {
             as: "user",
           },
         ],
+        transaction,
       });
 
       if (!user) {
@@ -37,9 +38,8 @@ export class AdminUserRepository implements IAdminUserRepository {
       }
 
       await transaction.commit();
-      return new User(user.user);
+      return new User(user.user!);
     } catch (error) {
-      // create error handling function
       await transaction.rollback();
       throw error;
     }
