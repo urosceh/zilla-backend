@@ -1,6 +1,6 @@
 import IssueModel from "../../database/models/issue.model";
+import {IssueStatus} from "./IssueStatus";
 import {Sprint} from "./Sprint";
-import {Status} from "./Status";
 import {User} from "./User";
 
 export class Issue {
@@ -9,7 +9,7 @@ export class Issue {
   private _reporter: User | undefined;
   private _assignee: User | null;
   private _sprint: Sprint | null;
-  private _status: Status | undefined;
+  private _status: IssueStatus;
   private _summary: string;
   private _details: string | null;
   private _createdAt: Date;
@@ -22,7 +22,7 @@ export class Issue {
     this._reporter = issue.reporter ? new User(issue.reporter) : undefined;
     this._assignee = issue.assignee ? new User(issue.assignee) : null;
     this._sprint = issue.sprint ? new Sprint(issue.sprint) : null;
-    this._status = issue.issueStatus ? new Status(issue.issueStatus) : undefined;
+    this._status = issue.issueStatus;
     this._summary = issue.summary;
     this._details = issue.details;
     this._createdAt = issue.createdAt;

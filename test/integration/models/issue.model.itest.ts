@@ -1,7 +1,6 @@
 import assert from "node:assert";
 import test, {after, describe} from "node:test";
 import IssueModel from "../../../src/database/models/issue.model";
-import IssueStatusModel from "../../../src/database/models/issue.status.model";
 import ProjectModel from "../../../src/database/models/project.model";
 import UserModel from "../../../src/database/models/user.model";
 import {IssueWrapper} from "../wrappers/issue.wrapper";
@@ -25,14 +24,9 @@ describe("IssueModel Integration Tests", () => {
       managerId: reporter.userId,
     });
 
-    const issueStatus = await IssueStatusModel.create({
-      statusName: "To Do",
-    });
-
     const createdIssue = await IssueModel.create({
       projectId: project.projectId,
       reporterId: reporter.userId,
-      issueStatusId: issueStatus.id,
       summary: "Test Issue",
     });
 
@@ -55,18 +49,14 @@ describe("IssueModel Integration Tests", () => {
           model: UserModel,
           as: "reporter",
         },
-        {
-          model: IssueStatusModel,
-          as: "issueStatus",
-        },
       ],
     });
 
     assert.ok(!!issue);
     assert.equal(issue.summary, "Test Issue");
+    assert.ok(issue.issueStatus === "Backlog");
     assert.ok(issue.project instanceof ProjectModel);
     assert.ok(issue.project.manager instanceof UserModel);
     assert.ok(issue.reporter instanceof UserModel);
-    assert.ok(issue.issueStatus instanceof IssueStatusModel);
   });
 });
