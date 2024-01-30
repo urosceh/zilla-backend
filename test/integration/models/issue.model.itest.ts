@@ -44,6 +44,12 @@ describe("IssueModel Integration Tests", () => {
         {
           model: ProjectModel,
           as: "project",
+          include: [
+            {
+              model: UserModel,
+              as: "manager",
+            },
+          ],
         },
         {
           model: UserModel,
@@ -59,6 +65,7 @@ describe("IssueModel Integration Tests", () => {
     assert.ok(!!issue);
     assert.equal(issue.summary, "Test Issue");
     assert.ok(issue.project instanceof ProjectModel);
+    assert.ok(issue.project.manager instanceof UserModel);
     assert.ok(issue.reporter instanceof UserModel);
     assert.ok(issue.issueStatus instanceof IssueStatusModel);
   });

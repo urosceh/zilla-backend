@@ -81,8 +81,8 @@ IssueModel.init(
       field: "status_id",
       allowNull: false,
       references: {
-        model: "status",
-        key: "status_id",
+        model: "issue_status",
+        key: "id",
       },
     },
     sprintId: {
@@ -130,38 +130,44 @@ IssueModel.init(
 
 IssueModel.belongsTo(UserModel, {
   targetKey: "userId",
-  foreignKey: {
-    name: "reporterId",
-  },
+  foreignKey: "reporter_id",
   as: "reporter",
 });
 IssueModel.belongsTo(UserModel, {
   targetKey: "userId",
-  foreignKey: {
-    name: "assigneeId",
-  },
+  foreignKey: "assignee_id",
   as: "assignee",
 });
 IssueModel.belongsTo(ProjectModel, {
   targetKey: "projectId",
-  foreignKey: {
-    name: "projectId",
-  },
+  foreignKey: "project_id",
   as: "project",
-});
-IssueModel.belongsTo(IssueStatusModel, {
-  targetKey: "id",
-  foreignKey: {
-    name: "issueStatusId",
-  },
-  as: "issueStatus",
 });
 IssueModel.belongsTo(SprintModel, {
   targetKey: "sprintId",
-  foreignKey: {
-    name: "sprintId",
-  },
+  foreignKey: "sprint_id",
   as: "sprint",
+});
+
+IssueModel.hasOne(IssueStatusModel, {
+  sourceKey: "issueStatusId",
+  foreignKey: "id",
+  as: "issueStatus",
+});
+
+SprintModel.hasMany(IssueModel, {
+  sourceKey: "sprintId",
+  foreignKey: "sprint_id",
+  as: "issues",
+  onDelete: "RESTRICT",
+  onUpdate: "RESTRICT",
+});
+ProjectModel.hasMany(IssueModel, {
+  sourceKey: "projectId",
+  foreignKey: "project_id",
+  as: "issues",
+  onDelete: "RESTRICT",
+  onUpdate: "RESTRICT",
 });
 
 export default IssueModel;

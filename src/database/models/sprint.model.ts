@@ -1,5 +1,6 @@
 import {DataTypes, Model} from "sequelize";
 import sequelize from "../sequelize";
+import IssueModel from "./issue.model";
 import ProjectModel from "./project.model";
 
 type SprintAttributes = {
@@ -19,6 +20,7 @@ class SprintModel extends Model<SprintAttributes, SprintCreationAttributes> {
   declare startOfSprint: Date;
   declare endOfSprint: Date;
   declare project?: ProjectModel;
+  declare issues?: IssueModel[];
 }
 
 SprintModel.init(
@@ -69,6 +71,16 @@ SprintModel.belongsTo(ProjectModel, {
   },
   as: "project",
   onDelete: "CASCADE",
+  onUpdate: "RESTRICT",
+});
+
+ProjectModel.hasMany(SprintModel, {
+  sourceKey: "projectId",
+  foreignKey: {
+    name: "project_id",
+  },
+  as: "sprints",
+  onDelete: "RESTRICT",
   onUpdate: "RESTRICT",
 });
 

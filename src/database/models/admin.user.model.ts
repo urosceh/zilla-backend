@@ -54,9 +54,7 @@ AdminUserModel.init(
 
 AdminUserModel.belongsTo(UserModel, {
   targetKey: "userId",
-  foreignKey: {
-    name: "user_id",
-  },
+  foreignKey: "user_id",
   as: "user",
   onDelete: "RESTRICT",
   onUpdate: "RESTRICT",

@@ -56,18 +56,14 @@ UserProjectAccessModel.init(
 
 UserProjectAccessModel.belongsTo(ProjectModel, {
   targetKey: "projectKey",
-  foreignKey: {
-    name: "project_key",
-  },
+  foreignKey: "project_key",
   as: "project",
   onDelete: "CASCADE",
   onUpdate: "RESTRICT",
 });
 UserProjectAccessModel.belongsTo(UserModel, {
   targetKey: "userId",
-  foreignKey: {
-    name: "user_id",
-  },
+  foreignKey: "user_id",
   as: "user",
   onDelete: "CASCADE",
   onUpdate: "RESTRICT",
