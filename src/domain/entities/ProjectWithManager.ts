@@ -1,13 +1,12 @@
-import {IProject} from "../interfaces/IProject";
-import {IUser} from "../interfaces/IUser";
+import ProjectModel from "../../database/models/project.model";
 import {Project} from "./Project";
 import {User} from "./User";
 
 export class ProjectWithManager extends Project {
-  private _manager: User;
+  private _manager: User | undefined;
 
-  constructor(project: IProject, manager: IUser) {
+  constructor(project: ProjectModel) {
     super(project);
-    this._manager = new User(manager);
+    this._manager = project.manager ? new User(project.manager) : undefined;
   }
 }

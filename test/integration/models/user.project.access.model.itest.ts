@@ -64,6 +64,12 @@ describe("UserProjectAccessModel Integration Tests", () => {
         {
           model: ProjectModel,
           as: "project",
+          include: [
+            {
+              model: UserModel,
+              as: "manager",
+            },
+          ],
         },
         {
           model: UserModel,
@@ -77,6 +83,7 @@ describe("UserProjectAccessModel Integration Tests", () => {
       assert.ok(!!upa.id);
       assert.ok(upa.user instanceof UserModel);
       assert.ok(upa.project instanceof ProjectModel);
+      assert.ok(upa.project.manager instanceof UserModel);
     }
 
     await projects[1].destroy({force: true});

@@ -1,5 +1,4 @@
 import {Request} from "express";
-import {Project} from "../../../domain/entities/Project";
 
 export class CreateProjectRequest {
   private _projectName: string;
@@ -12,11 +11,15 @@ export class CreateProjectRequest {
     this._managerId = request.body.managerId;
   }
 
-  get project(): Project {
-    return new Project({
-      projectName: this._projectName,
-      projectKey: this._projectKey,
-      managerId: this._managerId,
-    });
+  get projectName(): string {
+    return this._projectName;
+  }
+
+  get projectKey(): string {
+    return this._projectKey;
+  }
+
+  get managerId(): string {
+    return this._managerId;
   }
 }

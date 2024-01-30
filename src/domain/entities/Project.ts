@@ -1,7 +1,8 @@
+import ProjectModel from "../../database/models/project.model";
 import {IProject} from "../interfaces/IProject";
 
 export class Project {
-  private _projectId: string | null;
+  private _projectId: string;
   private _projectName: string;
   private _projectKey: string;
   private _managerId: string;
@@ -9,21 +10,13 @@ export class Project {
   private _updatedAt: Date;
   private _deletedAt: Date | null;
 
-  constructor(project: IProject) {
-    this._projectId = project.projectId || null;
+  constructor(project: ProjectModel) {
+    this._projectId = project.projectId;
     this._projectName = project.projectName;
     this._projectKey = project.projectKey;
     this._managerId = project.managerId;
-    this._createdAt = project.createdAt!;
-    this._updatedAt = project.updatedAt!;
-    this._deletedAt = project.deletedAt || null;
-  }
-
-  public getForCreate(): IProject {
-    return {
-      projectName: this._projectName,
-      projectKey: this._projectKey,
-      managerId: this._managerId,
-    };
+    this._createdAt = project.createdAt;
+    this._updatedAt = project.updatedAt;
+    this._deletedAt = project.deletedAt;
   }
 }

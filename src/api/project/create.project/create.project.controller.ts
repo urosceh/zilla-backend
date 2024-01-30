@@ -11,7 +11,7 @@ export class CreateProjectController extends AbstractController {
   protected async process(req: Request, res: Response): Promise<Response> {
     const request = new CreateProjectRequest(req);
 
-    const project = await this._projectService.createProject(request.project);
+    const project = await this._projectService.createProject(request);
 
     return res.status(201).json(project);
   }

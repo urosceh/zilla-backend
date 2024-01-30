@@ -1,16 +1,16 @@
 import {DataTypes, Model} from "sequelize";
+import {IssueStatus} from "../../domain/entities/IssueStatus";
 import sequelize from "../sequelize";
-import IssueStatusModel from "./issue.status.model";
 import ProjectModel from "./project.model";
 import SprintModel from "./sprint.model";
 import UserModel from "./user.model";
 
-type IssueAttributes = {
+export type IssueAttributes = {
   issueId: string;
   projectId: string;
   reporterId: string;
   assigneeId: string | null;
-  issueStatusId: number;
+  issueStatus: number;
   sprintId: number | null;
   summary: string;
   details: string | null;
@@ -19,14 +19,16 @@ type IssueAttributes = {
   deletedAt: Date | null;
 };
 
-type IssueCreationAttributes = Pick<IssueAttributes, "projectId" | "reporterId" | "summary" | "issueStatusId">;
+export type IssueCreationAttributes = Pick<IssueAttributes, "projectId" | "reporterId" | "summary">;
+
+export type IssueOrderAttributes = keyof Pick<IssueAttributes, "createdAt" | "updatedAt">;
 
 class IssueModel extends Model<IssueAttributes, IssueCreationAttributes> {
   declare issueId: string;
   declare projectId: string;
   declare reporterId: string;
   declare assigneeId: string | null;
-  declare statusId: number;
+  declare issueStatus: IssueStatus;
   declare sprintId: number | null;
   declare summary: string;
   declare details: string | null;
@@ -36,7 +38,6 @@ class IssueModel extends Model<IssueAttributes, IssueCreationAttributes> {
   declare reporter?: UserModel;
   declare assignee?: UserModel | null;
   declare project?: ProjectModel;
-  declare issueStatus?: IssueStatusModel;
   declare sprint?: SprintModel | null;
 }
 
@@ -76,14 +77,11 @@ IssueModel.init(
         key: "user_id",
       },
     },
-    issueStatusId: {
-      type: DataTypes.INTEGER,
-      field: "status_id",
+    issueStatus: {
+      type: DataTypes.ENUM("Backlog", "In Progress", "In Review", "Deployed", "Tested", "Done", "Rejected"),
+      field: "issue_status",
       allowNull: false,
-      references: {
-        model: "status",
-        key: "status_id",
-      },
+      defaultValue: "Backlog",
     },
     sprintId: {
       type: DataTypes.INTEGER,
@@ -130,38 +128,38 @@ IssueModel.init(
 
 IssueModel.belongsTo(UserModel, {
   targetKey: "userId",
-  foreignKey: {
-    name: "reporterId",
-  },
+  foreignKey: "reporter_id",
   as: "reporter",
 });
 IssueModel.belongsTo(UserModel, {
   targetKey: "userId",
-  foreignKey: {
-    name: "assigneeId",
-  },
+  foreignKey: "assignee_id",
   as: "assignee",
 });
 IssueModel.belongsTo(ProjectModel, {
   targetKey: "projectId",
-  foreignKey: {
-    name: "projectId",
-  },
+  foreignKey: "project_id",
   as: "project",
-});
-IssueModel.belongsTo(IssueStatusModel, {
-  targetKey: "id",
-  foreignKey: {
-    name: "issueStatusId",
-  },
-  as: "issueStatus",
 });
 IssueModel.belongsTo(SprintModel, {
   targetKey: "sprintId",
-  foreignKey: {
-    name: "sprintId",
-  },
+  foreignKey: "sprint_id",
   as: "sprint",
+});
+
+SprintModel.hasMany(IssueModel, {
+  sourceKey: "sprintId",
+  foreignKey: "sprint_id",
+  as: "issues",
+  onDelete: "RESTRICT",
+  onUpdate: "RESTRICT",
+});
+ProjectModel.hasMany(IssueModel, {
+  sourceKey: "projectId",
+  foreignKey: "project_id",
+  as: "issues",
+  onDelete: "RESTRICT",
+  onUpdate: "RESTRICT",
 });
 
 export default IssueModel;

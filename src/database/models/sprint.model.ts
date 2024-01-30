@@ -1,8 +1,9 @@
 import {DataTypes, Model} from "sequelize";
 import sequelize from "../sequelize";
+import IssueModel from "./issue.model";
 import ProjectModel from "./project.model";
 
-type SprintAttributes = {
+export type SprintAttributes = {
   sprintId: number;
   sprintName: string;
   projectId: string;
@@ -10,7 +11,7 @@ type SprintAttributes = {
   endOfSprint: Date;
 };
 
-type SprintCreationAttributes = Pick<SprintAttributes, "sprintName" | "projectId" | "startOfSprint" | "endOfSprint">;
+export type SprintCreationAttributes = Pick<SprintAttributes, "sprintName" | "projectId" | "startOfSprint" | "endOfSprint">;
 
 class SprintModel extends Model<SprintAttributes, SprintCreationAttributes> {
   declare sprintId: number;
@@ -19,6 +20,7 @@ class SprintModel extends Model<SprintAttributes, SprintCreationAttributes> {
   declare startOfSprint: Date;
   declare endOfSprint: Date;
   declare project?: ProjectModel;
+  declare issues?: IssueModel[];
 }
 
 SprintModel.init(
@@ -64,11 +66,17 @@ SprintModel.init(
 
 SprintModel.belongsTo(ProjectModel, {
   targetKey: "projectId",
-  foreignKey: {
-    name: "project_id",
-  },
+  foreignKey: "project_id",
   as: "project",
   onDelete: "CASCADE",
+  onUpdate: "RESTRICT",
+});
+
+ProjectModel.hasMany(SprintModel, {
+  sourceKey: "projectId",
+  foreignKey: "project_id",
+  as: "sprints",
+  onDelete: "RESTRICT",
   onUpdate: "RESTRICT",
 });
 

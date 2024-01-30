@@ -51,6 +51,20 @@ describe("SprintModel Integration Tests", () => {
     assert.equal(sprint.sprintName, "Test Sprint");
     assert.ok(sprint.project instanceof ProjectModel);
 
+    const projectWithSprints = await ProjectModel.findOne({
+      where: {
+        projectId: project.projectId,
+      },
+      include: [
+        {
+          model: SprintModel,
+          as: "sprints",
+        },
+      ],
+    });
+
+    assert.ok(!!projectWithSprints);
+
     await project.destroy({force: true});
 
     const deletedSprint = await SprintModel.findOne({

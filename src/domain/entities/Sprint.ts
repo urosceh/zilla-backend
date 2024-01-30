@@ -1,14 +1,14 @@
-import {ISprint} from "../interfaces/ISprint";
+import SprintModel from "../../database/models/sprint.model";
 
 export class Sprint {
-  private _sprintId: number | null;
+  private _sprintId: number;
   private _sprintName: string;
   private _projectId: string;
   private _startOfSprint: Date;
   private _endOfSprint: Date;
 
-  constructor(sprint: ISprint) {
-    this._sprintId = sprint.sprintId || null;
+  constructor(sprint: SprintModel) {
+    this._sprintId = sprint.sprintId;
     this._sprintName = sprint.sprintName;
     this._projectId = sprint.projectId;
     this._startOfSprint = sprint.startOfSprint;
