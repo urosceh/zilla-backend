@@ -1,5 +1,6 @@
 prepare-test:
 	docker-compose -f ./test/docker-compose.test.yml up -d postgres-test
+	sleep 3
 	docker-compose -f ./test/docker-compose.test.yml up --build --no-deps migrations-test
 
 down-test:

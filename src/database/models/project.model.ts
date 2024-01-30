@@ -2,7 +2,7 @@ import {DataTypes, Model} from "sequelize";
 import sequelize from "../sequelize";
 import UserModel from "./user.model";
 
-type ProjectAttributes = {
+export type ProjectAttributes = {
   projectId: string;
   projectName: string;
   projectKey: string;
@@ -12,7 +12,7 @@ type ProjectAttributes = {
   deletedAt: Date | null;
 };
 
-type ProjectCreationAttributes = Pick<ProjectAttributes, "projectName" | "projectKey" | "managerId">;
+export type ProjectCreationAttributes = Pick<ProjectAttributes, "projectName" | "projectKey" | "managerId">;
 
 class ProjectModel extends Model<ProjectAttributes, ProjectCreationAttributes> {
   declare projectId: string;
