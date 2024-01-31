@@ -12,7 +12,7 @@ export class CreateProjectController extends AdminAbstractController {
   protected async process(req: Request, res: Response): Promise<Response> {
     const request = new CreateProjectRequest(req);
 
-    const isAdmin = await this.isAdminUser(request.adminUserId);
+    const isAdmin = await this.isAdminUser(request.accessUserId);
 
     if (!isAdmin) {
       return res.status(403).json({

@@ -12,7 +12,7 @@ export class CreateUsersController extends AdminAbstractController {
   protected async process(req: Request, res: Response): Promise<Response> {
     const request = new CreateUsersRequest(req);
 
-    const isAdmin = await this.isAdminUser(request.adminUserId);
+    const isAdmin = await this.isAdminUser(request.accessUserId);
 
     if (!isAdmin) {
       return res.status(403).json({

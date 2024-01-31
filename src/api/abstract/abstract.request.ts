@@ -1,17 +1,17 @@
 import {Request} from "express";
 
 export abstract class AbstractRequest {
-  protected _adminUserId: string;
+  private _accessUserId: string;
 
   constructor(request: Request) {
-    this._adminUserId = request.query.access_id as string;
+    this._accessUserId = request.query.access_id as string;
 
-    if (!this._adminUserId) {
+    if (!this._accessUserId) {
       throw new Error("Access ID is required");
     }
   }
 
-  get adminUserId(): string {
-    return this._adminUserId;
+  get accessUserId(): string {
+    return this._accessUserId;
   }
 }
