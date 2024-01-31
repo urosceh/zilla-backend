@@ -1,6 +1,6 @@
 -- liquibase formatted sql
--- changeset uros:create-comment-table
-CREATE TABLE IF NOT EXISTS "comment" (
+-- changeset uros:create-issue-comment-table
+CREATE TABLE IF NOT EXISTS "issue_comment" (
   comment_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   issue_id UUID NOT NULL REFERENCES "issue"(issue_id),
   user_id UUID NOT NULL REFERENCES "zilla_user"(user_id),
