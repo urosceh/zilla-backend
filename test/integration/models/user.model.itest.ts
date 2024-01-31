@@ -6,13 +6,15 @@ import {UserWrapper} from "../wrappers/user.wrapper";
 describe("UserModel Integration Tests", () => {
   const userWrapper = new UserWrapper();
 
+  const userIds: string[] = [];
+
   after(async () => {
-    await userWrapper.cleanup();
+    await userWrapper.cleanup(userIds);
   });
 
   test("should create and paraniod delete a user", async () => {
     const user = await UserModel.create({
-      email: "john.doe@gmail.com",
+      email: "test@gmail.com",
       password: "password",
     });
 
@@ -20,14 +22,22 @@ describe("UserModel Integration Tests", () => {
     assert.ok(!!user.createdAt);
     assert.ok(!!user.updatedAt);
     assert.ok(!!user.password);
-    assert.equal(user.email, "john.doe@gmail.com");
+    assert.equal(user.email, "test@gmail.com");
+
+    userIds.push(user.userId);
 
     // Paraniod delete the user
     await user.destroy();
 
-    const paranoidDeletedUsers = await userWrapper.getUser(user.userId);
+    const paranoidDeletedUsers = await UserModel.findOne({
+      where: {
+        email: "test@gmail.com",
+      },
+      paranoid: false,
+    });
 
-    assert.equal(paranoidDeletedUsers.email, "john.doe@gmail.com");
-    assert.ok(!!paranoidDeletedUsers.deleted_at);
+    assert.ok(!!paranoidDeletedUsers);
+    assert.equal(paranoidDeletedUsers.email, "test@gmail.com");
+    assert.ok(!!paranoidDeletedUsers.deletedAt);
   });
 });

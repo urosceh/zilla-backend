@@ -1,30 +1,24 @@
 import assert from "node:assert";
-import test, {after, describe} from "node:test";
+import test, {after, before, describe} from "node:test";
 import ProjectModel from "../../../src/database/models/project.model";
 import SprintModel from "../../../src/database/models/sprint.model";
-import UserModel from "../../../src/database/models/user.model";
 import {SprintWrapper} from "../wrappers/sprint.wrapper";
 
 describe("SprintModel Integration Tests", () => {
   const sprintWrapper = new SprintWrapper();
 
+  const sprintIds: number[] = [];
+
+  before(async () => {
+    await sprintWrapper.setup();
+  });
+
   after(async () => {
-    await sprintWrapper.cleanup();
+    await sprintWrapper.cleanup(sprintIds);
   });
 
   test("should create and delete a sprint", async () => {
-    const user = await UserModel.create({
-      email: "john.doe@gmail.com",
-      password: "password",
-    });
-
-    assert(!!user.userId);
-
-    const project = await ProjectModel.create({
-      projectName: "Test Project",
-      projectKey: "TEST",
-      managerId: user.userId,
-    });
+    const project = sprintWrapper.testProjectModels.find((project) => project.projectKey === "PJC1")!;
 
     assert(!!project.projectId);
 
@@ -51,6 +45,8 @@ describe("SprintModel Integration Tests", () => {
     assert.equal(sprint.sprintName, "Test Sprint");
     assert.ok(sprint.project instanceof ProjectModel);
 
+    sprintIds.push(sprint.sprintId);
+
     const projectWithSprints = await ProjectModel.findOne({
       where: {
         projectId: project.projectId,
@@ -65,7 +61,7 @@ describe("SprintModel Integration Tests", () => {
 
     assert.ok(!!projectWithSprints);
 
-    await project.destroy({force: true});
+    await sprint.destroy();
 
     const deletedSprint = await SprintModel.findOne({
       where: {

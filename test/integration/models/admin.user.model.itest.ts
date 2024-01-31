@@ -1,5 +1,5 @@
 import assert from "node:assert";
-import test, {after, describe} from "node:test";
+import test, {after, before, describe} from "node:test";
 import AdminUserModel from "../../../src/database/models/admin.user.model";
 import UserModel from "../../../src/database/models/user.model";
 import {AdminUserWrapper} from "../wrappers/admin.user.wrapper";
@@ -7,17 +7,20 @@ import {AdminUserWrapper} from "../wrappers/admin.user.wrapper";
 describe("AdminUserModel Integration Tests", () => {
   const adminUserWrapper = new AdminUserWrapper();
 
+  const ids: number[] = [];
+
+  before(async () => {
+    await adminUserWrapper.setup();
+  });
+
   after(async () => {
-    await adminUserWrapper.cleanup();
+    await adminUserWrapper.cleanup(ids);
   });
 
   test("should create and delete an admin user", async () => {
-    const user = await UserModel.create({
-      email: "john.doe@gmail.com",
-      password: "password",
-    });
+    const user = adminUserWrapper.testUserModels[0];
 
-    assert.ok(!!user.userId);
+    console.log(user.toJSON());
 
     await AdminUserModel.create({
       userId: user.userId,
@@ -41,6 +44,8 @@ describe("AdminUserModel Integration Tests", () => {
     assert.equal(adminUser.userId, user.userId);
     assert.ok(adminUser.user instanceof UserModel);
     assert.equal(adminUser.user.email, "john.doe@gmail.com");
+
+    ids.push(adminUser.id);
 
     // should not be able to force delete the user
     await assert.rejects(async () => {

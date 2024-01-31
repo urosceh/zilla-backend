@@ -2,7 +2,7 @@ import {AbstractWrapper} from "./abstract/abstract.wrapper";
 
 export class UserWrapper extends AbstractWrapper {
   protected tableName = "zilla_user";
-  protected associatedTableNames = [];
+  protected primaryKey = "user_id";
 
   public async getUser(userId: string): Promise<any> {
     const result = await this.rawSelect("SELECT * FROM zilla_user WHERE user_id = :userId", {replacements: {userId}});

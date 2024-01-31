@@ -1,5 +1,5 @@
 import assert from "node:assert";
-import test, {after, describe} from "node:test";
+import test, {after, before, describe} from "node:test";
 import ProjectModel from "../../../src/database/models/project.model";
 import UserModel from "../../../src/database/models/user.model";
 import {ProjectWrapper} from "../wrappers/project.wrapper";
@@ -7,19 +7,22 @@ import {ProjectWrapper} from "../wrappers/project.wrapper";
 describe("ProjectModel Integration Tests", () => {
   const projectWrapper = new ProjectWrapper();
 
+  const projectIds: string[] = [];
+
+  before(async () => {
+    await projectWrapper.setup();
+  });
+
   after(async () => {
-    await projectWrapper.cleanup();
+    await projectWrapper.cleanup(projectIds);
   });
 
   test("should create and delete a project", async () => {
-    const user = await UserModel.create({
-      email: "joe.doe@gmail.com",
-      password: "password",
-    });
+    const user = projectWrapper.testUserModels.find((user) => user.email === "john.doe@gmail.com")!;
 
     assert.ok(!!user.userId);
 
-    await ProjectModel.create({
+    const createdProject = await ProjectModel.create({
       projectName: "Test Project",
       projectKey: "TEST",
       managerId: user.userId,
@@ -27,7 +30,7 @@ describe("ProjectModel Integration Tests", () => {
 
     const project = await ProjectModel.findOne({
       where: {
-        managerId: user.userId,
+        projectId: createdProject.projectId,
       },
       include: [
         {
@@ -43,7 +46,9 @@ describe("ProjectModel Integration Tests", () => {
     assert.equal(project.projectName, "Test Project");
     assert.equal(project.projectKey, "TEST");
     assert.ok(project.manager instanceof UserModel);
-    assert.equal(project.manager.email, "joe.doe@gmail.com");
+    assert.equal(project.manager.email, "john.doe@gmail.com");
+
+    projectIds.push(project.projectId);
 
     await assert.rejects(async () => {
       await user.destroy({
@@ -55,10 +60,16 @@ describe("ProjectModel Integration Tests", () => {
 
     await project.destroy();
 
-    const paranoidDeletedProject = await projectWrapper.getProject(projectId);
+    const paranoidDeletedProject = await ProjectModel.findOne({
+      where: {
+        projectId,
+      },
+      paranoid: false,
+    });
 
-    assert.equal(paranoidDeletedProject.project_name, "Test Project");
-    assert.equal(paranoidDeletedProject.project_key, "TEST");
-    assert.ok(!!paranoidDeletedProject.deleted_at);
+    assert.ok(!!paranoidDeletedProject);
+    assert.equal(paranoidDeletedProject.projectName, "Test Project");
+    assert.equal(paranoidDeletedProject.projectKey, "TEST");
+    assert.ok(!!paranoidDeletedProject.deletedAt);
   });
 });
