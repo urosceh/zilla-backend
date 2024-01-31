@@ -4,9 +4,9 @@ import ProjectModel from "../../../src/database/models/project.model";
 import SprintModel from "../../../src/database/models/sprint.model";
 import UserModel from "../../../src/database/models/user.model";
 import {IssueRepository} from "../../../src/database/repositories/issue.repository";
-import {IssueStatus} from "../../../src/domain/entities/IssueStatus";
 import {Sprint} from "../../../src/domain/entities/Sprint";
 import {User} from "../../../src/domain/entities/User";
+import {IssueStatus} from "../../../src/domain/enums/IssueStatus";
 import {IssueWrapper} from "../wrappers/issue.wrapper";
 
 describe("IssueModel Integration Tests", () => {
