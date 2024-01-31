@@ -14,4 +14,12 @@ export class Sprint {
     this._startOfSprint = sprint.startOfSprint;
     this._endOfSprint = sprint.endOfSprint;
   }
+
+  get sprintId(): number {
+    return this._sprintId;
+  }
+
+  get sprintName(): string {
+    return this._sprintName;
+  }
 }

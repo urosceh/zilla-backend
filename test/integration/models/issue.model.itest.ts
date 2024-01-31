@@ -22,8 +22,6 @@ describe("IssueModel Integration Tests", () => {
     const reporter: UserModel = issueWrapper.testUserModels.find((user) => user.email === "john.doe@gmail.com")!;
     const project: ProjectModel = issueWrapper.testProjectModels.find((project) => project.projectKey === "PJC1")!;
 
-    console.log(project);
-
     const createdIssue = await IssueModel.create({
       projectId: project.projectId,
       reporterId: reporter.userId,

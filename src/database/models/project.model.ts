@@ -1,5 +1,6 @@
 import {DataTypes, Model} from "sequelize";
 import sequelize from "../sequelize";
+import SprintModel from "./sprint.model";
 import UserModel from "./user.model";
 
 export type ProjectAttributes = {
@@ -23,6 +24,7 @@ class ProjectModel extends Model<ProjectAttributes, ProjectCreationAttributes> {
   declare updatedAt: Date;
   declare deletedAt: Date | null;
   declare manager: UserModel;
+  declare sprints?: SprintModel[];
 }
 
 ProjectModel.init(

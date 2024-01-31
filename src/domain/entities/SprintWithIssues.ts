@@ -9,4 +9,8 @@ export class SprintWithIssues extends Sprint {
     super(sprintWithIssues);
     this._issues = sprintWithIssues.issues ? sprintWithIssues.issues.map((issue) => new Issue(issue)) : [];
   }
+
+  get issues(): Issue[] {
+    return this._issues;
+  }
 }

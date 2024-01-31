@@ -11,7 +11,7 @@ export abstract class AbstractWrapper {
 
     const inStatement = formattedIds.length > 0 ? `${this.primaryKey} IN (${formattedIds.join(", ")})` : "false";
 
-    await this._sequelize.query(`DELETE FROM ${this.tableName} WHERE ${inStatement}`);
+    await this._sequelize.query(`DELETE FROM ${this.tableName} WHERE ${inStatement}`, {logging: false});
   }
 
   protected async rawSelect(query: string, options?: QueryOptions): Promise<any[]> {

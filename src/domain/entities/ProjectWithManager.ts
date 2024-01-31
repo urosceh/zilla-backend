@@ -9,4 +9,8 @@ export class ProjectWithManager extends Project {
     super(project);
     this._manager = project.manager ? new User(project.manager) : undefined;
   }
+
+  get manager(): User | undefined {
+    return this._manager;
+  }
 }

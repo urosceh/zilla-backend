@@ -39,4 +39,20 @@ export class ProjectRepository implements IProjectRepository {
       throw error;
     }
   }
+
+  public async getAllProjects(options: {limit: number; offset: number}): Promise<ProjectWithManager[]> {
+    const projects = await ProjectModel.findAll({
+      limit: options.limit,
+      offset: options.offset,
+      include: [
+        {
+          model: UserModel,
+          as: "manager",
+        },
+      ],
+      order: [["updatedAt", "DESC"]],
+    });
+
+    return projects.map((project) => new ProjectWithManager(project));
+  }
 }
