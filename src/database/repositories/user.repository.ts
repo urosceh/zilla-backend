@@ -4,6 +4,7 @@ import UserModel, {UserCreationAttributes} from "../models/user.model";
 
 export interface IUserRepository {
   createBatch(users: UserCreationAttributes[]): Promise<User[]>;
+  loginUser(credentials: {email: string; password: string}): Promise<User>;
 }
 
 export class UserRepository implements IUserRepository {
@@ -13,10 +14,10 @@ export class UserRepository implements IUserRepository {
     return createdUsers.map((user) => new User(user));
   }
 
-  public async loginUser(email: string, password: string): Promise<User> {
+  public async loginUser(credentials: {email: string; password: string}): Promise<User> {
     const user = await UserModel.findOne({
       where: {
-        email,
+        email: credentials.email,
       },
     });
 
@@ -24,7 +25,7 @@ export class UserRepository implements IUserRepository {
       throw new Error("Invalid email");
     }
 
-    const isPasswordValid = compareSync(password, user.password);
+    const isPasswordValid = compareSync(credentials.password, user.password);
 
     if (!isPasswordValid) {
       throw new Error("Invalid password");

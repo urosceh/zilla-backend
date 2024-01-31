@@ -3,7 +3,11 @@ import {IAdminUserRepository} from "../../database/repositories/admin.user.repos
 export class AdminUserService {
   constructor(private _adminUserRepository: IAdminUserRepository) {}
 
-  public async makeAdmin(userId: string): Promise<any> {
-    return this._adminUserRepository.makeAdmin(userId);
+  public async isAdmin(userId: string): Promise<boolean> {
+    return this._adminUserRepository.isAdmin(userId);
+  }
+
+  public async createAdmin(userId: string): Promise<any> {
+    return this._adminUserRepository.createAdmin(userId);
   }
 }

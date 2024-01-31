@@ -1,5 +1,5 @@
 import IssueModel from "../../database/models/issue.model";
-import {IssueStatus} from "./IssueStatus";
+import {IssueStatus} from "../enums/IssueStatus";
 import {Sprint} from "./Sprint";
 import {User} from "./User";
 

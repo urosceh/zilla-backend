@@ -1,16 +1,16 @@
 import express from "express";
-import {projectService} from "../../domain/services.index";
-import {bodySchemaValidationMiddleware} from "../../lib/joi/joi.index";
+import {adminUserService, projectService} from "../../domain/services.index";
+import {JoiValidator} from "../../lib/joi/joi.validator";
 import {CreateProjectController} from "./create.project/create.project.controller";
 import {createProjectBodySchema} from "./create.project/create.project.validation";
 
-const createProjectController = new CreateProjectController(projectService);
+const createProjectController = new CreateProjectController(projectService, adminUserService);
 
 const projectRouter = express.Router();
 
 projectRouter.post(
   "/create",
-  bodySchemaValidationMiddleware(createProjectBodySchema),
+  JoiValidator.bodySchemaValidationMiddleware(createProjectBodySchema),
   createProjectController.handle.bind(createProjectController)
 );
 
