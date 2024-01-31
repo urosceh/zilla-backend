@@ -6,18 +6,43 @@ import {tap} from "node:test/reporters";
 import {GlobalAfter} from "./global.after";
 import {GlobalBefore} from "./global.before";
 
-const modelFolder = "./test/integration/models/";
-const modelFiles = fs.readdirSync(modelFolder).map((file) => path.resolve(`${modelFolder}${file}`));
+console.log("All args:", process.argv);
+
+const getTestFilePath = () => {
+  const args = process.argv.slice(2);
+
+  console.log("args:", args);
+  // Parse command line arguments
+  const parsedArgs: Record<string, string> = args.reduce((acc, arg) => {
+    const [key, value] = arg.split("=") as [string, string];
+
+    console.log("key:", key);
+    console.log("value:", value);
+
+    acc[key] = value;
+    return acc;
+  }, {} as Record<string, string>);
+
+  // Access the value of the custom flag
+  const testFilePath = parsedArgs.testFilePath;
+
+  return testFilePath;
+};
+
+const getFiles = () => {
+  const testFilePath = getTestFilePath();
+  if (!!testFilePath) {
+    return [testFilePath];
+  } else {
+    const modelFolder = "./test/integration/models/";
+    const modelFiles = fs.readdirSync(modelFolder).map((file) => path.resolve(`${modelFolder}${file}`)) as string[];
+
+    return modelFiles;
+  }
+};
 
 const stream = run({
-  files: [
-    path.resolve("./test/integration/models/admin.user.model.itest.ts"),
-    path.resolve("./test/integration/models/issue.model.itest.ts"),
-    path.resolve("./test/integration/models/project.model.itest.ts"),
-    path.resolve("./test/integration/models/sprint.model.itest.ts"),
-    path.resolve("./test/integration/models/user.model.itest.ts"),
-    path.resolve("./test/integration/models/user.project.access.model.itest.ts"),
-  ],
+  files: getFiles(),
   concurrency: true,
   setup: async () => {
     try {

@@ -8,15 +8,23 @@
       "name": "Run App",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/node_modules/.bin/ts-node",
-      "args": ["${workspaceFolder}/src/index.ts"],
+      "args": ["--require", "ts-node/register", "${workspaceFolder}/src/index.ts"],
       "envFile": "${workspaceFolder}/.env"
     },
     {
-      "name": "Run Test File",
+      "name": "Run All Tests",
       "type": "node",
       "request": "launch",
-      "args": ["--test", "--require", "ts-node/register", "${file}"],
+      "args": ["--require", "ts-node/register", "${workspaceFolder}/test/test.index.ts"],
+      "envFile": "${workspaceFolder}/test/test.env",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Run Single Test File",
+      "type": "node",
+      "request": "launch",
+      "args": ["--require", "ts-node/register", "${workspaceFolder}/test/test.index.ts", "testFilePath=${file}"],
       "envFile": "${workspaceFolder}/test/test.env",
       "console": "integratedTerminal",
       "cwd": "${workspaceFolder}"
