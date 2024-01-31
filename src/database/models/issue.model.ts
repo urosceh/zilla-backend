@@ -10,7 +10,7 @@ export type IssueAttributes = {
   projectId: string;
   reporterId: string;
   assigneeId: string | null;
-  issueStatus: number;
+  issueStatus: IssueStatus;
   sprintId: number | null;
   summary: string;
   details: string | null;
@@ -19,7 +19,7 @@ export type IssueAttributes = {
   deletedAt: Date | null;
 };
 
-export type IssueCreationAttributes = Pick<IssueAttributes, "projectId" | "reporterId" | "summary">;
+export type IssueCreationAttributes = Pick<IssueAttributes, "projectId" | "reporterId" | "summary"> & Partial<IssueAttributes>;
 
 export type IssueOrderAttributes = keyof Pick<IssueAttributes, "createdAt" | "updatedAt">;
 

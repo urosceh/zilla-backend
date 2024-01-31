@@ -19,4 +19,32 @@ export class Project {
     this._updatedAt = project.updatedAt;
     this._deletedAt = project.deletedAt;
   }
+
+  get projectId(): string {
+    return this._projectId;
+  }
+
+  get projectName(): string {
+    return this._projectName;
+  }
+
+  get projectKey(): string {
+    return this._projectKey;
+  }
+
+  get managerId(): string {
+    return this._managerId;
+  }
+
+  get createdAt(): Date {
+    return this._createdAt;
+  }
+
+  get updatedAt(): Date {
+    return this._updatedAt;
+  }
+
+  get deletedAt(): Date | null {
+    return this._deletedAt;
+  }
 }

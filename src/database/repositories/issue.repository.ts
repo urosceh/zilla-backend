@@ -1,5 +1,7 @@
 import {Issue} from "../../domain/entities/Issue";
 import IssueModel, {IssueCreationAttributes, IssueOrderAttributes} from "../models/issue.model";
+import SprintModel from "../models/sprint.model";
+import UserModel from "../models/user.model";
 
 export interface IIssueRepository {
   createIssue(issue: IssueCreationAttributes): Promise<Issue>;
@@ -29,6 +31,20 @@ export class IssueRepository implements IIssueRepository {
       limit: options.limit,
       offset: options.offset,
       order,
+      include: [
+        {
+          model: UserModel,
+          as: "reporter",
+        },
+        {
+          model: UserModel,
+          as: "assignee",
+        },
+        {
+          model: SprintModel,
+          as: "sprint",
+        },
+      ],
     });
 
     return issues.map((issue) => new Issue(issue));

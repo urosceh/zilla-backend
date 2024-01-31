@@ -6,19 +6,12 @@ import {tap} from "node:test/reporters";
 import {GlobalAfter} from "./global.after";
 import {GlobalBefore} from "./global.before";
 
-console.log("All args:", process.argv);
-
 const getTestFilePath = () => {
   const args = process.argv.slice(2);
 
-  console.log("args:", args);
   // Parse command line arguments
   const parsedArgs: Record<string, string> = args.reduce((acc, arg) => {
     const [key, value] = arg.split("=") as [string, string];
-
-    console.log("key:", key);
-    console.log("value:", value);
-
     acc[key] = value;
     return acc;
   }, {} as Record<string, string>);
@@ -37,7 +30,10 @@ const getFiles = () => {
     const modelFolder = "./test/integration/models/";
     const modelFiles = fs.readdirSync(modelFolder).map((file) => path.resolve(`${modelFolder}${file}`)) as string[];
 
-    return modelFiles;
+    const repositoryFolder = "./test/integration/repositories/";
+    const repositoryFiles = fs.readdirSync(repositoryFolder).map((file) => path.resolve(`${repositoryFolder}${file}`)) as string[];
+
+    return [...modelFiles, ...repositoryFiles];
   }
 };
 
@@ -49,9 +45,15 @@ const stream = run({
       await GlobalBefore.run();
       console.log("GlobalBefore run complete\n\n\n");
     } catch (error) {
-      console.log("GlobalBefore run failed\n\n\n", error);
-      await GlobalAfter.run();
-      process.exit(1);
+      try {
+        await GlobalAfter.run();
+        console.log("GlobalAfter run complete\n\n\n");
+        await GlobalBefore.run();
+        console.log("GlobalBefore run complete\n\n\n");
+      } catch (error) {
+        console.log("GlobalBefore run failed\n\n\n", error);
+        process.exit(1);
+      }
     }
   },
 }).compose(tap);

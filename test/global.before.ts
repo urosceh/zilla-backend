@@ -1,4 +1,6 @@
+import IssueModel from "../src/database/models/issue.model";
 import ProjectModel from "../src/database/models/project.model";
+import SprintModel from "../src/database/models/sprint.model";
 import UserModel from "../src/database/models/user.model";
 
 export class GlobalBefore {
@@ -36,5 +38,45 @@ export class GlobalBefore {
         logging: false,
       }
     );
+
+    const sprint = await SprintModel.bulkCreate([
+      {
+        projectId: testProjects[0].projectId,
+        sprintName: "Sprint 1",
+        startOfSprint: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7), // - 7 days
+        endOfSprint: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), // + 7 days
+      },
+    ]);
+
+    const issues = await IssueModel.bulkCreate([
+      {
+        projectId: testProjects[0].projectId,
+        summary: "PJC1 Issue 1",
+        reporterId: testUsers[0].userId,
+        sprintId: sprint[0].sprintId,
+      },
+      {
+        projectId: testProjects[0].projectId,
+        summary: "PJC1 Issue 2",
+        reporterId: testUsers[0].userId,
+        assigneeId: testUsers[1].userId,
+      },
+      {
+        projectId: testProjects[0].projectId,
+        summary: "PJC1 Issue 3",
+        reporterId: testUsers[0].userId,
+        sprintId: sprint[0].sprintId,
+      },
+      {
+        projectId: testProjects[1].projectId,
+        summary: "PJC2 Issue 1",
+        reporterId: testUsers[0].userId,
+      },
+      {
+        projectId: testProjects[1].projectId,
+        summary: "PJC2 Issue 2",
+        reporterId: testUsers[1].userId,
+      },
+    ]);
   }
 }
