@@ -27,9 +27,9 @@ describe("UserRepository Integration Tests", () => {
     ]);
 
     const [pera, zika, steva] = await Promise.allSettled([
-      userRepository.loginUser("test.pera@gmail.com", "password.pera"),
-      userRepository.loginUser("test.zika@gmail.com", "password.not.zika"),
-      userRepository.loginUser("test.steva@gmail.com", "password.steva"),
+      userRepository.loginUser({email: "test.pera@gmail.com", password: "password.pera"}),
+      userRepository.loginUser({email: "test.zika@gmail.com", password: "password.not.zika"}),
+      userRepository.loginUser({email: "test.steva@gmail.com", password: "password.steva"}),
     ]);
 
     assert.ok(pera.status === "fulfilled");

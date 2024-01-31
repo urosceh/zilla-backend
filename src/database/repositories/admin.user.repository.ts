@@ -3,11 +3,22 @@ import AdminUserModel from "../models/admin.user.model";
 import UserModel from "../models/user.model";
 
 export interface IAdminUserRepository {
-  makeAdmin(userId: string): Promise<User>;
+  isAdmin(userId: string): Promise<boolean>;
+  createAdmin(userId: string): Promise<User>;
 }
 
 export class AdminUserRepository implements IAdminUserRepository {
-  public async makeAdmin(userId: string): Promise<User> {
+  public async isAdmin(userId: string): Promise<boolean> {
+    const adminUser = await AdminUserModel.findOne({
+      where: {
+        userId,
+      },
+    });
+
+    return !!adminUser;
+  }
+
+  public async createAdmin(userId: string): Promise<User> {
     const transaction = await AdminUserModel.sequelize!.transaction();
 
     try {

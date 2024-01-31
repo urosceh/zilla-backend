@@ -1,9 +1,11 @@
 import {Request} from "express";
+import {AbstractRequest} from "../../abstract/abstract.request";
 
-export class CreateUsersRequest {
+export class CreateUsersRequest extends AbstractRequest {
   private _emails: string[];
 
   constructor(requset: Request) {
+    super(requset);
     this._emails = requset.body.emails;
   }
 

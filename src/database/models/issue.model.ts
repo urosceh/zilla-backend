@@ -1,5 +1,5 @@
 import {DataTypes, Model} from "sequelize";
-import {IssueStatus} from "../../domain/entities/IssueStatus";
+import {IssueStatus} from "../../domain/enums/IssueStatus";
 import sequelize from "../sequelize";
 import ProjectModel from "./project.model";
 import SprintModel from "./sprint.model";

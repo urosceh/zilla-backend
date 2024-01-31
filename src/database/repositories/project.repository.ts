@@ -3,10 +3,23 @@ import ProjectModel, {ProjectCreationAttributes} from "../models/project.model";
 import UserModel from "../models/user.model";
 
 export interface IProjectRepository {
+  isManager(projectId: string, userId: string): Promise<boolean>;
   createProject(project: ProjectCreationAttributes): Promise<ProjectWithManager>;
+  getAllProjects(options: {limit: number; offset: number}): Promise<ProjectWithManager[]>;
 }
 
 export class ProjectRepository implements IProjectRepository {
+  public async isManager(projectId: string, userId: string): Promise<boolean> {
+    const project = await ProjectModel.findOne({
+      where: {
+        projectId,
+        managerId: userId,
+      },
+    });
+
+    return !!project;
+  }
+
   public async createProject(project: ProjectCreationAttributes): Promise<ProjectWithManager> {
     const transaction = await ProjectModel.sequelize!.transaction();
 
