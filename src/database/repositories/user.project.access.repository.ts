@@ -7,7 +7,7 @@ export interface IUserProjectAccessRepository {
   insertAccess(userIds: string[], projectKey: string): Promise<void>;
   deleteAccess(userIds: string[], projectKey: string): Promise<void>;
   hasAccess(userId: string, projectKey: string): Promise<boolean>;
-  getAllUsersProjects(userId: string): Promise<Project[]>;
+  getAllUsersProjects(userId: string, options: {limit: number; offset: number; search?: string}): Promise<Project[]>;
 }
 
 export class UserProjectAccessRepository implements IUserProjectAccessRepository {
@@ -48,15 +48,31 @@ export class UserProjectAccessRepository implements IUserProjectAccessRepository
     return !!access;
   }
 
-  public async getAllUsersProjects(userId: string): Promise<Project[]> {
+  public async getAllUsersProjects(userId: string, options: {limit: number; offset: number; search?: string}): Promise<Project[]> {
+    const whereCondition = options.search
+      ? {
+          [Op.or]: {
+            projectKey: {
+              [Op.iLike]: `%${options.search}%`,
+            },
+            projectName: {
+              [Op.iLike]: `%${options.search}%`,
+            },
+          },
+        }
+      : {};
+
     const userProjectAccesses = await UserProjectAccessModel.findAll({
       where: {
         userId,
       },
+      limit: options.limit,
+      offset: options.offset,
       include: [
         {
           model: ProjectModel,
           as: "project",
+          where: whereCondition,
         },
       ],
     });

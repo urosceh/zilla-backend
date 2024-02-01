@@ -25,7 +25,7 @@ export class AccessValidationMiddleware {
 
         return next();
       } else {
-        if (req.method !== "GET" || req.path !== "/projects") {
+        if (req.method !== "GET" || req.path !== "/all") {
           return res.status(400).json({
             message: "Project key is required",
           });

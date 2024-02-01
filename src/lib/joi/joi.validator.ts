@@ -24,6 +24,17 @@ export class JoiValidator {
     };
   }
 
+  public static querySchemaValidationMiddleware(schema: Joi.Schema) {
+    return (request: Request, response: Response, next: NextFunction) => {
+      const result = this.checkSchema(request.query, schema);
+      if (result.errors || !result.value) {
+        return result.errors ? next(result.errors) : next(new Error("Invalid query"));
+      }
+      request.query = result.value;
+      return next();
+    };
+  }
+
   public static checkSchema(data: any, schema: Joi.Schema, options?: Joi.ValidationOptions) {
     const result = schema.validate(data, options);
     let errors;
