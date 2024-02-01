@@ -23,24 +23,25 @@ export class TokenMiddleware {
         });
       }
 
-      const userId = JwtGenerator.getUserIdFromToken(token);
+      try {
+        const userId = JwtGenerator.getUserIdFromToken(token);
 
-      // redis has active set for certain duration
-      // after that it's deleted
-      // on logout, it's set as blacklisted
-      // check redis (exists and active token)
+        req.headers.userId = userId;
 
-      req.headers.userId = userId;
+        const result = JoiValidator.checkSchema(req.headers, headersSchema, {allowUnknown: true});
 
-      const result = JoiValidator.checkSchema(req.headers, headersSchema, {allowUnknown: true});
+        if (result.errors || !result.value) {
+          return res.status(401).json({
+            message: "Invalid token",
+          });
+        }
 
-      if (result.errors || !result.value) {
+        return next();
+      } catch (error) {
         return res.status(401).json({
-          message: "Invalid token",
+          message: "Token expired",
         });
       }
-
-      return next();
     };
   }
 }
