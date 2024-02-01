@@ -18,8 +18,15 @@ describe("UserProjectAccessModel Integration Tests", () => {
     await userProjectAccessWrapper.cleanup(ids);
   });
 
-  test.skip("should test UserProjectAccessModel associations", async () => {
+  test("should test UserProjectAccessModel associations", async () => {
+    const user = userProjectAccessWrapper.testUserModels.find((u) => u.email === "john.doe@gmail.com");
+
+    assert.ok(!!user);
+
     const userProjectAcesses = await UserProjectAccessModel.findAll({
+      where: {
+        userId: user.userId,
+      },
       include: [
         {
           model: ProjectModel,
@@ -38,21 +45,12 @@ describe("UserProjectAccessModel Integration Tests", () => {
       ],
     });
 
-    assert.ok(userProjectAcesses.length === 2);
+    assert.ok(userProjectAcesses.length > 0);
     for (const upa of userProjectAcesses) {
       assert.ok(!!upa.id);
       assert.ok(upa.user instanceof UserModel);
       assert.ok(upa.project instanceof ProjectModel);
       assert.ok(upa.project.manager instanceof UserModel);
     }
-    // await projects[1].destroy({force: true});
-
-    // const upaByProject = await userProjectAccessWrapper.getByProjectKey(projects[1].projectKey);
-    // assert.ok(upaByProject.length === 0);
-
-    // await users[1].destroy({force: true});
-
-    // const upaByUser = await userProjectAccessWrapper.getByUserId(users[1].userId);
-    // assert.ok(upaByUser.length === 0);
   });
 });

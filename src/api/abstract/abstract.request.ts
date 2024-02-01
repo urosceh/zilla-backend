@@ -4,7 +4,7 @@ export abstract class AbstractRequest {
   private _accessUserId: string;
 
   constructor(request: Request) {
-    this._accessUserId = request.query.access_id as string;
+    this._accessUserId = request.headers.userId as string;
 
     if (!this._accessUserId) {
       throw new Error("Access ID is required");

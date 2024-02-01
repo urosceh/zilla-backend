@@ -4,8 +4,8 @@ import {Middleware} from "../../domain/types/middleware.type";
 import {JoiValidator} from "../../lib/joi/joi.validator";
 import {JwtGenerator} from "../../lib/jwt/jwt.generator";
 
-const accessIdQuerySchema = Joi.object({
-  access_id: Joi.string().uuid().required(),
+const headersSchema = Joi.object({
+  userId: Joi.string().uuid().required(),
 });
 
 export class TokenMiddleware {
@@ -23,11 +23,16 @@ export class TokenMiddleware {
         });
       }
 
-      const user_id = JwtGenerator.getUserIdFromToken(token);
+      const userId = JwtGenerator.getUserIdFromToken(token);
 
-      req.query.access_id = user_id;
+      // redis has active set for certain duration
+      // after that it's deleted
+      // on logout, it's set as blacklisted
+      // check redis (exists and active token)
 
-      const result = JoiValidator.checkSchema(req.query, accessIdQuerySchema);
+      req.headers.userId = userId;
+
+      const result = JoiValidator.checkSchema(req.headers, headersSchema, {allowUnknown: true});
 
       if (result.errors || !result.value) {
         return res.status(401).json({

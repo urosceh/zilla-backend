@@ -24,8 +24,8 @@ export class JoiValidator {
     };
   }
 
-  public static checkSchema(data: any, schema: Joi.Schema) {
-    const result = schema.validate(data);
+  public static checkSchema(data: any, schema: Joi.Schema, options?: Joi.ValidationOptions) {
+    const result = schema.validate(data, options);
     let errors;
     if (result.error) {
       errors = result.error.details.map((value) => {

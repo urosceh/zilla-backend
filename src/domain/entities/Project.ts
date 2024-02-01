@@ -1,7 +1,7 @@
 import ProjectModel from "../../database/models/project.model";
-import {IProject} from "../interfaces/IProject";
+import {IReturnable} from "../interfaces/IReturnable";
 
-export class Project {
+export class Project implements IReturnable {
   private _projectId: string;
   private _projectName: string;
   private _projectKey: string;
@@ -18,6 +18,17 @@ export class Project {
     this._createdAt = project.createdAt;
     this._updatedAt = project.updatedAt;
     this._deletedAt = project.deletedAt;
+  }
+
+  public createDto() {
+    return {
+      projectId: this._projectId,
+      projectName: this._projectName,
+      projectKey: this._projectKey,
+      managerId: this._managerId,
+      createdAt: this._createdAt,
+      updatedAt: this._updatedAt,
+    };
   }
 
   get projectId(): string {
