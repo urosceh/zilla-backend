@@ -8,11 +8,14 @@ export class LoginUserController extends AbstractController {
     super();
   }
 
-  protected async process(req: Request, res: Response): Promise<Response> {
+  protected async process(req: Request, res: Response): Promise<{statusCode: number; data: string}> {
     const request = new LoginUserRequest(req);
 
     const userBearerToken = await this._userService.loginUser(request.credentials);
 
-    return res.status(200).json(userBearerToken);
+    return {
+      statusCode: 200,
+      data: userBearerToken,
+    };
   }
 }

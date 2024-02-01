@@ -1,27 +1,23 @@
 import {Request, Response} from "express";
-import {AdminUserService} from "../../../domain/services/admin.user.service";
+import {User} from "../../../domain/entities/User";
+import {IReturnable} from "../../../domain/interfaces/IReturnable";
 import {UserService} from "../../../domain/services/user.service";
-import {AdminAbstractController} from "../../abstract/admin.abstract.controller";
+import {AbstractController} from "../../abstract/abstract.controller";
 import {CreateUsersRequest} from "./create.users.request";
 
-export class CreateUsersController extends AdminAbstractController {
-  constructor(private _userService: UserService, adminUserService: AdminUserService) {
-    super(adminUserService);
+export class CreateUsersController extends AbstractController {
+  constructor(private _userService: UserService) {
+    super();
   }
 
-  protected async process(req: Request, res: Response): Promise<Response> {
+  protected async process(req: Request, res: Response): Promise<{statusCode: number; data: IReturnable[]}> {
     const request = new CreateUsersRequest(req);
 
-    const isAdmin = await this.isAdminUser(request.accessUserId);
+    const users: User[] = await this._userService.createUsers(request.emails);
 
-    if (!isAdmin) {
-      return res.status(403).json({
-        message: "You are not authorized to create users",
-      });
-    }
-
-    const users = await this._userService.createUsers(request.emails);
-
-    return res.json(users);
+    return {
+      statusCode: 201,
+      data: users,
+    };
   }
 }

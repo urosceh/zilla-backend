@@ -2,6 +2,7 @@ import IssueModel from "../src/database/models/issue.model";
 import ProjectModel from "../src/database/models/project.model";
 import SprintModel from "../src/database/models/sprint.model";
 import UserModel from "../src/database/models/user.model";
+import UserProjectAccessModel from "../src/database/models/user.project.access.model";
 
 export class GlobalBefore {
   public static async run() {
@@ -38,6 +39,13 @@ export class GlobalBefore {
         logging: false,
       }
     );
+
+    const userProjectAccesses = await UserProjectAccessModel.bulkCreate([
+      {
+        userId: testUsers[0].userId,
+        projectKey: testProjects[0].projectKey,
+      },
+    ]);
 
     const sprint = await SprintModel.bulkCreate([
       {

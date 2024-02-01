@@ -1,4 +1,5 @@
 import {IAdminUserRepository} from "../../database/repositories/admin.user.repository";
+import {User} from "../entities/User";
 
 export class AdminUserService {
   constructor(private _adminUserRepository: IAdminUserRepository) {}
@@ -7,7 +8,7 @@ export class AdminUserService {
     return this._adminUserRepository.isAdmin(userId);
   }
 
-  public async createAdmin(userId: string): Promise<any> {
+  public async createAdmin(userId: string): Promise<User> {
     return this._adminUserRepository.createAdmin(userId);
   }
 }

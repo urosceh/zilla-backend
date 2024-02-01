@@ -1,7 +1,7 @@
-import UserModel, {UserCreationAttributes} from "../../database/models/user.model";
-import {IUser} from "../interfaces/IUser";
+import UserModel from "../../database/models/user.model";
+import {IReturnable} from "../interfaces/IReturnable";
 
-export class User {
+export class User implements IReturnable {
   private _userId: string;
   private _email: string;
   private _password: string;
@@ -20,6 +20,15 @@ export class User {
     this._createdAt = user.createdAt;
     this._updatedAt = user.updatedAt;
     this._deletedAt = user.deletedAt;
+  }
+
+  public createDto() {
+    return {
+      userId: this._userId,
+      email: this._email,
+      firstName: this._firstName,
+      lastName: this._lastName,
+    };
   }
 
   get userId(): string {

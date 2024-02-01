@@ -1,27 +1,23 @@
 import {Request, Response} from "express";
-import {AdminUserService} from "../../../domain/services/admin.user.service";
+import {ProjectWithManager} from "../../../domain/entities/ProjectWithManager";
+import {IReturnable} from "../../../domain/interfaces/IReturnable";
 import {ProjectService} from "../../../domain/services/project.service";
-import {AdminAbstractController} from "../../abstract/admin.abstract.controller";
+import {AbstractController} from "../../abstract/abstract.controller";
 import {CreateProjectRequest} from "./create.project.request";
 
-export class CreateProjectController extends AdminAbstractController {
-  constructor(private _projectService: ProjectService, adminUserService: AdminUserService) {
-    super(adminUserService);
+export class CreateProjectController extends AbstractController {
+  constructor(private _projectService: ProjectService) {
+    super();
   }
 
-  protected async process(req: Request, res: Response): Promise<Response> {
+  protected async process(req: Request, res: Response): Promise<{statusCode: number; data: IReturnable}> {
     const request = new CreateProjectRequest(req);
 
-    const isAdmin = await this.isAdminUser(request.accessUserId);
+    const project: ProjectWithManager = await this._projectService.createProject(request);
 
-    if (!isAdmin) {
-      return res.status(403).json({
-        message: "You are not authorized to create projects",
-      });
-    }
-
-    const project = await this._projectService.createProject(request);
-
-    return res.status(201).json(project);
+    return {
+      statusCode: 201,
+      data: project,
+    };
   }
 }

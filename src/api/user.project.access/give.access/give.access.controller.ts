@@ -1,27 +1,21 @@
 import {Request, Response} from "express";
-import {ProjectService} from "../../../domain/services/project.service";
 import {UserProjectAccessService} from "../../../domain/services/user.project.access.service";
-import {ManagerAbstractController} from "../../abstract/manager.abstract.controller";
+import {AbstractController} from "../../abstract/abstract.controller";
 import {GiveAccessRequest} from "./give.access.request";
 
-export class GiveAccessController extends ManagerAbstractController {
-  constructor(private _userProjectAccessService: UserProjectAccessService, projectService: ProjectService) {
-    super(projectService);
+export class GiveAccessController extends AbstractController {
+  constructor(private _userProjectAccessService: UserProjectAccessService) {
+    super();
   }
 
-  protected async process(req: Request, res: Response): Promise<Response> {
+  protected async process(req: Request, res: Response): Promise<{statusCode: number; data: string}> {
     const request = new GiveAccessRequest(req);
 
-    const isManager = await this.isManager(request.projectKey, request.accessUserId);
+    await this._userProjectAccessService.giveProjectAccessToUsers(request.userIds, request.projectKey);
 
-    if (!isManager) {
-      return res.status(403).json({
-        message: "You are not authorized to give access to users",
-      });
-    }
-
-    const userProjectAccess = await this._userProjectAccessService.giveProjectAccessToUsers(request.userIds, request.projectKey);
-
-    return res.status(201).json(userProjectAccess);
+    return {
+      statusCode: 201,
+      data: "OK",
+    };
   }
 }

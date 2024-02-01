@@ -1,26 +1,23 @@
 import {Request, Response} from "express";
+import {User} from "../../../domain/entities/User";
+import {IReturnable} from "../../../domain/interfaces/IReturnable";
 import {AdminUserService} from "../../../domain/services/admin.user.service";
-import {AdminAbstractController} from "../../abstract/admin.abstract.controller";
+import {AbstractController} from "../../abstract/abstract.controller";
 import {MakeAdminRequest} from "./make.admin.request";
 
-export class MakeAdminController extends AdminAbstractController {
-  constructor(adminUserService: AdminUserService) {
-    super(adminUserService);
+export class MakeAdminController extends AbstractController {
+  constructor(private _adminUserService: AdminUserService) {
+    super();
   }
 
-  protected async process(req: Request, res: Response): Promise<Response> {
+  protected async process(req: Request, res: Response): Promise<{statusCode: number; data: IReturnable}> {
     const request = new MakeAdminRequest(req);
 
-    const isAdmin = await this.isAdminUser(request.accessUserId);
+    const user: User = await this._adminUserService.createAdmin(request.userId);
 
-    if (!isAdmin) {
-      return res.status(403).json({
-        message: "You are not authorized to make user an admin",
-      });
-    }
-
-    const user = await this._adminUserService.createAdmin(request.userId);
-
-    return res.status(200).json(user);
+    return {
+      statusCode: 201,
+      data: user,
+    };
   }
 }

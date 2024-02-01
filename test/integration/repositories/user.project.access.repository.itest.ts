@@ -28,10 +28,7 @@ describe("UserProjectAccessRepository Integration Tests", () => {
 
     assert.ok(projects.length === 2);
 
-    await Promise.all([
-      userProjectAccessRepository.insertAccess([users[0].userId], projects[0].projectKey),
-      userProjectAccessRepository.insertAccess([users[1].userId], projects[1].projectKey),
-    ]);
+    await userProjectAccessRepository.insertAccess([users[1].userId], projects[1].projectKey);
 
     const [u1p1, u1p2, u2p1, u2p2] = await Promise.all([
       userProjectAccessRepository.hasAccess(users[0].userId, projects[0].projectKey),
@@ -45,17 +42,28 @@ describe("UserProjectAccessRepository Integration Tests", () => {
     assert.ok(!u2p1);
     assert.ok(u2p2);
 
-    await Promise.all([
-      userProjectAccessRepository.deleteAccess([users[0].userId], projects[0].projectKey),
-      userProjectAccessRepository.deleteAccess([users[1].userId], projects[1].projectKey),
-    ]);
+    await userProjectAccessRepository.deleteAccess([users[1].userId], projects[1].projectKey);
 
     const [u1p1r, u2p2r] = await Promise.all([
       userProjectAccessRepository.hasAccess(users[0].userId, projects[0].projectKey),
       userProjectAccessRepository.hasAccess(users[1].userId, projects[1].projectKey),
     ]);
 
-    assert.ok(!u1p1r);
+    assert.ok(u1p1r);
     assert.ok(!u2p2r);
+  });
+
+  test("should get all accessable projects for a user", async () => {
+    const user = userProjectAccessWrapper.testUserModels.find((u) => u.email === "john.doe@gmail.com");
+
+    assert.ok(!!user);
+
+    const projects = await userProjectAccessRepository.getAllUsersProjects(user.userId);
+
+    assert.ok(projects.length > 0);
+
+    const testProject = userProjectAccessWrapper.testProjectModels.find((p) => p.projectKey === "PJC1");
+
+    assert.ok(!!testProject);
   });
 });

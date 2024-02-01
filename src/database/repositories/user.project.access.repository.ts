@@ -1,10 +1,13 @@
 import {Op} from "sequelize";
+import {Project} from "../../domain/entities/Project";
+import ProjectModel from "../models/project.model";
 import UserProjectAccessModel from "../models/user.project.access.model";
 
 export interface IUserProjectAccessRepository {
   insertAccess(userIds: string[], projectKey: string): Promise<void>;
   deleteAccess(userIds: string[], projectKey: string): Promise<void>;
   hasAccess(userId: string, projectKey: string): Promise<boolean>;
+  getAllUsersProjects(userId: string): Promise<Project[]>;
 }
 
 export class UserProjectAccessRepository implements IUserProjectAccessRepository {
@@ -43,5 +46,21 @@ export class UserProjectAccessRepository implements IUserProjectAccessRepository
     });
 
     return !!access;
+  }
+
+  public async getAllUsersProjects(userId: string): Promise<Project[]> {
+    const userProjectAccesses = await UserProjectAccessModel.findAll({
+      where: {
+        userId,
+      },
+      include: [
+        {
+          model: ProjectModel,
+          as: "project",
+        },
+      ],
+    });
+
+    return userProjectAccesses.map((upa) => new Project(upa.project!));
   }
 }
