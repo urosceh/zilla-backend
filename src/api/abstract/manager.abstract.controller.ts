@@ -1,7 +1,10 @@
 import {ProjectService} from "../../domain/services/project.service";
+import {AbstractController} from "./abstract.controller";
 
-export abstract class ManagerAbstractController {
-  constructor(private _projectService: ProjectService) {}
+export abstract class ManagerAbstractController extends AbstractController {
+  constructor(private _projectService: ProjectService) {
+    super();
+  }
 
   protected async isManager(projectId: string, userId: string): Promise<boolean> {
     return this._projectService.isManager(projectId, userId);

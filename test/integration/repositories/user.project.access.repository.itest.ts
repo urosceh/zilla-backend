@@ -29,8 +29,8 @@ describe("UserProjectAccessRepository Integration Tests", () => {
     assert.ok(projects.length === 2);
 
     await Promise.all([
-      userProjectAccessRepository.giveAccess(users[0].userId, projects[0].projectKey),
-      userProjectAccessRepository.giveAccess(users[1].userId, projects[1].projectKey),
+      userProjectAccessRepository.insertAccess(users[0].userId, projects[0].projectKey),
+      userProjectAccessRepository.insertAccess(users[1].userId, projects[1].projectKey),
     ]);
 
     const [u1p1, u1p2, u2p1, u2p2] = await Promise.all([
@@ -46,8 +46,8 @@ describe("UserProjectAccessRepository Integration Tests", () => {
     assert.ok(u2p2);
 
     await Promise.all([
-      userProjectAccessRepository.revokeAccess(users[0].userId, projects[0].projectKey),
-      userProjectAccessRepository.revokeAccess(users[1].userId, projects[1].projectKey),
+      userProjectAccessRepository.deleteAccess(users[0].userId, projects[0].projectKey),
+      userProjectAccessRepository.deleteAccess(users[1].userId, projects[1].projectKey),
     ]);
 
     const [u1p1r, u2p2r] = await Promise.all([

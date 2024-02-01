@@ -11,11 +11,11 @@ export class MakeAdminController extends AdminAbstractController {
   protected async process(req: Request, res: Response): Promise<Response> {
     const request = new MakeAdminRequest(req);
 
-    const isAdmin = await this.isAdminUser(request.adminUserId);
+    const isAdmin = await this.isAdminUser(request.accessUserId);
 
     if (!isAdmin) {
       return res.status(403).json({
-        message: "You are not authorized to create users",
+        message: "You are not authorized to make user an admin",
       });
     }
 

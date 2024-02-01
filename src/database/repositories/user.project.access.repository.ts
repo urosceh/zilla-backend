@@ -1,13 +1,13 @@
 import UserProjectAccessModel from "../models/user.project.access.model";
 
 export interface IUserProjectAccessRepository {
-  giveAccess(userId: string, projectKey: string): Promise<void>;
-  revokeAccess(userId: string, projectKey: string): Promise<void>;
+  insertAccess(userId: string, projectKey: string): Promise<void>;
+  deleteAccess(userId: string, projectKey: string): Promise<void>;
   hasAccess(userId: string, projectKey: string): Promise<boolean>;
 }
 
 export class UserProjectAccessRepository implements IUserProjectAccessRepository {
-  public async giveAccess(userId: string, projectKey: string): Promise<void> {
+  public async insertAccess(userId: string, projectKey: string): Promise<void> {
     await UserProjectAccessModel.create({
       userId,
       projectKey,
@@ -16,7 +16,7 @@ export class UserProjectAccessRepository implements IUserProjectAccessRepository
     return;
   }
 
-  public async revokeAccess(userId: string, projectKey: string): Promise<void> {
+  public async deleteAccess(userId: string, projectKey: string): Promise<void> {
     await UserProjectAccessModel.destroy({
       where: {
         userId,

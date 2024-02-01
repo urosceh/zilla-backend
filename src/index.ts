@@ -22,8 +22,7 @@ class App {
 
   public async init(): Promise<void> {
     this._router.use("/api", router);
-    console.log(JSON.stringify(this._router.stack));
-
+    
     this._router.listen(this._port);
   }
 }
