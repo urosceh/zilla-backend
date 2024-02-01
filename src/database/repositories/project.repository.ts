@@ -3,16 +3,16 @@ import ProjectModel, {ProjectCreationAttributes} from "../models/project.model";
 import UserModel from "../models/user.model";
 
 export interface IProjectRepository {
-  isManager(projectId: string, userId: string): Promise<boolean>;
+  isManager(projectKey: string, userId: string): Promise<boolean>;
   createProject(project: ProjectCreationAttributes): Promise<ProjectWithManager>;
   getAllProjects(options: {limit: number; offset: number}): Promise<ProjectWithManager[]>;
 }
 
 export class ProjectRepository implements IProjectRepository {
-  public async isManager(projectId: string, userId: string): Promise<boolean> {
+  public async isManager(projectKey: string, userId: string): Promise<boolean> {
     const project = await ProjectModel.findOne({
       where: {
-        projectId,
+        projectKey,
         managerId: userId,
       },
     });

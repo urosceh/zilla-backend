@@ -1,6 +1,7 @@
 import Joi from "joi";
+import {projectKeySchema} from "../../abstract/validations";
 
 export const giveAccessBodySchema = Joi.object({
-  userId: Joi.string().uuid().required(),
-  projectId: Joi.string().uuid().required(),
+  userIds: Joi.array().items(Joi.string().uuid()).required(),
+  projectKey: projectKeySchema,
 });

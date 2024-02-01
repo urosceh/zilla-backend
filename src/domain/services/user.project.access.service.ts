@@ -3,7 +3,7 @@ import {IUserProjectAccessRepository} from "../../database/repositories/user.pro
 export class UserProjectAccessService {
   constructor(private _userProjectAccessRepository: IUserProjectAccessRepository) {}
 
-  public async insertUserProjectAccess(projectId: string, userId: string): Promise<void> {
-    return this._userProjectAccessRepository.insertAccess(projectId, userId);
+  public async giveProjectAccessToUsers(userIds: string[], projectKey: string): Promise<void> {
+    return this._userProjectAccessRepository.insertAccess(userIds, projectKey);
   }
 }
