@@ -1,20 +1,20 @@
 import {AbstractRequest} from "../../abstract/abstract.request";
 
 export class GiveAccessRequest extends AbstractRequest {
-  private _userId: string;
-  private _projectId: string;
+  private _userIds: string[];
+  private _projectKey: string;
 
   constructor(request: any) {
     super(request);
-    this._userId = request.body.userId;
-    this._projectId = request.body.projectId;
+    this._userIds = request.body.userIds;
+    this._projectKey = request.body.projectKey;
   }
 
-  get userId(): string {
-    return this._userId;
+  get userIds(): string[] {
+    return this._userIds;
   }
 
-  get projectId(): string {
-    return this._projectId;
+  get projectKey(): string {
+    return this._projectKey;
   }
 }

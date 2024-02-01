@@ -12,7 +12,7 @@ export class GiveAccessController extends ManagerAbstractController {
   protected async process(req: Request, res: Response): Promise<Response> {
     const request = new GiveAccessRequest(req);
 
-    const isManager = await this.isManager(request.projectId, request.accessUserId);
+    const isManager = await this.isManager(request.projectKey, request.accessUserId);
 
     if (!isManager) {
       return res.status(403).json({
@@ -20,7 +20,7 @@ export class GiveAccessController extends ManagerAbstractController {
       });
     }
 
-    const userProjectAccess = await this._userProjectAccessService.insertUserProjectAccess(request.projectId, request.userId);
+    const userProjectAccess = await this._userProjectAccessService.giveProjectAccessToUsers(request.userIds, request.projectKey);
 
     return res.status(201).json(userProjectAccess);
   }

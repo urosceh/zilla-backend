@@ -7,8 +7,8 @@ import {ProjectWithManager} from "../entities/ProjectWithManager";
 export class ProjectService {
   constructor(private _projectRepository: IProjectRepository) {}
 
-  public async isManager(projectId: string, userId: string): Promise<boolean> {
-    return this._projectRepository.isManager(projectId, userId);
+  public async isManager(projectKey: string, userId: string): Promise<boolean> {
+    return this._projectRepository.isManager(projectKey, userId);
   }
 
   public async createProject(request: CreateProjectRequest): Promise<ProjectWithManager> {

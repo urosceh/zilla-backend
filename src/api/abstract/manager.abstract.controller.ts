@@ -6,7 +6,7 @@ export abstract class ManagerAbstractController extends AbstractController {
     super();
   }
 
-  protected async isManager(projectId: string, userId: string): Promise<boolean> {
-    return this._projectService.isManager(projectId, userId);
+  protected async isManager(projectKey: string, userId: string): Promise<boolean> {
+    return this._projectService.isManager(projectKey, userId);
   }
 }
