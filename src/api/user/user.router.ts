@@ -6,9 +6,12 @@ import {CreateUsersController} from "./create.users/create.users.controller";
 import {createUsersBodySchema} from "./create.users/create.users.validation";
 import {LoginUserController} from "./login.user/login.user.controlller";
 import {loginUsersBodySchema} from "./login.user/login.user.validation";
+import {UpdateUserController} from "./update.user/update.user.controller";
+import {updateUserBodySchema} from "./update.user/update.user.validation";
 
-const createUsersController = new CreateUsersController(userService);
 const loginUserController = new LoginUserController(userService);
+const createUsersController = new CreateUsersController(userService);
+const updateUserController = new UpdateUserController(userService);
 
 const userRouter = express.Router();
 
@@ -23,6 +26,12 @@ userRouter.post(
   AdminValidationMiddleware.middleware,
   JoiValidator.bodySchemaValidationMiddleware(createUsersBodySchema),
   createUsersController.handle.bind(createUsersController)
+);
+
+userRouter.patch(
+  "/update",
+  JoiValidator.bodySchemaValidationMiddleware(updateUserBodySchema),
+  updateUserController.handle.bind(updateUserController)
 );
 
 export default userRouter;
