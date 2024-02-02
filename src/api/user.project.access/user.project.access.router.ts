@@ -3,7 +3,7 @@ import {userProjectAccessService} from "../../domain/services.index";
 import {JoiValidator} from "../../lib/joi/joi.validator";
 import {ManagerValidationMiddleware} from "../web.api.middleware/menager.validation.middleware";
 import {GiveAccessController} from "./manage.access/give.access.controller";
-import {ManageAccessBodySchema} from "./manage.access/manage.access.validation";
+import {manageAccessBodySchema} from "./manage.access/manage.access.validation";
 import {RevokeAccessController} from "./manage.access/revoke.access.controller";
 
 const giveAccessController = new GiveAccessController(userProjectAccessService);
@@ -14,14 +14,14 @@ const accessRouter = express.Router();
 accessRouter.post(
   "/",
   ManagerValidationMiddleware.middleware,
-  JoiValidator.bodySchemaValidationMiddleware(ManageAccessBodySchema),
+  JoiValidator.bodySchemaValidationMiddleware(manageAccessBodySchema),
   giveAccessController.handle.bind(giveAccessController)
 );
 
 accessRouter.delete(
   "/",
   ManagerValidationMiddleware.middleware,
-  JoiValidator.bodySchemaValidationMiddleware(ManageAccessBodySchema),
+  JoiValidator.bodySchemaValidationMiddleware(manageAccessBodySchema),
   revokeAccessController.handle.bind(revokeAccessController)
 );
 

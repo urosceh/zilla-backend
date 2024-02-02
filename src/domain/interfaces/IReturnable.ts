@@ -2,4 +2,8 @@ export interface IDtoable {
   createDto(): any;
 }
 
-export type IReturnable = IDtoable | IDtoable[] | {bearer: string};
+export interface IBearerData {
+  bearerToken: string;
+}
+
+export type IReturnable = IDtoable | IDtoable[] | IBearerData;

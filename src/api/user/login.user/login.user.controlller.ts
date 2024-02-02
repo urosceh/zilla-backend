@@ -1,4 +1,5 @@
 import {Request, Response} from "express";
+import {IBearerData} from "../../../domain/interfaces/IReturnable";
 import {UserService} from "../../../domain/services/user.service";
 import {AbstractController} from "../../abstract/abstract.controller";
 import {LoginUserRequest} from "./login.user.request";
@@ -8,14 +9,14 @@ export class LoginUserController extends AbstractController {
     super();
   }
 
-  protected async process(req: Request, res: Response): Promise<{statusCode: number; data: string}> {
+  protected async process(req: Request, res: Response): Promise<{statusCode: number; data: IBearerData}> {
     const request = new LoginUserRequest(req);
 
-    const userBearerToken = await this._userService.loginUser(request.credentials);
+    const bearerToken = await this._userService.loginUser(request.credentials);
 
     return {
       statusCode: 200,
-      data: userBearerToken,
+      data: {bearerToken},
     };
   }
 }

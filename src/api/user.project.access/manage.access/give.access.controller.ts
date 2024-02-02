@@ -8,14 +8,13 @@ export class GiveAccessController extends AbstractController {
     super();
   }
 
-  protected async process(req: Request, res: Response): Promise<{statusCode: number; data: string}> {
+  protected async process(req: Request, res: Response): Promise<{statusCode: number}> {
     const request = new ManageAccessRequest(req);
 
     await this._userProjectAccessService.giveProjectAccessToUsers(request.userIds, request.projectKey);
 
     return {
       statusCode: 201,
-      data: "OK",
     };
   }
 }

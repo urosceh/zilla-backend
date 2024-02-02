@@ -1,4 +1,5 @@
 import {Request, Response} from "express";
+import {IBearerData} from "../../../domain/interfaces/IReturnable";
 import {UserService} from "../../../domain/services/user.service";
 import {IRedisClient} from "../../../external/redis/redis.client";
 import {JwtGenerator} from "../../../lib/jwt/jwt.generator";
@@ -10,7 +11,7 @@ export class SetForgottenPasswordController extends AbstractController {
     super();
   }
 
-  protected async process(req: Request, res: Response): Promise<{statusCode: number; data: string}> {
+  protected async process(req: Request, res: Response): Promise<{statusCode: number; data?: IBearerData}> {
     const request = new SetForgottenPasswordRequest(req);
 
     const {email, token} = JwtGenerator.decodeForgottenPasswordToken(request.securityCode);
@@ -22,7 +23,6 @@ export class SetForgottenPasswordController extends AbstractController {
 
       return {
         statusCode: 401,
-        data: "Invalid token",
       };
     }
 
@@ -32,7 +32,7 @@ export class SetForgottenPasswordController extends AbstractController {
 
     return {
       statusCode: 200,
-      data: bearerToken,
+      data: {bearerToken},
     };
   }
 }

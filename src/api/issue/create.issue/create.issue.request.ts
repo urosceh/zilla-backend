@@ -15,7 +15,7 @@ export class CreateIssueRequest extends AbstractRequest {
   constructor(request: Request) {
     super(request);
     this._projectId = request.body.projectId;
-    this._reporterId = request.body.reporterId;
+    this._reporterId = this.accessUserId;
     this._issueStatus = request.body.issueStatus;
     this._summary = request.body.summary;
     this._assigneeId = request.body.assigneeId;
