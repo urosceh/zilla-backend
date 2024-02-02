@@ -1,7 +1,7 @@
 import {NextFunction, Request, Response} from "express";
 import Joi from "joi";
 import {Middleware} from "../../domain/types/middleware.type";
-import {RedisClient} from "../../external/redis/redis.client";
+import {IRedisClient, RedisClient} from "../../external/redis/redis.client";
 import {JoiValidator} from "../../lib/joi/joi.validator";
 import {JwtGenerator} from "../../lib/jwt/jwt.generator";
 
@@ -12,13 +12,13 @@ const headersSchema = Joi.object({
 export class TokenMiddleware {
   public static get middleware(): Middleware {
     return async (req: Request, res: Response, next: NextFunction) => {
-      const redisClient = RedisClient.getInstance();
+      const redisClient: IRedisClient = RedisClient.getInstance();
 
       const bearerToken = req.headers["authorization"];
 
       const token = bearerToken ? bearerToken.replace("Bearer ", "") : null;
 
-      if (req.method === "POST" && req.path === "/user/login") {
+      if ((req.method === "POST" && req.path === "/user/login") || (req.method === "POST" && req.path === "/user/set-forgotten-password")) {
         return next();
       }
 
@@ -29,7 +29,7 @@ export class TokenMiddleware {
       }
 
       if (req.method === "POST" && req.path === "/user/logout") {
-        await redisClient.set(token, "blacklist");
+        await redisClient.setBlacklistedToken(token);
 
         return res.status(200).json({
           message: "Logged out successfully",
@@ -37,9 +37,9 @@ export class TokenMiddleware {
       }
 
       try {
-        const redisToken = await redisClient.get(token);
+        const isBlacklistedToken = await redisClient.isBlacklistedToken(token);
 
-        if (redisToken === "blacklist") {
+        if (isBlacklistedToken) {
           return res.status(401).json({
             message: "Token expired",
           });

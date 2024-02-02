@@ -22,12 +22,44 @@ export class JwtGenerator {
   }
 
   public static getUserIdFromToken(token: string): string {
-    const result: JwtPayload = verify(token.replace("Bearer ", ""), JwtConfig.secret) as JwtPayload;
+    const result: JwtPayload = verify(token, JwtConfig.secret) as JwtPayload;
 
     if (!result || !result.data) {
       throw new Error("Invalid token");
     }
 
     return result.data as string;
+  }
+
+  public static generateForgottenPasswordToken(email: string, token: string): string {
+    const expiresIn = JwtConfig.forgottenPasswordExpiresIn;
+    const secret = JwtConfig.secret;
+
+    const tokenString = sign(
+      {
+        data: `${email}@@@${token}`,
+      },
+      secret,
+      {
+        expiresIn,
+      }
+    );
+
+    return tokenString;
+  }
+
+  public static decodeForgottenPasswordToken(securityCode: string): {email: string; token: string} {
+    const result: JwtPayload = verify(securityCode, JwtConfig.secret) as JwtPayload;
+
+    if (!result || !result.data) {
+      throw new Error("Invalid token");
+    }
+
+    const [email, token] = (result.data as string).split("@@@");
+
+    return {
+      email,
+      token,
+    };
   }
 }

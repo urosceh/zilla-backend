@@ -2,7 +2,7 @@ import {genSaltSync, hashSync} from "bcrypt";
 import {DataTypes, Model} from "sequelize";
 import sequelize from "../sequelize";
 
-type UserAttributes = {
+export type UserAttributes = {
   userId: string;
   email: string;
   password: string;
@@ -14,6 +14,8 @@ type UserAttributes = {
 };
 
 export type UserCreationAttributes = Pick<UserAttributes, "email" | "password">;
+
+export type UserUpdateAttributes = Partial<Pick<UserAttributes, "firstName" | "lastName">>;
 
 class UserModel extends Model<UserAttributes, UserCreationAttributes> {
   declare userId: string;

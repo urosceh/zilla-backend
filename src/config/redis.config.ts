@@ -3,4 +3,5 @@ export const RedisConfig = {
   port: process.env.REDIS_PORT || 6379,
   password: process.env.REDIS_PASSWORD || "password",
   db: process.env.REDIS_DB || 0,
+  passwordForgottenFlag: "password-forgotten:",
 };
