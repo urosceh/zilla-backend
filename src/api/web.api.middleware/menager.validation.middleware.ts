@@ -6,7 +6,7 @@ export class ManagerValidationMiddleware {
   public static get middleware(): Middleware {
     return async (req: Request, res: Response, next: NextFunction) => {
       const userId = req.headers.userId as string;
-      const projectKey = req.query.projectKey as string;
+      const projectKey = (req.query.projectKey as string) || (req.body.projectKey as string);
 
       if (!userId) {
         return res.status(401).json({
