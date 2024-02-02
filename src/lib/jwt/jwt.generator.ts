@@ -1,5 +1,6 @@
 import {JwtPayload, sign, verify} from "jsonwebtoken";
 import {JwtConfig} from "../../config/jwt.config";
+import {UnprocessableContent} from "../../domain/errors/errors.index";
 
 export class JwtGenerator {
   public static generateUserBearerToken(userId: string): string {
@@ -25,7 +26,7 @@ export class JwtGenerator {
     const result: JwtPayload = verify(token, JwtConfig.secret) as JwtPayload;
 
     if (!result || !result.data) {
-      throw new Error("Invalid token");
+      throw new UnprocessableContent("Unprocessable Content", {message: "Invalid JWT userId token"});
     }
 
     return result.data as string;
@@ -52,7 +53,7 @@ export class JwtGenerator {
     const result: JwtPayload = verify(securityCode, JwtConfig.secret) as JwtPayload;
 
     if (!result || !result.data) {
-      throw new Error("Invalid token");
+      throw new UnprocessableContent("Unprocessable Content", {message: "Invalid JWT forgotten password token"});
     }
 
     const [email, token] = (result.data as string).split("@@@");

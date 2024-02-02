@@ -1,4 +1,5 @@
 import {Request} from "express";
+import {BadRequest} from "../../../domain/errors/errors.index";
 import {AbstractRequest} from "../../abstract/abstract.request";
 
 export class ChangePasswordRequest extends AbstractRequest {
@@ -11,7 +12,7 @@ export class ChangePasswordRequest extends AbstractRequest {
     this._oldPassword = request.body.oldPassword;
 
     if (!this._newPassword || !this._oldPassword) {
-      throw new Error("Invalid request");
+      throw new BadRequest("Invalid request", {message: "New and old password are required"});
     }
   }
 

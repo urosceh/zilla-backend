@@ -1,5 +1,5 @@
 import {Request} from "express";
-import {AbstractRequest} from "../../abstract/abstract.request";
+import {BadRequest} from "../../../domain/errors/errors.index";
 
 export class SetForgottenPasswordRequest {
   private _securityCode: string;
@@ -10,7 +10,7 @@ export class SetForgottenPasswordRequest {
     this._newPassword = request.body.newPassword;
 
     if (!this._securityCode) {
-      throw new Error("Invalid request");
+      throw new BadRequest("Invalid request", {message: "Security code not passed"});
     }
   }
 

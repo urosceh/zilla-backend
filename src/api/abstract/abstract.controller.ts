@@ -1,4 +1,5 @@
 import {NextFunction, Request, Response} from "express";
+import {InternalServerError} from "../../domain/errors/errors.index";
 import {IBearerData, IDtoable, IReturnable} from "../../domain/interfaces/IReturnable";
 
 export abstract class AbstractController {
@@ -15,7 +16,7 @@ export abstract class AbstractController {
       } else if (this.isDtoableArray(response.data)) {
         return res.status(response.statusCode).json(response.data.map((item) => item.createDto()));
       } else {
-        throw new Error("Invalid response data type");
+        throw new InternalServerError("Invalid Response Data Type");
       }
     } catch (error) {
       console.warn(`${req.method} ${req.originalUrl} failed.`, {

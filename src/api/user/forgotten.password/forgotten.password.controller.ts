@@ -15,12 +15,18 @@ export class ForgottenPasswordController extends AbstractController {
 
     const secret = crypto.randomBytes(20).toString("hex");
 
-    await this._userService.sendForgottenPasswordEmail(request.email, secret);
+    try {
+      await this._userService.sendForgottenPasswordEmail(request.email, secret);
 
-    await this._redisClient.setForgottenPasswordToken(request.email, secret);
+      await this._redisClient.setForgottenPasswordToken(request.email, secret);
 
-    return {
-      statusCode: 200,
-    };
+      return {
+        statusCode: 200,
+      };
+    } catch (error) {
+      await this._redisClient.deleteForgottenPasswordToken(request.email);
+
+      throw error;
+    }
   }
 }

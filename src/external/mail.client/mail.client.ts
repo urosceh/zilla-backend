@@ -1,5 +1,6 @@
 import Client from "node-mailjet";
 import {MailClientConfig} from "../../config/mail.client.config";
+import {BadGateway} from "../../domain/errors/errors.index";
 
 export interface IMailClient {
   sendRegistrationMail(email: string, password: string): void;
@@ -75,7 +76,7 @@ export class MailClient implements IMailClient {
     } catch (error) {
       console.log(`Failed to send reset password email to ${email}`);
 
-      throw new Error("Failed to send reset password email");
+      throw new BadGateway("Failed to send Reset Password Email", {error});
     }
   }
 

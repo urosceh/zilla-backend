@@ -1,5 +1,6 @@
 import {compareSync} from "bcrypt";
 import {User} from "../../domain/entities/User";
+import {NotFound, UnauthorizedAccess} from "../../domain/errors/errors.index";
 import UserModel, {UserCreationAttributes, UserUpdateAttributes} from "../models/user.model";
 
 export interface IUserRepository {
@@ -20,7 +21,7 @@ export class UserRepository implements IUserRepository {
     });
 
     if (!user) {
-      throw new Error("Invalid email");
+      throw new NotFound("User Not Found", {method: this.getUserByEmail.name});
     }
 
     return new User(user);
@@ -40,13 +41,13 @@ export class UserRepository implements IUserRepository {
     });
 
     if (!user) {
-      throw new Error("Invalid email");
+      throw new NotFound("Email Not Found", {method: this.loginUser.name});
     }
 
     const isPasswordValid = compareSync(credentials.password, user.password);
 
     if (!isPasswordValid) {
-      throw new Error("Invalid password");
+      throw new UnauthorizedAccess("Invalid Password", {method: this.loginUser.name});
     }
 
     return new User(user);
@@ -63,8 +64,8 @@ export class UserRepository implements IUserRepository {
       }
     );
 
-    if (updatedUsers[1].length === 0) {
-      throw new Error("No user found");
+    if (updatedUsers[1].length === 0 || !(updatedUsers[1][0] instanceof UserModel)) {
+      throw new NotFound("User Not Found", {users: updatedUsers[1].map((user) => user.toJSON()), method: this.updateUser.name});
     }
 
     return new User(updatedUsers[1][0]);
@@ -78,13 +79,13 @@ export class UserRepository implements IUserRepository {
     });
 
     if (!user) {
-      throw new Error("Invalid user id");
+      throw new NotFound("User Not Found", {method: this.updatePassword.name, userId});
     }
 
     const isPasswordValid = compareSync(data.oldPassword, user.password);
 
     if (!isPasswordValid) {
-      throw new Error("Invalid old password");
+      throw new UnauthorizedAccess("Invalid old password", {method: this.updatePassword.name});
     }
 
     await UserModel.update(
@@ -107,7 +108,7 @@ export class UserRepository implements IUserRepository {
     });
 
     if (!user) {
-      throw new Error("Invalid user id");
+      throw new NotFound("User Not Found", {method: this.updateForgottenPassword.name});
     }
 
     await UserModel.update(

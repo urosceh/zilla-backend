@@ -1,6 +1,7 @@
 import {Op} from "sequelize";
 import {Project} from "../../domain/entities/Project";
 import {UserProjectAccess} from "../../domain/entities/UserProjectAccess";
+import {BadGateway, NotFound} from "../../domain/errors/errors.index";
 import ProjectModel from "../models/project.model";
 import UserProjectAccessModel from "../models/user.project.access.model";
 
@@ -28,10 +29,15 @@ export class UserProjectAccessRepository implements IUserProjectAccessRepository
     });
 
     if (!userProjectAccess) {
-      throw new Error("User project access not found");
+      throw new NotFound("User Project Access Not Found", {method: this.getAllUsersProjects.name, userId, projectKey});
     }
     if (!userProjectAccess.project) {
-      throw new Error("Project not found");
+      throw new BadGateway("Project of UserProjectAccess Not Found", {
+        userProjectAccess: userProjectAccess.toJSON(),
+        method: this.getAllUsersProjects.name,
+        userId,
+        projectKey,
+      });
     }
 
     return new UserProjectAccess(userProjectAccess);

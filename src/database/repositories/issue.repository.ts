@@ -1,4 +1,5 @@
 import {Issue} from "../../domain/entities/Issue";
+import {NotFound} from "../../domain/errors/errors.index";
 import IssueModel, {IssueCreationAttributes, IssueOrderAttributes} from "../models/issue.model";
 import ProjectModel from "../models/project.model";
 import SprintModel from "../models/sprint.model";
@@ -47,7 +48,7 @@ export class IssueRepository implements IIssueRepository {
     });
 
     if (!issue) {
-      throw new Error("Issue not found");
+      throw new NotFound("Issue Not Found", {method: this.getIssue.name, issueId, projectId});
     }
 
     return new Issue(issue);

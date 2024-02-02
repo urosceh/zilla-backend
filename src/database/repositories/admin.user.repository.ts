@@ -1,4 +1,5 @@
 import {User} from "../../domain/entities/User";
+import {NotFound} from "../../domain/errors/errors.index";
 import AdminUserModel from "../models/admin.user.model";
 import UserModel from "../models/user.model";
 
@@ -45,7 +46,7 @@ export class AdminUserRepository implements IAdminUserRepository {
       });
 
       if (!user) {
-        throw new Error("User not found");
+        throw new NotFound("User Not Found", {method: this.createAdmin.name, userId});
       }
 
       await transaction.commit();
