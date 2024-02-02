@@ -1,0 +1,315 @@
+openapi: 3.0.3
+info:
+  title: Zilla Backend
+  description: |-
+    Zilla Backend OpenAPI 3.0 specification.
+  # termsOfService: http://swagger.io/terms/
+  contact:
+    email: urosvceh@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+externalDocs:
+  description: GitHub Page of Zilla Backend
+  url: https://github.com/urosceh/zilla-backend
+components:
+  securitySchemes:
+    bearerAuth: # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []
+
+paths:
+  #################### user
+  /api/user/login:
+    post:
+      security: []
+      summary: Login
+      description: Login
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "schemas/login.schema.yaml"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "schemas/bearer.token.schema.yaml"
+
+  /api/user/logout:
+    post:
+      summary: Logout
+      description: Logout
+      operationId: logout
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /api/user/create-batch:
+    post:
+      summary: Create a batch of users
+      description: Create a batch of users
+      operationId: createBatch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                emails:
+                  type: array
+                  items:
+                    type: string
+                    format: email
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "schemas/user.schema.yaml"
+
+  /api/user/:
+    patch:
+      summary: Update a user
+      description: Update a user
+      operationId: updateUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "schemas/update.user.schema.yaml"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "schemas/user.schema.yaml"
+
+  /api/user/password:
+    put:
+      summary: Change password
+      description: Change password
+      operationId: changePassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "schemas/change.password.schema.yaml"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "schemas/bearer.token.schema.yaml"
+
+  /api/user/forgotten-password:
+    post:
+      summary: Send a forgotten password email
+      description: Send a forgotten password email
+      operationId: forgottenPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+              required:
+                - email
+      responses:
+        "200":
+          description: OK
+
+  /api/user/set-forgotten-password:
+    post:
+      security: []
+      summary: Set a new password
+      description: Set a new password
+      operationId: setForgottenPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                securityCode:
+                  type: string
+                newPassword:
+                  type: string
+              required:
+                - token
+                - newPassword
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "schemas/bearer.token.schema.yaml"
+
+  #################### admin
+  /api/admin/make-user-admin/{userId}:
+    post:
+      summary: Make a user an admin
+      description: Make a user an admin
+      operationId: makeUserAdmin
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "201":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "schemas/user.schema.yaml"
+
+  #################### issue
+  /api/issue/{issueId}:
+    get:
+      summary: Get an issue
+      description: Get an issue
+      operationId: getIssue
+      parameters:
+        - name: issueId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: OK
+
+  /api/issue:
+    post:
+      summary: Create an issue
+      description: Create an issue
+      operationId: createIssue
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "schemas/create.issue.schema.yaml"
+      responses:
+        "200":
+          description: OK
+
+  #################### project
+  /api/project/?projectKey={projectKey}:
+    get:
+      summary: Get a project
+      description: Get a project
+      operationId: getProject
+      parameters:
+        - name: projectKey
+          in: query
+          required: true
+          schema:
+            type: string
+            pattern: "^[A-Z0-9_-]+$"
+      responses:
+        "200":
+          description: OK
+
+  /api/project/all:
+    get:
+      summary: Get all users projects
+      description: Get all users projects
+      operationId: getAllUsersProjects
+      responses:
+        "200":
+          description: OK
+
+  /api/project:
+    post:
+      summary: Create a project
+      description: Create a project
+      operationId: createProject
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "schemas/create.project.schema.yaml"
+      responses:
+        "200":
+          description: OK
+
+  #################### sprint
+  /api/sprint:
+    post:
+      summary: Create a sprint
+      description: Create a sprint
+      operationId: createSprint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "schemas/create.sprint.schema.yaml"
+      responses:
+        "200":
+          description: OK
+
+  #################### access
+  /api/access:
+    post:
+      summary: Grant access to a project
+      description: Grant access to a project
+      operationId: grantAccess
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "schemas/manage.access.schema.yaml"
+      responses:
+        "200":
+          description: OK
+    delete:
+      summary: Revoke access to a project
+      description: Revoke access to a project
+      operationId: revokeAccess
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "schemas/manage.access.schema.yaml"
+      responses:
+        "200":
+          description: OK
