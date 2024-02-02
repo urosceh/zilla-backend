@@ -1,5 +1,6 @@
 import express from "express";
 import adminRouter from "./admin.user/admin.user.router";
+import issueRouter from "./issue/issue.routes";
 import projectRouter from "./project/project.router";
 import sprintRouter from "./sprint/sprint.router";
 import accessRouter from "./user.project.access/user.project.access.router";
@@ -17,5 +18,6 @@ router.use("/admin", adminRouter);
 router.use("/project", projectRouter);
 router.use("/access", accessRouter);
 router.use("/sprint", sprintRouter);
+router.use("/issue", issueRouter);
 
 export default router;

@@ -1,9 +1,11 @@
 import {Op} from "sequelize";
 import {Project} from "../../domain/entities/Project";
+import {UserProjectAccess} from "../../domain/entities/UserProjectAccess";
 import ProjectModel from "../models/project.model";
 import UserProjectAccessModel from "../models/user.project.access.model";
 
 export interface IUserProjectAccessRepository {
+  getUserProjectAccess(userId: string, projectKey: string): Promise<UserProjectAccess>;
   insertAccess(userIds: string[], projectKey: string): Promise<void>;
   deleteAccess(userIds: string[], projectKey: string): Promise<void>;
   hasAccess(userId: string, projectKey: string): Promise<boolean>;
@@ -11,6 +13,30 @@ export interface IUserProjectAccessRepository {
 }
 
 export class UserProjectAccessRepository implements IUserProjectAccessRepository {
+  public async getUserProjectAccess(userId: string, projectKey: string): Promise<UserProjectAccess> {
+    const userProjectAccess = await UserProjectAccessModel.findOne({
+      where: {
+        userId,
+        projectKey,
+      },
+      include: [
+        {
+          model: ProjectModel,
+          as: "project",
+        },
+      ],
+    });
+
+    if (!userProjectAccess) {
+      throw new Error("User project access not found");
+    }
+    if (!userProjectAccess.project) {
+      throw new Error("Project not found");
+    }
+
+    return new UserProjectAccess(userProjectAccess);
+  }
+
   public async insertAccess(userIds: string[], projectKey: string): Promise<void> {
     const acessess = userIds.map((userId) => ({
       userId,

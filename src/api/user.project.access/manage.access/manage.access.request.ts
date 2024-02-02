@@ -7,7 +7,7 @@ export class ManageAccessRequest extends AbstractRequest {
   constructor(request: any) {
     super(request);
     this._userIds = request.body.userIds;
-    this._projectKey = request.query.projectKey;
+    this._projectKey = request.body.projectKey;
   }
 
   get userIds(): string[] {

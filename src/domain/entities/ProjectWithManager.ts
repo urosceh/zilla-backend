@@ -1,9 +1,9 @@
 import ProjectModel from "../../database/models/project.model";
-import {IReturnable} from "../interfaces/IReturnable";
+import {IDtoable} from "../interfaces/IReturnable";
 import {Project} from "./Project";
 import {User} from "./User";
 
-export class ProjectWithManager extends Project implements IReturnable {
+export class ProjectWithManager extends Project implements IDtoable {
   private _manager: User | undefined;
 
   constructor(project: ProjectModel) {

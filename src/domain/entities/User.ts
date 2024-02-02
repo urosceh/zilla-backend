@@ -1,7 +1,7 @@
 import UserModel from "../../database/models/user.model";
-import {IReturnable} from "../interfaces/IReturnable";
+import {IDtoable} from "../interfaces/IReturnable";
 
-export class User implements IReturnable {
+export class User implements IDtoable {
   private _userId: string;
   private _email: string;
   private _password: string;

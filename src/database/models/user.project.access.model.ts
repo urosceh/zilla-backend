@@ -15,7 +15,7 @@ class UserProjectAccessModel extends Model<UserProjectAccessAttributes, UserProj
   declare id: number | undefined;
   declare userId: string;
   declare projectKey: string;
-  declare project?: ProjectModel;
+  declare project: ProjectModel;
   declare user?: UserModel;
 }
 

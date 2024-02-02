@@ -6,7 +6,7 @@ export class ManagerValidationMiddleware {
   public static get middleware(): Middleware {
     return async (req: Request, res: Response, next: NextFunction) => {
       const userId = req.headers.userId as string;
-      const projectKey = req.query.projectKey as string;
+      const projectKey = (req.query.projectKey as string) || (req.body.projectKey as string);
 
       if (!userId) {
         return res.status(401).json({
@@ -20,12 +20,21 @@ export class ManagerValidationMiddleware {
         });
       }
 
-      const isManager = await projectService.isManager(projectKey, userId);
+      const project = await projectService.getProjectByProjectKey(projectKey, {withManager: false});
+
+      const isManager = project.managerId === userId;
 
       if (!isManager) {
         return res.status(403).json({
           message: "Access denied",
         });
+      }
+
+      if (!!req.body.projectKey) {
+        req.body.projectId = project.projectId;
+      }
+      if (!!req.query.projectKey) {
+        req.query.projectId = project.projectId;
       }
 
       return next();
