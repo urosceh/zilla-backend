@@ -1,6 +1,7 @@
 import {Op} from "sequelize";
 import {Sprint} from "../../domain/entities/Sprint";
 import {SprintWithIssues} from "../../domain/entities/SprintWithIssues";
+import {NotFound} from "../../domain/errors/errors.index";
 import IssueModel from "../models/issue.model";
 import SprintModel, {SprintCreationAttributes} from "../models/sprint.model";
 
@@ -40,7 +41,7 @@ export class SprintRepository implements ISprintRepository {
     });
 
     if (!sprintWithIssues) {
-      throw new Error("Sprint not found");
+      throw new NotFound("Sprint with Issues Not Found", {method: this.getCurrentSprintIssues.name, projectId});
     }
 
     return new SprintWithIssues(sprintWithIssues);

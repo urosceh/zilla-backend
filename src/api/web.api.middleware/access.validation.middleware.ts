@@ -1,5 +1,6 @@
 import {NextFunction, Request, Response} from "express";
 import {UserProjectAccess} from "../../domain/entities/UserProjectAccess";
+import {ForbiddenAccess} from "../../domain/errors/errors.index";
 import {userProjectAccessService} from "../../domain/services.index";
 import {Middleware} from "../../domain/types/middleware.type";
 
@@ -28,9 +29,7 @@ export class AccessValidationMiddleware {
 
           return next();
         } catch (error) {
-          return res.status(403).json({
-            message: "Access denied",
-          });
+          throw new ForbiddenAccess("Forbidden Access", {message: "User does not have access to this project"});
         }
       } else {
         if (req.method !== "GET" || req.path !== "/all") {

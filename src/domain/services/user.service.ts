@@ -3,6 +3,8 @@ import {IUserRepository} from "../../database/repositories/user.repository";
 import {IMailClient} from "../../external/mail.client/mail.client";
 import {JwtGenerator} from "../../lib/jwt/jwt.generator";
 import {User} from "../entities/User";
+import {DomainError} from "../errors/BaseError";
+import {BadRequest, InternalServerError} from "../errors/errors.index";
 
 export class UserService {
   constructor(private _userRepository: IUserRepository, private _mailClient: IMailClient) {}
@@ -43,10 +45,10 @@ export class UserService {
     const {oldPassword, newPassword} = passwordData;
 
     if (oldPassword === newPassword) {
-      throw new Error("Old and new passwords cannot be the same");
+      throw new BadRequest("Old and New Password are the same");
     }
     if (!oldPassword || !newPassword) {
-      throw new Error("Old and new passwords are required");
+      throw new BadRequest("Old and New Password are required");
     }
 
     const user = await this._userRepository.updatePassword(userId, {oldPassword, newPassword});
@@ -74,7 +76,11 @@ export class UserService {
     } catch (error) {
       console.log(`Failed to send reset password email to ${user.email}`);
 
-      throw new Error("Failed to send reset password email");
+      if (error instanceof DomainError) {
+        throw error;
+      } else {
+        throw new InternalServerError("Failed to send Reset Password Email", {error});
+      }
     }
   }
 }

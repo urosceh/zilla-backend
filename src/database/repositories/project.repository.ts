@@ -1,4 +1,5 @@
 import {ProjectWithManager} from "../../domain/entities/ProjectWithManager";
+import {NotFound} from "../../domain/errors/errors.index";
 import ProjectModel, {ProjectCreationAttributes} from "../models/project.model";
 import UserModel from "../models/user.model";
 
@@ -24,7 +25,7 @@ export class ProjectRepository implements IProjectRepository {
     });
 
     if (!project) {
-      throw new Error("Project not found");
+      throw new NotFound("Project Not Found", {method: this.getProjectById.name, projectId});
     }
 
     return new ProjectWithManager(project);
@@ -48,7 +49,7 @@ export class ProjectRepository implements IProjectRepository {
     });
 
     if (!project) {
-      throw new Error("Project not found");
+      throw new NotFound("Project Not Found", {method: this.getProjectByProjectKey.name, projectKey});
     }
 
     return new ProjectWithManager(project);
@@ -76,7 +77,7 @@ export class ProjectRepository implements IProjectRepository {
       });
 
       if (!projectWithManager) {
-        throw new Error("Project not found");
+        throw new NotFound("Project with Manager Not Found", {method: this.createProject.name, projectId: newProject.projectId});
       }
 
       await transaction.commit();
