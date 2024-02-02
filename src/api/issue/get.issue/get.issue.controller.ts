@@ -16,7 +16,7 @@ export class GetIssueController extends AbstractController {
     const issue: Issue = await this._issueService.getIssue(request.issueId, request.projectId);
 
     return {
-      statusCode: 201,
+      statusCode: 200,
       data: issue,
     };
   }
