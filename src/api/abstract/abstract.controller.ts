@@ -1,16 +1,18 @@
 import {NextFunction, Request, Response} from "express";
-import {IReturnable} from "../../domain/interfaces/IReturnable";
+import {IBearerData, IDtoable, IReturnable} from "../../domain/interfaces/IReturnable";
 
 export abstract class AbstractController {
   public async handle(req: Request, res: Response, next: NextFunction) {
     try {
       const response = await this.process(req, res);
 
-      if (typeof response.data === "boolean" || typeof response.data === "string") {
-        return res.status(response.statusCode).json(response.data);
-      } else if (this.isReturnable(response.data)) {
+      if (!response.data) {
+        return res.status(response.statusCode).send();
+      } else if (this.isBearerData(response.data)) {
+        return res.status(response.statusCode).json({bearerToken: response.data.bearerToken});
+      } else if (this.isDtoable(response.data)) {
         return res.status(response.statusCode).json(response.data.createDto());
-      } else if (Array.isArray(response.data) && response.data.every((item) => this.isReturnable(item))) {
+      } else if (this.isDtoableArray(response.data)) {
         return res.status(response.statusCode).json(response.data.map((item) => item.createDto()));
       } else {
         throw new Error("Invalid response data type");
@@ -25,12 +27,17 @@ export abstract class AbstractController {
     }
   }
 
-  protected abstract process(
-    req: Request,
-    res: Response
-  ): Promise<{statusCode: number; data: boolean | string | IReturnable | IReturnable[]}>;
+  protected abstract process(req: Request, res: Response): Promise<{statusCode: number; data?: IReturnable}>;
 
-  private isReturnable(data: any): data is IReturnable {
+  private isDtoable(data: any): data is IDtoable {
     return "createDto" in data;
+  }
+
+  private isDtoableArray(data: any): data is IDtoable[] {
+    return Array.isArray(data) && data.every((item) => this.isDtoable(item));
+  }
+
+  private isBearerData(data: any): data is IBearerData {
+    return "bearerToken" in data;
   }
 }

@@ -1,6 +1,6 @@
 import {Request, Response} from "express";
 import {Sprint} from "../../../domain/entities/Sprint";
-import {IReturnable} from "../../../domain/interfaces/IReturnable";
+import {IDtoable} from "../../../domain/interfaces/IReturnable";
 import {SprintService} from "../../../domain/services/sprint.service";
 import {AbstractController} from "../../abstract/abstract.controller";
 import {CreateSprintRequest} from "./create.sprint.request";
@@ -10,7 +10,7 @@ export class CreateSprintController extends AbstractController {
     super();
   }
 
-  protected async process(req: Request, res: Response): Promise<{statusCode: number; data: IReturnable}> {
+  protected async process(req: Request, res: Response): Promise<{statusCode: number; data: IDtoable}> {
     const request = new CreateSprintRequest(req);
 
     const sprint: Sprint = await this._sprintService.createSprint(request.sprint);

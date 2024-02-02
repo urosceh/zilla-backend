@@ -1,7 +1,7 @@
 import ProjectModel from "../../database/models/project.model";
-import {IReturnable} from "../interfaces/IReturnable";
+import {IDtoable} from "../interfaces/IReturnable";
 
-export class Project implements IReturnable {
+export class Project implements IDtoable {
   private _projectId: string;
   private _projectName: string;
   private _projectKey: string;

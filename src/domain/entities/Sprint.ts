@@ -1,7 +1,7 @@
 import SprintModel from "../../database/models/sprint.model";
-import {IReturnable} from "../interfaces/IReturnable";
+import {IDtoable} from "../interfaces/IReturnable";
 
-export class Sprint implements IReturnable {
+export class Sprint implements IDtoable {
   private _sprintId: number;
   private _sprintName: string;
   private _projectId: string;

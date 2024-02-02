@@ -4,8 +4,7 @@ import UserModel from "../models/user.model";
 
 export interface IProjectRepository {
   getProjectById(projectId: string): Promise<ProjectWithManager>;
-  getProjectByProjectKey(projectKey: string): Promise<ProjectWithManager>;
-  isManager(projectKey: string, userId: string): Promise<boolean>;
+  getProjectByProjectKey(projectKey: string, options?: {withManager: boolean}): Promise<ProjectWithManager>;
   createProject(project: ProjectCreationAttributes): Promise<ProjectWithManager>;
   getAllProjects(options: {limit: number; offset: number}): Promise<ProjectWithManager[]>;
 }
@@ -31,17 +30,21 @@ export class ProjectRepository implements IProjectRepository {
     return new ProjectWithManager(project);
   }
 
-  public async getProjectByProjectKey(projectKey: string): Promise<ProjectWithManager> {
+  public async getProjectByProjectKey(projectKey: string, options?: {withManager: boolean}): Promise<ProjectWithManager> {
+    const include = options?.withManager
+      ? [
+          {
+            model: UserModel,
+            as: "manager",
+          },
+        ]
+      : [];
+
     const project = await ProjectModel.findOne({
       where: {
         projectKey,
       },
-      include: [
-        {
-          model: UserModel,
-          as: "manager",
-        },
-      ],
+      include,
     });
 
     if (!project) {
@@ -49,17 +52,6 @@ export class ProjectRepository implements IProjectRepository {
     }
 
     return new ProjectWithManager(project);
-  }
-
-  public async isManager(projectKey: string, userId: string): Promise<boolean> {
-    const project = await ProjectModel.findOne({
-      where: {
-        projectKey,
-        managerId: userId,
-      },
-    });
-
-    return !!project;
   }
 
   public async createProject(project: ProjectCreationAttributes): Promise<ProjectWithManager> {
