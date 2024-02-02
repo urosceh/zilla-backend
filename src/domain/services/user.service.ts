@@ -1,7 +1,7 @@
 import {UserCreationAttributes} from "../../database/models/user.model";
 import {IUserRepository} from "../../database/repositories/user.repository";
+import {IMailClient} from "../../external/mail.client/mail.client";
 import {JwtGenerator} from "../../lib/jwt/jwt.generator";
-import {IMailClient} from "../../lib/mail.client/mail.client";
 import {User} from "../entities/User";
 
 export class UserService {

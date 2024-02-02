@@ -1,5 +1,5 @@
 import {adminUserRepository, projectRepository, userProjectAccessRepository, userRepository} from "../database/repositories.index";
-import {MailClient} from "../lib/mail.client/mail.client";
+import {MailClient} from "../external/mail.client/mail.client";
 import {AdminUserService} from "./services/admin.user.service";
 import {ProjectService} from "./services/project.service";
 import {UserProjectAccessService} from "./services/user.project.access.service";
