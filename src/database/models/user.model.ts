@@ -15,7 +15,7 @@ export type UserAttributes = {
 
 export type UserCreationAttributes = Pick<UserAttributes, "email" | "password">;
 
-export type UserUpdateAttributes = Partial<Pick<UserAttributes, "password" | "firstName" | "lastName">>;
+export type UserUpdateAttributes = Partial<Pick<UserAttributes, "firstName" | "lastName">>;
 
 class UserModel extends Model<UserAttributes, UserCreationAttributes> {
   declare userId: string;

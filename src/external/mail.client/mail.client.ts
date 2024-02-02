@@ -2,7 +2,8 @@ import Client from "node-mailjet";
 import {MailClientConfig} from "../../config/mail.client.config";
 
 export interface IMailClient {
-  sendMail(email: string, password: string): void;
+  sendRegistrationMail(email: string, password: string): void;
+  sendForgottenPasswordMail(email: string, token: string): Promise<void>;
 }
 
 export class MailClient implements IMailClient {
@@ -23,7 +24,7 @@ export class MailClient implements IMailClient {
     return MailClient._instance;
   }
 
-  public sendMail(email: string, password: string): void {
+  public sendRegistrationMail(email: string, password: string): void {
     const body = {
       Messages: [
         {
@@ -41,9 +42,7 @@ export class MailClient implements IMailClient {
       ],
     };
 
-    this._client
-      .post("send", {version: "v3.1"})
-      .request(body)
+    this.sendMail(body)
       .then((result) => {
         console.log(result);
       })
@@ -51,5 +50,36 @@ export class MailClient implements IMailClient {
         console.error(`Failed to send email to ${email}`);
         console.error(error);
       });
+  }
+
+  public async sendForgottenPasswordMail(email: string, token: string): Promise<void> {
+    const body = {
+      Messages: [
+        {
+          From: {
+            Email: MailClientConfig.senderEmail,
+          },
+          To: [
+            {
+              Email: email,
+            },
+          ],
+          Subject: MailClientConfig.forgottenPasswordMailSubject,
+          TextPart: `You have requested to reset your password. Use this code to reset your password: ${token}`,
+        },
+      ],
+    };
+
+    try {
+      await this.sendMail(body);
+    } catch (error) {
+      console.log(`Failed to send reset password email to ${email}`);
+
+      throw new Error("Failed to send reset password email");
+    }
+  }
+
+  private async sendMail(body: any): Promise<void> {
+    await this._client.post("send", {version: "v3.1"}).request(body);
   }
 }

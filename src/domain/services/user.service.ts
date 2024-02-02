@@ -1,6 +1,5 @@
-import {UserCreationAttributes, UserUpdateAttributes} from "../../database/models/user.model";
+import {UserCreationAttributes} from "../../database/models/user.model";
 import {IUserRepository} from "../../database/repositories/user.repository";
-import sequelize from "../../database/sequelize";
 import {IMailClient} from "../../external/mail.client/mail.client";
 import {JwtGenerator} from "../../lib/jwt/jwt.generator";
 import {User} from "../entities/User";
@@ -32,28 +31,50 @@ export class UserService {
     return JwtGenerator.generateUserBearerToken(user.userId);
   }
 
-  public async updateUser(
-    userId: string,
-    updates: {newPassword?: string; oldPassword?: string; firstName?: string; lastName?: string}
-  ): Promise<User> {
-    const transaction = await sequelize.transaction();
+  public async updateUser(userId: string, updates: {firstName?: string; lastName?: string}): Promise<User> {
+    const {firstName, lastName} = updates;
 
-    const {newPassword, oldPassword, firstName, lastName} = updates;
-
-    let user: User | null = null;
-
-    if (!!newPassword && !!oldPassword) {
-      user = await this._userRepository.updatePassword({userId, newPassword, oldPassword}, {transaction});
-    }
-
-    if (!!firstName || !!lastName) {
-      user = await this._userRepository.updateUser(userId, {firstName, lastName}, {transaction});
-    }
-
-    if (!user) {
-      throw new Error("Arguments have to be passed");
-    }
+    const user = await this._userRepository.updateUser(userId, {firstName, lastName});
 
     return user;
+  }
+
+  public async updatePassword(userId: string, passwordData: {oldPassword: string; newPassword: string}): Promise<string> {
+    const {oldPassword, newPassword} = passwordData;
+
+    if (oldPassword === newPassword) {
+      throw new Error("Old and new passwords cannot be the same");
+    }
+    if (!oldPassword || !newPassword) {
+      throw new Error("Old and new passwords are required");
+    }
+
+    const user = await this._userRepository.updatePassword(userId, {oldPassword, newPassword});
+
+    return JwtGenerator.generateUserBearerToken(user.userId);
+  }
+
+  public async updateForgottenPassword(email: string, newPassword: string): Promise<string> {
+    const user = await this._userRepository.updateForgottenPassword(email, newPassword);
+
+    return JwtGenerator.generateUserBearerToken(user.userId);
+  }
+
+  public async sendForgottenPasswordEmail(email: string, secret: string): Promise<void> {
+    const user = await this._userRepository.getUserByEmail(email);
+
+    const token = JwtGenerator.generateForgottenPasswordToken(email, secret);
+
+    try {
+      await this._mailClient.sendForgottenPasswordMail(user.email, token);
+
+      console.log(`Sent reset password email to ${user.email}`);
+
+      return;
+    } catch (error) {
+      console.log(`Failed to send reset password email to ${user.email}`);
+
+      throw new Error("Failed to send reset password email");
+    }
   }
 }
