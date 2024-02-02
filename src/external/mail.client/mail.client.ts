@@ -16,7 +16,7 @@ export class MailClient implements IMailClient {
     });
   }
 
-  public static getInstance(): MailClient {
+  public static getInstance(): IMailClient {
     if (!MailClient._instance) {
       MailClient._instance = new MailClient();
     }

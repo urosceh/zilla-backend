@@ -12,7 +12,7 @@ export class UserProjectAccessService {
     return this._userProjectAccessRepository.hasAccess(userId, projectKey);
   }
 
-  public async getAllAccessableProjects(userId: string): Promise<Project[]> {
-    return this._userProjectAccessRepository.getAllUsersProjects(userId);
+  public async getAllAccessableProjects(userId: string, options: {limit: number; offset: number; search?: string}): Promise<Project[]> {
+    return this._userProjectAccessRepository.getAllUsersProjects(userId, options);
   }
 }
