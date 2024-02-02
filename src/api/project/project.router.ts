@@ -22,11 +22,13 @@ projectRouter.get(
   JoiValidator.querySchemaValidationMiddleware(getProjectQuerySchema),
   getProjectController.handle.bind(getProjectController)
 );
+
 projectRouter.get(
   "/all",
   JoiValidator.querySchemaValidationMiddleware(getAllProjectsQuerySchema),
   getAllProjectsController.handle.bind(getAllProjectsController)
 );
+
 projectRouter.post(
   "/create",
   AdminValidationMiddleware.middleware,

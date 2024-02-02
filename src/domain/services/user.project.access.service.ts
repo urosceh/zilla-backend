@@ -8,6 +8,10 @@ export class UserProjectAccessService {
     return this._userProjectAccessRepository.insertAccess(userIds, projectKey);
   }
 
+  public async revokeProjectAccessFromUsers(userIds: string[], projectKey: string): Promise<void> {
+    return this._userProjectAccessRepository.deleteAccess(userIds, projectKey);
+  }
+
   public async hasAccessToProject(userId: string, projectKey: string): Promise<boolean> {
     return this._userProjectAccessRepository.hasAccess(userId, projectKey);
   }
