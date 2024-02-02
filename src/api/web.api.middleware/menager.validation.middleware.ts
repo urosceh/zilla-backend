@@ -1,4 +1,5 @@
 import {NextFunction, Request, Response} from "express";
+import {BadRequest, ForbiddenAccess, UnauthorizedAccess} from "../../domain/errors/errors.index";
 import {projectService} from "../../domain/services.index";
 import {Middleware} from "../../domain/types/middleware.type";
 
@@ -9,15 +10,11 @@ export class ManagerValidationMiddleware {
       const projectKey = (req.query.projectKey as string) || (req.body.projectKey as string);
 
       if (!userId) {
-        return res.status(401).json({
-          message: "Manager Access ID is required",
-        });
+        throw new UnauthorizedAccess("Unauthorized Access", {message: "Manager userId is required"});
       }
 
       if (!projectKey) {
-        return res.status(400).json({
-          message: "Project key is required",
-        });
+        throw new BadRequest("projectKey is required", {message: "Project key is required"});
       }
 
       const project = await projectService.getProjectByProjectKey(projectKey, {withManager: false});
@@ -25,9 +22,7 @@ export class ManagerValidationMiddleware {
       const isManager = project.managerId === userId;
 
       if (!isManager) {
-        return res.status(403).json({
-          message: "Access denied",
-        });
+        throw new ForbiddenAccess("Forbidden Access", {message: "User is not a manager"});
       }
 
       if (!!req.body.projectKey) {
