@@ -1,9 +1,9 @@
 import express from "express";
 import {issueService} from "../../domain/services.index";
 import {JoiValidator} from "../../lib/joi/joi.validator";
-import {createUsersBodySchema} from "../user/create.users/create.users.validation";
 import {AccessValidationMiddleware} from "../web.api.middleware/access.validation.middleware";
 import {CreateIssueController} from "./create.issue/create.issue.controller";
+import {createIssueBodySchema} from "./create.issue/create.issue.validation";
 import {GetIssueController} from "./get.issue/get.issue.controller";
 import {getIssueParamsSchema, getIssueQuerySchema} from "./get.issue/get.issue.validation";
 
@@ -23,7 +23,7 @@ issueRouter.get(
 issueRouter.post(
   "/",
   AccessValidationMiddleware.middleware,
-  JoiValidator.bodySchemaValidationMiddleware(createUsersBodySchema),
+  JoiValidator.bodySchemaValidationMiddleware(createIssueBodySchema),
   createIssueController.handle.bind(createIssueController)
 );
 

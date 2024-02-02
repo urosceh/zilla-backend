@@ -10,7 +10,7 @@ export class ForgottenPasswordController extends AbstractController {
     super();
   }
 
-  protected async process(req: Request, res: Response): Promise<{statusCode: number; data: string}> {
+  protected async process(req: Request, res: Response): Promise<{statusCode: number}> {
     const request = new ForgottenPasswordRequest(req);
 
     const secret = crypto.randomBytes(20).toString("hex");
@@ -21,7 +21,6 @@ export class ForgottenPasswordController extends AbstractController {
 
     return {
       statusCode: 200,
-      data: "OK",
     };
   }
 }
