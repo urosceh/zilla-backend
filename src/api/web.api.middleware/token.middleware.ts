@@ -24,7 +24,7 @@ export class TokenMiddleware {
       }
 
       if (!token) {
-        throw new UnauthorizedAccess("Unauthorized Access", {message: "Token is required"});
+        return next(new UnauthorizedAccess("Unauthorized Access", {message: "Token is required"}));
       }
 
       if (req.method === "POST" && req.path === "/user/logout") {
@@ -39,7 +39,7 @@ export class TokenMiddleware {
         const isBlacklistedToken = await redisClient.isBlacklistedToken(token);
 
         if (isBlacklistedToken) {
-          throw new UnauthorizedAccess("Unauthorized Access", {message: "Token is blacklisted"});
+          return next(new UnauthorizedAccess("Unauthorized Access", {message: "Token is blacklisted"}));
         }
 
         const userId = JwtGenerator.getUserIdFromToken(token);
@@ -49,12 +49,12 @@ export class TokenMiddleware {
         const result = JoiValidator.checkSchema(req.headers, headersSchema, {allowUnknown: true});
 
         if (result.errors || !result.value) {
-          throw new UnauthorizedAccess("Unauthorized Access", {message: "Invalid headers"});
+          return next(new UnauthorizedAccess("Unauthorized Access", {message: "Invalid headers"}));
         }
 
         return next();
       } catch (error) {
-        throw new UnauthorizedAccess("Unauthorized Access", {message: "Token expired or invalid"});
+        return next(new UnauthorizedAccess("Unauthorized Access", {message: "Token expired or invalid"}));
       }
     };
   }

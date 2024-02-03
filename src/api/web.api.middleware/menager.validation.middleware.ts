@@ -10,11 +10,11 @@ export class ManagerValidationMiddleware {
       const projectKey = (req.query.projectKey as string) || (req.body.projectKey as string);
 
       if (!userId) {
-        throw new UnauthorizedAccess("Unauthorized Access", {message: "Manager userId is required"});
+        return next(new UnauthorizedAccess("Unauthorized Access", {message: "Manager userId is required"}));
       }
 
       if (!projectKey) {
-        throw new BadRequest("projectKey is required", {message: "Project key is required"});
+        return next(new BadRequest("projectKey is required", {message: "Project key is required"}));
       }
 
       const project = await projectService.getProjectByProjectKey(projectKey, {withManager: false});
@@ -22,7 +22,7 @@ export class ManagerValidationMiddleware {
       const isManager = project.managerId === userId;
 
       if (!isManager) {
-        throw new ForbiddenAccess("Forbidden Access", {message: "User is not a manager"});
+        return next(new ForbiddenAccess("Forbidden Access", {message: "User is not a manager"}));
       }
 
       if (!!req.body.projectKey) {

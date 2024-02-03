@@ -28,6 +28,20 @@
       "envFile": "${workspaceFolder}/test/test.env",
       "console": "integratedTerminal",
       "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Seed Data",
+      "type": "node",
+      "request": "launch",
+      "args": ["--require", "ts-node/register", "${workspaceFolder}/scripts/seed.script.ts"],
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "name": "Purge Data",
+      "type": "node",
+      "request": "launch",
+      "args": ["--require", "ts-node/register", "${workspaceFolder}/scripts/purge.script.ts"],
+      "envFile": "${workspaceFolder}/.env"
     }
   ]
 }

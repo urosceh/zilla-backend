@@ -15,7 +15,7 @@ export class ProjectService {
     return this._projectRepository.getProjectById(projectId);
   }
 
-  public async createProject(request: CreateProjectRequest): Promise<ProjectWithManager> {
+  public async createProject(request: CreateProjectRequest): Promise<Project> {
     const project: ProjectCreationAttributes = {
       projectName: request.projectName,
       projectKey: request.projectKey,

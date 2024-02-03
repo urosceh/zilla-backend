@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-import {ProjectWithManager} from "../../../domain/entities/ProjectWithManager";
+import {Project} from "../../../domain/entities/Project";
 import {IDtoable} from "../../../domain/interfaces/IReturnable";
 import {ProjectService} from "../../../domain/services/project.service";
 import {AbstractController} from "../../abstract/abstract.controller";
@@ -13,7 +13,7 @@ export class CreateProjectController extends AbstractController {
   protected async process(req: Request, res: Response): Promise<{statusCode: number; data: IDtoable}> {
     const request = new CreateProjectRequest(req);
 
-    const project: ProjectWithManager = await this._projectService.createProject(request);
+    const project: Project = await this._projectService.createProject(request);
 
     return {
       statusCode: 201,
