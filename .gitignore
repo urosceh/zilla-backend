@@ -14,4 +14,4 @@ build/
 
 # Passwords
 passwords.txt
-./scripts/passwords.txt
+scripts/passwords.txt
