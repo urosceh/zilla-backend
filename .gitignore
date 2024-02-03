@@ -11,3 +11,7 @@ node_modules/
 build/
 
 .env
+
+# Passwords
+passwords.txt
+./scripts/passwords.txt

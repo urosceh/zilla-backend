@@ -84,7 +84,7 @@ export class MailClient implements IMailClient {
 
       const data = `${email}: ${password}\n`;
 
-      fs.appendFileSync(`./scripts/passwords.txt`, data);
+      fs.appendFileSync(`./passwords.txt`, data);
 
       return;
     }

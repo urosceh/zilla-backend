@@ -1,7 +1,7 @@
 ## Prerequisites
 
-You have to have [Docker](https://docs.docker.com/engine/install/) installed
-You have to have [Node](https://nodejs.org/en/download/package-manager#nvm) installed
+You have to have [Docker](https://docs.docker.com/engine/install/) installed.
+You have to have [Node](https://nodejs.org/en/download/package-manager#nvm) installed.
 
 ## Setup
 
@@ -11,14 +11,21 @@ To setup the project run:
 make prepare-dev
 ```
 
-This make script will create Postgres database and Redis. It will run migrations for the database.
+The make script will create Postgres and Redis docker containers. It will also run migrations for the database.
 
 ## Run
 
+Before running the project, you need to rename **.env.example** file to **.env**. You must add ADMIN_EMAIL and ADMIN_PASSWORD. Other parameters are not necessary.
+Run
+
+```bash
+npm run init # creates an admin user with ADMIN_EMAIL and ADMIN_PASSWORD
+```
+
 To run the project go to **Run and Debug** VsCode menu and select **Run App** configuration.
-You need to rename **.env.example** file to **.env**.
+See _*documentation/api-docs.yaml*_ to find more about the API.
 
-# Sending mails
+### Sending mails
 
-If you want mails to be sent, you need to create [Mailjet](https://app.mailjet.com/signin?) account, find your api and secret key and paste the values into \* _mail client_ \* configuration.
-If you leave \* _NODE_ENV="test"_ \* on new user creation you will have the password of the user in the scripts/passwords.txt file
+When admin user sends _/api/user/create-batch_ request with emails in the body, users are created with those emails and have a password generated for them. The password, if NODE_ENV == "test" is appended to **passwords.txt** file in the root of the directory.
+However if you want mails to be sent, you need to create [Mailjet](https://app.mailjet.com/signin?) account, find your [Credentials](https://app.mailjet.com/account/apikeys) and paste the values, along with the email you used to create Mailjet account, into **mail client** configuration of the .env file.
