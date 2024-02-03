@@ -12,6 +12,12 @@
       "envFile": "${workspaceFolder}/.env"
     },
     {
+      "name": "Run Inspector",
+      "type": "node",
+      "request": "attach",
+      "port": 9234
+    },
+    {
       "name": "Run All Tests",
       "type": "node",
       "request": "launch",
