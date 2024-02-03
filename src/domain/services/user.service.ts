@@ -19,10 +19,9 @@ export class UserService {
 
     const createdUsers = await this._userRepository.createBatch(userCredentials);
 
-    // userCredentials.forEach((credential) => {
-    //   this._mailClient.sendMail(credential.email, credential.password);
-    // });
-    console.log(JSON.stringify(userCredentials));
+    userCredentials.forEach((credential) => {
+      this._mailClient.sendRegistrationMail(credential.email, credential.password);
+    });
 
     return createdUsers;
   }

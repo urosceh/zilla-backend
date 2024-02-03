@@ -9,13 +9,13 @@ export class AdminValidationMiddleware {
       const userId = req.headers.userId as string;
 
       if (!userId) {
-        throw new UnauthorizedAccess("Unauthorized Access", {message: "Admin userId is required"});
+        return next(new UnauthorizedAccess("Unauthorized Access", {message: "Admin userId is required"}));
       }
 
       const isAdmin = await adminUserService.isAdmin(userId);
 
       if (!isAdmin) {
-        throw new ForbiddenAccess("Forbidden Access", {message: "User is not an admin"});
+        return next(new ForbiddenAccess("Forbidden Access", {message: "User is not an admin"}));
       }
 
       return next();

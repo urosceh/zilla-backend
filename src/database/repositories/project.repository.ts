@@ -1,12 +1,14 @@
+import {Project} from "../../domain/entities/Project";
 import {ProjectWithManager} from "../../domain/entities/ProjectWithManager";
 import {NotFound} from "../../domain/errors/errors.index";
 import ProjectModel, {ProjectCreationAttributes} from "../models/project.model";
 import UserModel from "../models/user.model";
+import UserProjectAccessModel from "../models/user.project.access.model";
 
 export interface IProjectRepository {
   getProjectById(projectId: string): Promise<ProjectWithManager>;
   getProjectByProjectKey(projectKey: string, options?: {withManager: boolean}): Promise<ProjectWithManager>;
-  createProject(project: ProjectCreationAttributes): Promise<ProjectWithManager>;
+  createProject(project: ProjectCreationAttributes): Promise<Project>;
   getAllProjects(options: {limit: number; offset: number}): Promise<ProjectWithManager[]>;
 }
 
@@ -55,7 +57,7 @@ export class ProjectRepository implements IProjectRepository {
     return new ProjectWithManager(project);
   }
 
-  public async createProject(project: ProjectCreationAttributes): Promise<ProjectWithManager> {
+  public async createProject(project: ProjectCreationAttributes): Promise<Project> {
     const transaction = await ProjectModel.sequelize!.transaction();
 
     try {
@@ -63,25 +65,16 @@ export class ProjectRepository implements IProjectRepository {
         transaction,
       });
 
-      const projectWithManager = await ProjectModel.findOne({
-        where: {
-          projectId: newProject.projectId,
+      await UserProjectAccessModel.create(
+        {
+          userId: project.managerId,
+          projectKey: newProject.projectKey,
         },
-        include: [
-          {
-            model: UserModel,
-            as: "manager",
-          },
-        ],
-        transaction,
-      });
-
-      if (!projectWithManager) {
-        throw new NotFound("Project with Manager Not Found", {method: this.createProject.name, projectId: newProject.projectId});
-      }
+        {transaction}
+      );
 
       await transaction.commit();
-      return new ProjectWithManager(projectWithManager);
+      return new Project(newProject);
     } catch (error) {
       await transaction.rollback();
       throw error;

@@ -30,7 +30,7 @@ projectRouter.get(
 );
 
 projectRouter.post(
-  "/create",
+  "/",
   AdminValidationMiddleware.middleware,
   JoiValidator.bodySchemaValidationMiddleware(createProjectBodySchema),
   createProjectController.handle.bind(createProjectController)

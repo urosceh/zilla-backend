@@ -1,3 +1,4 @@
+import fs from "fs";
 import Client from "node-mailjet";
 import {MailClientConfig} from "../../config/mail.client.config";
 import {BadGateway} from "../../domain/errors/errors.index";
@@ -43,14 +44,10 @@ export class MailClient implements IMailClient {
       ],
     };
 
-    this.sendMail(body)
-      .then((result) => {
-        console.log(result);
-      })
-      .catch((error) => {
-        console.error(`Failed to send email to ${email}`);
-        console.error(error);
-      });
+    this.sendMail(body).catch((error) => {
+      console.error(`Failed to send email to ${email}`);
+      console.error(error);
+    });
   }
 
   public async sendForgottenPasswordMail(email: string, token: string): Promise<void> {
@@ -81,6 +78,16 @@ export class MailClient implements IMailClient {
   }
 
   private async sendMail(body: any): Promise<void> {
+    if (process.env.NODE_ENV === "test") {
+      const email = body.Messages[0].To[0].Email;
+      const password = body.Messages[0].TextPart.split("Your password is ")[1];
+
+      const data = `${email}: ${password}\n`;
+
+      fs.appendFileSync(`./passwords.txt`, data);
+
+      return;
+    }
     await this._client.post("send", {version: "v3.1"}).request(body);
   }
 }
