@@ -81,6 +81,10 @@ export class MailClient implements IMailClient {
   }
 
   private async sendMail(body: any): Promise<void> {
+    if (process.env.NODE_ENV === "test") {
+      console.log(body.Messages[0].TextPart);
+      return;
+    }
     await this._client.post("send", {version: "v3.1"}).request(body);
   }
 }
