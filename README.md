@@ -25,6 +25,15 @@ npm run init # creates an admin user with ADMIN_EMAIL and ADMIN_PASSWORD
 To run the project go to **Run and Debug** VsCode menu and select **Run App** configuration.
 See _*documentation/api-docs.yaml*_ to find more about the API.
 
+## Seed
+
+You need to have admin user in order to seed the data.
+To seed database with test data first run the app, then go to **Run and Debug** VsCode menu and run **Seed App** configuration.
+
+# Purge
+
+To purge the database of test data first run the app, then go to **Run and Debug** VsCode menu and run **Purge App** configuration.
+
 ### Sending mails
 
 When admin user sends _/api/user/create-batch_ request with emails in the body, users are created with those emails and have a password generated for them. The password, if NODE_ENV == "test" is appended to **passwords.txt** file in the root of the directory.
