@@ -1,6 +1,7 @@
 import {NextFunction, Request, Response} from "express";
 import {InternalServerError} from "../../domain/errors/errors.index";
-import {IBearerData, IDtoable, IReturnable} from "../../domain/interfaces/IReturnable";
+import {IBearerData, IDtoable} from "../../domain/interfaces/IReturnable";
+import {Returnable} from "../../domain/types/Returnable";
 
 export abstract class AbstractController {
   public async handle(req: Request, res: Response, next: NextFunction) {
@@ -28,7 +29,7 @@ export abstract class AbstractController {
     }
   }
 
-  protected abstract process(req: Request, res: Response): Promise<{statusCode: number; data?: IReturnable}>;
+  protected abstract process(req: Request, res: Response): Promise<{statusCode: number; data?: Returnable}>;
 
   private isDtoable(data: any): data is IDtoable {
     return "createDto" in data;

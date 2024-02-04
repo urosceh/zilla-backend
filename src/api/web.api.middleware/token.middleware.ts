@@ -1,7 +1,7 @@
 import {NextFunction, Request, Response} from "express";
 import Joi from "joi";
 import {UnauthorizedAccess} from "../../domain/errors/errors.index";
-import {Middleware} from "../../domain/types/middleware.type";
+import {Middleware} from "../../domain/types/Middleware";
 import {IRedisClient, RedisClient} from "../../external/redis/redis.client";
 import {JoiValidator} from "../../lib/joi/joi.validator";
 import {JwtGenerator} from "../../lib/jwt/jwt.generator";

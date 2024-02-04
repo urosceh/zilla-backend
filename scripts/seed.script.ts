@@ -1,5 +1,5 @@
 import axios from "axios";
-import {DatabaseConfig} from "../src/config/db.config";
+import IssueModel from "../src/database/models/issue.model";
 import ProjectModel from "../src/database/models/project.model";
 import SprintModel from "../src/database/models/sprint.model";
 import UserProjectAccessModel from "../src/database/models/user.project.access.model";
@@ -7,13 +7,15 @@ import {Project} from "../src/domain/entities/Project";
 import {seedProjects} from "./data/projects";
 import {seedSprints} from "./data/sprints";
 
-process.env.NODE_ENV = "test";
-
 const adminEmail: string = process.env.ADMIN_EMAL || "";
 const adminPassword: string = process.env.ADMIN_PASSWORD || "";
 
 if (!adminEmail || !adminPassword) {
   console.error("ADMIN_EMAL and ADMIN_PASSWORD not found in .env");
+  process.exit(1);
+}
+if (process.env.NODE_ENV !== "test") {
+  console.error("NODE_ENV must equal 'test'. Add it to .env file.");
   process.exit(1);
 }
 
@@ -26,13 +28,16 @@ class Seed {
   });
 
   constructor() {
+    console.log("Seeding database. Date", new Date().toString());
     this.seed()
       .then(() => {
         console.log("Seeding complete");
+        process.exit(0);
       })
       .catch((error) => {
         console.error("Seeding failed");
         console.error(error);
+        process.exit(1);
       });
   }
 
@@ -45,7 +50,24 @@ class Seed {
 
     await this.createSprints(projects);
 
-    await this.createIssues(userIds, projects);
+    const issueData: {projectId: string; reporterId: string; summary: string}[] = projects.flatMap((project) => {
+      let i = 1;
+      return Array.from({length: Math.floor(Math.random() * 11) + 15}, () => {
+        const projectId = project.projectId;
+        const reporterId = userIds[Math.floor(Math.random() * userIds.length)];
+        const summary = `${project.projectKey}: issue ${i++}`;
+
+        return {projectId, reporterId, summary};
+      });
+    });
+
+    await this.createUserProjectAccess(
+      projects.map((project) => project.projectKey),
+      userIds,
+      issueData.map((data) => ({projectKey: projects.find((p) => p.projectId === data.projectId)?.projectKey!, userId: data.reporterId}))
+    );
+
+    await this.createIssues(issueData);
   }
 
   private async login() {
@@ -89,11 +111,7 @@ class Seed {
   private async createProjects(userIds: string[]): Promise<Project[]> {
     const projects = seedProjects(userIds);
 
-    console.log(DatabaseConfig.port);
-
     const createdProjects = await ProjectModel.bulkCreate(projects);
-
-    await UserProjectAccessModel.bulkCreate(projects.map((project) => ({projectKey: project.projectKey, userId: project.managerId})));
 
     return createdProjects.map((project) => new Project(project));
   }
@@ -104,10 +122,23 @@ class Seed {
     const createdSprints = await SprintModel.bulkCreate(sprints);
   }
 
-  private async createIssues(userIds: string[], projects: Project[]): Promise<void> {}
+  private async createIssues(data: {projectId: string; reporterId: string; summary: string}[]): Promise<void> {
+    await IssueModel.bulkCreate(data, {ignoreDuplicates: true});
+  }
 
-  private async createUserProjectAccess(data: {projectKey: string; userId: string}[]): Promise<void> {
-    await UserProjectAccessModel.bulkCreate(data);
+  private async createUserProjectAccess(
+    projectKeys: string[],
+    userIds: string[],
+    issueData: {projectKey: string; userId: string}[]
+  ): Promise<void> {
+    const data: {projectKey: string; userId: string}[] = projectKeys.flatMap((projectKey) =>
+      Array.from({length: Math.floor(Math.random() * 6) + 5}, () => {
+        const userId = userIds[Math.floor(Math.random() * userIds.length)];
+        return {projectKey, userId};
+      })
+    );
+
+    await UserProjectAccessModel.bulkCreate(data, {ignoreDuplicates: true});
   }
 }
 
