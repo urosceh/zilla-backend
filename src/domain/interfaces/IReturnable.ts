@@ -5,5 +5,3 @@ export interface IDtoable {
 export interface IBearerData {
   bearerToken: string;
 }
-
-export type IReturnable = IDtoable | IDtoable[] | IBearerData;

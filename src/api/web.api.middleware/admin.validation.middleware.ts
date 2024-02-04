@@ -1,7 +1,7 @@
 import {NextFunction, Request, Response} from "express";
 import {ForbiddenAccess, UnauthorizedAccess} from "../../domain/errors/errors.index";
 import {adminUserService} from "../../domain/services.index";
-import {Middleware} from "../../domain/types/middleware.type";
+import {Middleware} from "../../domain/types/Middleware";
 
 export class AdminValidationMiddleware {
   public static get middleware(): Middleware {

@@ -1,5 +1,4 @@
 import {DataTypes, Model} from "sequelize";
-import {IAdminUser} from "../../domain/interfaces/IAdminUser";
 import sequelize from "../sequelize";
 import UserModel from "./user.model";
 
@@ -11,7 +10,7 @@ export type AdminUserAttributes = {
 
 type AdminUserCreationAttributes = Pick<AdminUserAttributes, "userId">;
 
-class AdminUserModel extends Model<AdminUserAttributes, AdminUserCreationAttributes> implements IAdminUser {
+class AdminUserModel extends Model<AdminUserAttributes, AdminUserCreationAttributes> {
   declare id: number;
   declare userId: string;
   declare createdAt: Date;

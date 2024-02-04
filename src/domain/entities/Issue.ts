@@ -35,7 +35,7 @@ export class Issue implements IDtoable {
     this._project = issue.project ? new Project(issue.project) : undefined;
     this._reporter = issue.reporter ? new User(issue.reporter) : undefined;
     this._assignee = issue.assignee ? new User(issue.assignee) : undefined;
-    this._sprint = issue.sprint ? new Sprint(issue.sprint) : issue.sprint;
+    this._sprint = issue.sprint ? new Sprint(issue.sprint) : undefined;
 
     this._createdAt = issue.createdAt;
     this._updatedAt = issue.updatedAt;
@@ -54,7 +54,6 @@ export class Issue implements IDtoable {
       details: this._details,
       createdAt: this._createdAt,
       updatedAt: this._updatedAt,
-      deletedAt: this._deletedAt,
     };
   }
 }

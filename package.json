@@ -17,7 +17,8 @@
     "start": "node --require ts-node/register --env-file .env --inspect=0.0.0.0:9234 ./src/index.ts",
     "test": "ts-node ./test/ node --import tsx --test $(find ./test -name \"*.itest.ts\")",
     "test-all": "ts-node ./test/test.index.ts",
-    "init": "node --require ts-node/register --env-file .env ./scripts/insert.admin.script.ts"
+    "init": "node --require ts-node/register --env-file .env ./scripts/insert.admin.script.ts",
+    "reseed": "node --require ts-node/register --env-file .env ./scripts/purge.script.ts && node --require ts-node/register --env-file .env ./scripts/seed.script.ts"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",

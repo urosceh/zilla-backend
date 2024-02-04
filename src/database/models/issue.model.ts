@@ -21,8 +21,6 @@ export type IssueAttributes = {
 
 export type IssueCreationAttributes = Pick<IssueAttributes, "projectId" | "reporterId" | "summary"> & Partial<IssueAttributes>;
 
-export type IssueOrderAttributes = keyof Pick<IssueAttributes, "createdAt" | "updatedAt">;
-
 class IssueModel extends Model<IssueAttributes, IssueCreationAttributes> {
   declare issueId: string;
   declare projectId: string;
