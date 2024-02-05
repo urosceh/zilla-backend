@@ -1,7 +1,7 @@
 import express from "express";
 import {sprintService} from "../../domain/services.index";
 import {JoiValidator} from "../../lib/joi/joi.validator";
-import {ManagerValidationMiddleware} from "../web.api.middleware/menager.validation.middleware";
+import {ManagerValidationMiddleware} from "../web.api.middleware/manager.validation.middleware";
 import {CreateSprintController} from "./create.sprint/create.sprint.controller";
 import {createSprintBodySchema} from "./create.sprint/create.sprint.validation";
 

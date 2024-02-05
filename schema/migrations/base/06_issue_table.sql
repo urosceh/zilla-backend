@@ -13,7 +13,7 @@ CREATE TYPE issue_status_enum AS ENUM (
 -- changeset uros:create-issue-table
 CREATE TABLE IF NOT EXISTS "issue" (
   issue_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  project_id UUID NOT NULL REFERENCES "project"(project_id),
+  project_key TEXT NOT NULL REFERENCES "project"(project_key),
   assignee_id UUID NULL REFERENCES "zilla_user"(user_id),
   reporter_id UUID NOT NULL REFERENCES "zilla_user"(user_id),
   issue_status ISSUE_STATUS_ENUM NOT NULL,

@@ -8,31 +8,31 @@ export const seedSprints: (projects: Project[]) => SprintCreationAttributes[] = 
 
   return [
     {
-      projectId: projects[0].projectId,
+      projectKey: projects[0].projectKey,
       sprintName: `${projects[0].projectKey} S1`,
       startOfSprint: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7),
       endOfSprint: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
     },
     {
-      projectId: projects[1].projectId,
+      projectKey: projects[1].projectKey,
       sprintName: `${projects[1].projectKey} S1`,
       startOfSprint: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7),
       endOfSprint: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
     },
     {
-      projectId: projects[2].projectId,
+      projectKey: projects[2].projectKey,
       sprintName: `${projects[2].projectKey} S1`,
       startOfSprint: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7),
       endOfSprint: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
     },
     {
-      projectId: projects[3].projectId,
+      projectKey: projects[3].projectKey,
       sprintName: `${projects[3].projectKey} S1`,
       startOfSprint: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7),
       endOfSprint: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
     },
     {
-      projectId: projects[4].projectId,
+      projectKey: projects[4].projectKey,
       sprintName: `${projects[4].projectKey} S1`,
       startOfSprint: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7),
       endOfSprint: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),

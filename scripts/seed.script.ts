@@ -50,21 +50,21 @@ class Seed {
 
     await this.createSprints(projects);
 
-    const issueData: {projectId: string; reporterId: string; summary: string}[] = projects.flatMap((project) => {
+    const issueData: {projectKey: string; reporterId: string; summary: string}[] = projects.flatMap((project) => {
       let i = 1;
       return Array.from({length: Math.floor(Math.random() * 11) + 15}, () => {
-        const projectId = project.projectId;
+        const projectKey = project.projectKey;
         const reporterId = userIds[Math.floor(Math.random() * userIds.length)];
         const summary = `${project.projectKey}: issue ${i++}`;
 
-        return {projectId, reporterId, summary};
+        return {projectKey, reporterId, summary};
       });
     });
 
     await this.createUserProjectAccess(
       projects.map((project) => project.projectKey),
       userIds,
-      issueData.map((data) => ({projectKey: projects.find((p) => p.projectId === data.projectId)?.projectKey!, userId: data.reporterId}))
+      issueData.map((data) => ({projectKey: data.projectKey, userId: data.reporterId}))
     );
 
     await this.createIssues(issueData);
@@ -122,7 +122,7 @@ class Seed {
     const createdSprints = await SprintModel.bulkCreate(sprints);
   }
 
-  private async createIssues(data: {projectId: string; reporterId: string; summary: string}[]): Promise<void> {
+  private async createIssues(data: {projectKey: string; reporterId: string; summary: string}[]): Promise<void> {
     await IssueModel.bulkCreate(data, {ignoreDuplicates: true});
   }
 

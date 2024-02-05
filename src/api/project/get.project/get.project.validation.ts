@@ -1,7 +1,6 @@
 import Joi from "joi";
 import {projectKeySchema} from "../../abstract/validations";
 
-export const getProjectQuerySchema = Joi.object({
+export const getProjectParamsSchema = Joi.object({
   projectKey: projectKeySchema.required(),
-  projectId: Joi.string().required(),
 });

@@ -7,7 +7,7 @@ import UserModel from "./user.model";
 
 export type IssueAttributes = {
   issueId: string;
-  projectId: string;
+  projectKey: string;
   reporterId: string;
   assigneeId: string | null;
   issueStatus: IssueStatus;
@@ -19,11 +19,11 @@ export type IssueAttributes = {
   deletedAt: Date | null;
 };
 
-export type IssueCreationAttributes = Pick<IssueAttributes, "projectId" | "reporterId" | "summary"> & Partial<IssueAttributes>;
+export type IssueCreationAttributes = Pick<IssueAttributes, "projectKey" | "reporterId" | "summary"> & Partial<IssueAttributes>;
 
 class IssueModel extends Model<IssueAttributes, IssueCreationAttributes> {
   declare issueId: string;
-  declare projectId: string;
+  declare projectKey: string;
   declare reporterId: string;
   declare assigneeId: string | null;
   declare issueStatus: IssueStatus;
@@ -48,13 +48,13 @@ IssueModel.init(
       allowNull: false,
       defaultValue: DataTypes.UUIDV4,
     },
-    projectId: {
+    projectKey: {
       type: DataTypes.UUIDV4,
-      field: "project_id",
+      field: "project_key",
       allowNull: false,
       references: {
         model: "project",
-        key: "project_id",
+        key: "project_key",
       },
     },
     reporterId: {
@@ -135,8 +135,8 @@ IssueModel.belongsTo(UserModel, {
   as: "assignee",
 });
 IssueModel.belongsTo(ProjectModel, {
-  targetKey: "projectId",
-  foreignKey: "project_id",
+  targetKey: "projectKey",
+  foreignKey: "project_key",
   as: "project",
 });
 IssueModel.belongsTo(SprintModel, {
@@ -153,8 +153,8 @@ SprintModel.hasMany(IssueModel, {
   onUpdate: "RESTRICT",
 });
 ProjectModel.hasMany(IssueModel, {
-  sourceKey: "projectId",
-  foreignKey: "project_id",
+  sourceKey: "projectKey",
+  foreignKey: "project_key",
   as: "issues",
   onDelete: "RESTRICT",
   onUpdate: "RESTRICT",

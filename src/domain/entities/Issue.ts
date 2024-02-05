@@ -7,7 +7,7 @@ import {User} from "./User";
 
 export class Issue implements IDtoable {
   private _issueId: string;
-  private _projectId: string;
+  private _projectKey: string;
   private _reporterId: string;
   private _assigneeId: string | null;
   private _sprintId: number | null;
@@ -24,7 +24,7 @@ export class Issue implements IDtoable {
 
   constructor(issue: IssueModel) {
     this._issueId = issue.issueId;
-    this._projectId = issue.projectId;
+    this._projectKey = issue.projectKey;
     this._reporterId = issue.reporterId;
     this._assigneeId = issue.assigneeId;
     this._sprintId = issue.sprintId;
@@ -45,7 +45,7 @@ export class Issue implements IDtoable {
   public createDto() {
     return {
       issueId: this._issueId,
-      projectId: this._projectId,
+      projectKey: this._projectKey,
       reporter: this._reporter?.createDto(),
       assignee: this._assignee?.createDto(),
       sprint: this._sprint?.createDto(),

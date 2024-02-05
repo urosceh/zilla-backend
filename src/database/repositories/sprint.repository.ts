@@ -21,7 +21,7 @@ export class SprintRepository implements ISprintRepository {
     const sprintWithIssues = await SprintModel.findOne({
       where: {
         [Op.and]: {
-          projectId,
+          projectKey: projectId,
           [Op.and]: {
             startOfSprint: {
               [Op.lte]: new Date(),

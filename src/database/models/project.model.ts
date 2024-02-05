@@ -4,7 +4,7 @@ import SprintModel from "./sprint.model";
 import UserModel from "./user.model";
 
 export type ProjectAttributes = {
-  projectId: string;
+  projectId: number;
   projectName: string;
   projectKey: string;
   managerId: string;
@@ -16,7 +16,7 @@ export type ProjectAttributes = {
 export type ProjectCreationAttributes = Pick<ProjectAttributes, "projectName" | "projectKey" | "managerId">;
 
 class ProjectModel extends Model<ProjectAttributes, ProjectCreationAttributes> {
-  declare projectId: string;
+  declare projectId: number;
   declare projectName: string;
   declare projectKey: string;
   declare managerId: string;
@@ -30,11 +30,10 @@ class ProjectModel extends Model<ProjectAttributes, ProjectCreationAttributes> {
 ProjectModel.init(
   {
     projectId: {
-      type: DataTypes.UUIDV4,
+      type: DataTypes.INTEGER,
       field: "project_id",
+      autoIncrement: true,
       primaryKey: true,
-      allowNull: false,
-      defaultValue: DataTypes.UUIDV4,
     },
     projectName: {
       type: DataTypes.STRING,

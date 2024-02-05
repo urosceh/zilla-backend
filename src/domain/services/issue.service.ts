@@ -10,11 +10,11 @@ export class IssueService {
     return this._issueRepository.createIssue(issue);
   }
 
-  public async getIssue(issueId: string, projectId: string): Promise<Issue> {
-    return this._issueRepository.getIssue(issueId, projectId);
+  public async getIssue(issueId: string, projectKey: string): Promise<Issue> {
+    return this._issueRepository.getIssue(issueId, projectKey);
   }
 
-  public async getAllProjectIssues(projectId: string, options: IProjectIssueSearch): Promise<Issue[]> {
-    return this._issueRepository.getAllProjectIssues(projectId, options);
+  public async getAllProjectIssues(projectKey: string, options: IProjectIssueSearch): Promise<Issue[]> {
+    return this._issueRepository.getAllProjectIssues(projectKey, options);
   }
 }
