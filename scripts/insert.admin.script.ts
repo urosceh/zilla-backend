@@ -1,5 +1,4 @@
 import dotenv from "dotenv";
-import {DatabaseConfig} from "../src/config/db.config";
 import AdminUserModel from "../src/database/models/admin.user.model";
 import UserModel from "../src/database/models/user.model";
 
@@ -14,8 +13,6 @@ if (!adminEmail || !adminPassword) {
 }
 
 (async () => {
-  console.log(DatabaseConfig.port);
-
   const user = await UserModel.findOne({where: {email: adminEmail}});
 
   if (!user) {
@@ -24,6 +21,5 @@ if (!adminEmail || !adminPassword) {
     console.log("Admin user created");
   }
 
-  console.log(JSON.stringify(user, null, 2));
   process.exit(0);
 })();

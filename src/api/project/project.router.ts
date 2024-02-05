@@ -8,7 +8,7 @@ import {createProjectBodySchema} from "./create.project/create.project.validatio
 import {GetAllProjectsController} from "./get.all.projects/get.all.projects.controller";
 import {getAllProjectsQuerySchema} from "./get.all.projects/get.all.projects.validation";
 import {GetProjectController} from "./get.project/get.project.controller";
-import {getProjectQuerySchema} from "./get.project/get.project.validation";
+import {getProjectParamsSchema} from "./get.project/get.project.validation";
 
 const getProjectController = new GetProjectController(projectService);
 const getAllProjectsController = new GetAllProjectsController(userProjectAccessService);
@@ -17,16 +17,16 @@ const createProjectController = new CreateProjectController(projectService);
 const projectRouter = express.Router();
 
 projectRouter.get(
-  "/",
-  AccessValidationMiddleware.middleware,
-  JoiValidator.querySchemaValidationMiddleware(getProjectQuerySchema),
-  getProjectController.handle.bind(getProjectController)
-);
-
-projectRouter.get(
   "/all",
   JoiValidator.querySchemaValidationMiddleware(getAllProjectsQuerySchema),
   getAllProjectsController.handle.bind(getAllProjectsController)
+);
+
+projectRouter.get(
+  "/:projectKey",
+  AccessValidationMiddleware.middleware,
+  JoiValidator.paramsSchemaValidationMiddleware(getProjectParamsSchema),
+  getProjectController.handle.bind(getProjectController)
 );
 
 projectRouter.post(

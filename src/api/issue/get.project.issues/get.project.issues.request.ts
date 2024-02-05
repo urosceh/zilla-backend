@@ -4,7 +4,7 @@ import {IProjectIssueSearch} from "../../../domain/interfaces/IIssueSearch";
 import {AbstractRequest} from "../../abstract/abstract.request";
 
 export class GetProjectIssuesRequest extends AbstractRequest {
-  private _projectId: string;
+  private _projectKey: string;
   private assigneeIds: string[] | undefined;
   private reportedIds: string[] | undefined;
   private issueStatuses: IssueStatus[] | undefined;
@@ -18,7 +18,9 @@ export class GetProjectIssuesRequest extends AbstractRequest {
 
   constructor(request: Request) {
     super(request);
-    this._projectId = request.params.projectId;
+
+    this._projectKey = request.params.projectKey;
+
     this.reportedIds = request.query.reportedIds as string[];
     this.assigneeIds = request.query.assigneeIds as string[];
     this.issueStatuses = request.query.issueStatuses as unknown as IssueStatus[];
@@ -30,8 +32,8 @@ export class GetProjectIssuesRequest extends AbstractRequest {
     this._orderDir = request.query.orderDir as string;
   }
 
-  public get projectId(): string {
-    return this._projectId;
+  public get projectKey(): string {
+    return this._projectKey;
   }
 
   public get options(): IProjectIssueSearch {

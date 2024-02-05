@@ -25,13 +25,6 @@ export class ManagerValidationMiddleware {
         return next(new ForbiddenAccess("Forbidden Access", {message: "User is not a manager"}));
       }
 
-      if (!!req.body.projectKey) {
-        req.body.projectId = project.projectId;
-      }
-      if (!!req.query.projectKey) {
-        req.query.projectId = project.projectId;
-      }
-
       return next();
     };
   }

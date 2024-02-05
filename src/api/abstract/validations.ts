@@ -3,13 +3,12 @@ import {IssueStatus} from "../../domain/enums/IssueStatus";
 
 export const projectKeySchema = Joi.string()
   .regex(/^[A-Z0-9-_]+$/)
-  .max(20);
+  .max(10);
 
 export const issueStatusSchema = Joi.string().allow(...Object.values(IssueStatus));
 
 export const getIssuesParamsSchema = Joi.object({
   projectKey: projectKeySchema.required(),
-  projectId: Joi.string().uuid().required(),
 });
 
 export const getIssuesQuerySchema = Joi.object({

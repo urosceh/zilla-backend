@@ -2,7 +2,7 @@ import ProjectModel from "../../database/models/project.model";
 import {IDtoable} from "../interfaces/IReturnable";
 
 export class Project implements IDtoable {
-  private _projectId: string;
+  private _projectId: number;
   private _projectName: string;
   private _projectKey: string;
   private _managerId: string;
@@ -31,7 +31,7 @@ export class Project implements IDtoable {
     };
   }
 
-  get projectId(): string {
+  get projectId(): number {
     return this._projectId;
   }
 

@@ -6,7 +6,7 @@ export class GetProjectRequest extends AbstractRequest {
 
   constructor(request: Request) {
     super(request);
-    this._projectKey = request.query.projectKey as string;
+    this._projectKey = request.params.projectKey as string;
   }
 
   get projectKey(): string {

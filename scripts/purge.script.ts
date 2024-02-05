@@ -54,9 +54,11 @@ class Purge {
 
   private async deleteProjects() {
     await sequelize.query("DELETE FROM project WHERE true");
+    await sequelize.query("ALTER SEQUENCE project_project_id_seq RESTART WITH 1");
   }
 
   private async deleteUsers() {
+    await sequelize.query(`DELETE FROM admin_user WHERE user_id != (SELECT user_id FROM zilla_user WHERE email = '${adminEmail}')`);
     await sequelize.query(`DELETE FROM zilla_user WHERE email != '${adminEmail}'`);
   }
 }

@@ -1,3 +1,4 @@
+import cors from "cors";
 import express from "express";
 import adminRouter from "./admin.user/admin.user.router";
 import issueRouter from "./issue/issue.routes";
@@ -9,6 +10,8 @@ import {ErrorHandlingMiddleware} from "./web.api.middleware/error.handling.middl
 import {TokenMiddleware} from "./web.api.middleware/token.middleware";
 
 const router = express.Router();
+
+router.use(cors());
 
 router.use(express.json({limit: "1mb", type: "application/json"}));
 

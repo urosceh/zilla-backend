@@ -9,8 +9,8 @@ import UserModel from "../models/user.model";
 
 export interface IIssueRepository {
   createIssue(issue: IssueCreationAttributes): Promise<Issue>;
-  getIssue(issueId: string, projectId: string): Promise<Issue>;
-  getAllProjectIssues(projectId: string, options: IProjectIssueSearch): Promise<Issue[]>;
+  getIssue(issueId: string, projectKey: string): Promise<Issue>;
+  getAllProjectIssues(projectKey: string, options: IProjectIssueSearch): Promise<Issue[]>;
 }
 
 export class IssueRepository implements IIssueRepository {
@@ -20,11 +20,11 @@ export class IssueRepository implements IIssueRepository {
     return new Issue(createdIssue);
   }
 
-  public async getIssue(issueId: string, projectId: string): Promise<Issue> {
+  public async getIssue(issueId: string, projectKey: string): Promise<Issue> {
     const issue = await IssueModel.findOne({
       where: {
         issueId,
-        projectId,
+        projectKey,
       },
       include: [
         {
@@ -47,28 +47,19 @@ export class IssueRepository implements IIssueRepository {
     });
 
     if (!issue) {
-      throw new NotFound("Issue Not Found", {method: this.getIssue.name, issueId, projectId});
+      throw new NotFound("Issue Not Found", {method: this.getIssue.name, issueId, projectKey});
     }
 
     return new Issue(issue);
   }
 
-  public async getAllProjectIssues(projectId: string, options: IProjectIssueSearch): Promise<Issue[]> {
+  public async getAllProjectIssues(projectKey: string, options: IProjectIssueSearch): Promise<Issue[]> {
     const orderCol = ["createdAt", "updatedAt"].includes(options.orderCol) ? options.orderCol : "updatedAt";
     const orderDir = ["ASC", "DESC"].includes(options.orderDir) ? options.orderDir : "ASC";
 
-    // const whereCondition = {
-    //   [Op.and]: {
-    //     projectId,
-    //     sprintId: {[Op.in]: options.sprintIds},
-    //     reporterId: {[Op.in]: options.reportedIds},
-    //     assigneeId: {[Op.in]: options.assigneeIds},
-    //     issueStatus: {[Op.in]: options.issueStatuses},
-    //   },
-    // };
     const whereCondition = {
       [Op.and]: [
-        {projectId},
+        {projectKey},
         options.sprintIds ? {sprintId: {[Op.in]: options.sprintIds}} : {},
         options.reportedIds ? {reporterId: {[Op.in]: options.reportedIds}} : {},
         options.assigneeIds ? {assigneeId: {[Op.in]: options.assigneeIds}} : {},

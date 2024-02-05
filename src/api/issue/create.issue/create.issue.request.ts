@@ -4,7 +4,7 @@ import {IIssue} from "../../../domain/interfaces/IIssue";
 import {AbstractRequest} from "../../abstract/abstract.request";
 
 export class CreateIssueRequest extends AbstractRequest {
-  private _projectId: string;
+  private _projectKey: string;
   private _reporterId: string;
   private _issueStatus: IssueStatus;
   private _summary: string;
@@ -14,7 +14,7 @@ export class CreateIssueRequest extends AbstractRequest {
 
   constructor(request: Request) {
     super(request);
-    this._projectId = request.body.projectId;
+    this._projectKey = request.body.projectId;
     this._reporterId = this.accessUserId;
     this._issueStatus = request.body.issueStatus;
     this._summary = request.body.summary;
@@ -25,7 +25,7 @@ export class CreateIssueRequest extends AbstractRequest {
 
   public get issue(): IIssue {
     return {
-      projectId: this._projectId,
+      projectKey: this._projectKey,
       reporterId: this._reporterId,
       issueStatus: this._issueStatus,
       summary: this._summary,

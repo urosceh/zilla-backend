@@ -4,14 +4,14 @@ import {IDtoable} from "../interfaces/IReturnable";
 export class Sprint implements IDtoable {
   private _sprintId: number;
   private _sprintName: string;
-  private _projectId: string;
+  private _projectKey: string;
   private _startOfSprint: Date;
   private _endOfSprint: Date;
 
   constructor(sprint: SprintModel) {
     this._sprintId = sprint.sprintId;
     this._sprintName = sprint.sprintName;
-    this._projectId = sprint.projectId;
+    this._projectKey = sprint.projectKey;
     this._startOfSprint = sprint.startOfSprint;
     this._endOfSprint = sprint.endOfSprint;
   }
@@ -20,17 +20,9 @@ export class Sprint implements IDtoable {
     return {
       sprintId: this._sprintId,
       sprintName: this._sprintName,
-      projectId: this._projectId,
+      projectKey: this._projectKey,
       startOfSprint: this._startOfSprint,
       endOfSprint: this._endOfSprint,
     };
-  }
-
-  get sprintId(): number {
-    return this._sprintId;
-  }
-
-  get sprintName(): string {
-    return this._sprintName;
   }
 }
