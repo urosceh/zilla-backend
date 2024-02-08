@@ -42,13 +42,13 @@ export class Issue implements IDtoable {
     this._deletedAt = issue.deletedAt;
   }
 
-  public createDto() {
+  public toDto() {
     return {
       issueId: this._issueId,
       projectKey: this._projectKey,
-      reporter: this._reporter?.createDto(),
-      assignee: this._assignee?.createDto(),
-      sprint: this._sprint?.createDto(),
+      reporter: this._reporter?.toDto(),
+      assignee: this._assignee?.toDto(),
+      sprint: this._sprint?.toDto(),
       issueStatus: this._issueStatus,
       summary: this._summary,
       details: this._details,

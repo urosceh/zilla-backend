@@ -22,7 +22,7 @@ export class User implements IDtoable {
     this._deletedAt = user.deletedAt;
   }
 
-  public createDto() {
+  public toDto() {
     return {
       userId: this._userId,
       email: this._email,

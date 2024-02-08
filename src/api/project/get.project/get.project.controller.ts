@@ -15,6 +15,10 @@ export class GetProjectController extends AbstractController {
 
     const project: ProjectWithManager = await this._projectService.getProjectByProjectKey(request.projectKey);
 
+    if (project.managerId === request.accessUserId) {
+      project.isManager = true;
+    }
+
     return {
       statusCode: 200,
       data: project,

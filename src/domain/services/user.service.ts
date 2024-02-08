@@ -2,6 +2,8 @@ import {UserCreationAttributes} from "../../database/models/user.model";
 import {IUserRepository} from "../../database/repositories/user.repository";
 import {IMailClient} from "../../external/mail.client/mail.client";
 import {JwtGenerator} from "../../lib/jwt/jwt.generator";
+import {AdminBearerToken} from "../entities/AdminBearerToken";
+import {AdminUser} from "../entities/AdminUser";
 import {User} from "../entities/User";
 import {DomainError} from "../errors/BaseError";
 import {BadRequest, InternalServerError} from "../errors/errors.index";
@@ -26,10 +28,12 @@ export class UserService {
     return createdUsers;
   }
 
-  public async loginUser(credentials: {email: string; password: string}): Promise<string> {
-    const user = await this._userRepository.loginUser(credentials);
+  public async loginUser(credentials: {email: string; password: string}): Promise<AdminBearerToken> {
+    const user: AdminUser = await this._userRepository.loginUser(credentials);
 
-    return JwtGenerator.generateUserBearerToken(user.userId);
+    const bearerToken = JwtGenerator.generateUserBearerToken(user.userId);
+
+    return new AdminBearerToken(bearerToken, user.isAdmin ? bearerToken : undefined);
   }
 
   public async updateUser(userId: string, updates: {firstName?: string; lastName?: string}): Promise<User> {

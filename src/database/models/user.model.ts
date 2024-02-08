@@ -1,6 +1,7 @@
 import {genSaltSync, hashSync} from "bcrypt";
 import {DataTypes, Model} from "sequelize";
 import sequelize from "../sequelize";
+import AdminUserModel from "./admin.user.model";
 
 export type UserAttributes = {
   userId: string;
@@ -26,6 +27,8 @@ class UserModel extends Model<UserAttributes, UserCreationAttributes> {
   declare createdAt: Date;
   declare updatedAt: Date;
   declare deletedAt: Date | null;
+
+  declare admin?: AdminUserModel;
 }
 
 UserModel.init(
