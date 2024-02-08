@@ -1,5 +1,5 @@
 export interface IDtoable {
-  createDto(): any;
+  toDto(): any;
 }
 
 export interface IBearerData {

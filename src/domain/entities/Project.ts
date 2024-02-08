@@ -20,7 +20,7 @@ export class Project implements IDtoable {
     this._deletedAt = project.deletedAt;
   }
 
-  public createDto() {
+  public toDto() {
     return {
       projectId: this._projectId,
       projectName: this._projectName,

@@ -58,5 +58,10 @@ AdminUserModel.belongsTo(UserModel, {
   onDelete: "RESTRICT",
   onUpdate: "RESTRICT",
 });
+UserModel.hasOne(AdminUserModel, {
+  sourceKey: "userId",
+  foreignKey: "userId",
+  as: "admin",
+});
 
 export default AdminUserModel;

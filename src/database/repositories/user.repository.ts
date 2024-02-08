@@ -1,12 +1,14 @@
 import {compareSync} from "bcrypt";
+import {AdminUser} from "../../domain/entities/AdminUser";
 import {User} from "../../domain/entities/User";
 import {NotFound, UnauthorizedAccess} from "../../domain/errors/errors.index";
+import AdminUserModel from "../models/admin.user.model";
 import UserModel, {UserCreationAttributes, UserUpdateAttributes} from "../models/user.model";
 
 export interface IUserRepository {
   getUserByEmail(email: string): Promise<User>;
   createBatch(users: UserCreationAttributes[]): Promise<User[]>;
-  loginUser(credentials: {email: string; password: string}): Promise<User>;
+  loginUser(credentials: {email: string; password: string}): Promise<AdminUser>;
   updateUser(userId: string, updates: UserUpdateAttributes): Promise<User>;
   updatePassword(userId: string, data: {oldPassword: string; newPassword: string}): Promise<User>;
   updateForgottenPassword(email: string, newPassword: string): Promise<User>;
@@ -33,11 +35,17 @@ export class UserRepository implements IUserRepository {
     return createdUsers.map((user) => new User(user));
   }
 
-  public async loginUser(credentials: {email: string; password: string}): Promise<User> {
+  public async loginUser(credentials: {email: string; password: string}): Promise<AdminUser> {
     const user = await UserModel.findOne({
       where: {
         email: credentials.email,
       },
+      include: [
+        {
+          model: AdminUserModel,
+          as: "admin",
+        },
+      ],
     });
 
     if (!user) {
@@ -50,7 +58,7 @@ export class UserRepository implements IUserRepository {
       throw new UnauthorizedAccess("Invalid Password", {method: this.loginUser.name});
     }
 
-    return new User(user);
+    return new AdminUser(user);
   }
 
   public async updateUser(userId: string, updates: UserUpdateAttributes): Promise<User> {

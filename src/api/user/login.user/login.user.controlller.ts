@@ -1,5 +1,6 @@
 import {Request, Response} from "express";
-import {IBearerData} from "../../../domain/interfaces/IReturnable";
+import {AdminBearerToken} from "../../../domain/entities/AdminBearerToken";
+import {IDtoable} from "../../../domain/interfaces/IReturnable";
 import {UserService} from "../../../domain/services/user.service";
 import {AbstractController} from "../../abstract/abstract.controller";
 import {LoginUserRequest} from "./login.user.request";
@@ -9,14 +10,14 @@ export class LoginUserController extends AbstractController {
     super();
   }
 
-  protected async process(req: Request, res: Response): Promise<{statusCode: number; data: IBearerData}> {
+  protected async process(req: Request, res: Response): Promise<{statusCode: number; data: IDtoable}> {
     const request = new LoginUserRequest(req);
 
-    const bearerToken = await this._userService.loginUser(request.credentials);
+    const roleBearerToken: AdminBearerToken = await this._userService.loginUser(request.credentials);
 
     return {
       statusCode: 200,
-      data: {bearerToken},
+      data: roleBearerToken,
     };
   }
 }

@@ -13,9 +13,9 @@ export abstract class AbstractController {
       } else if (this.isBearerData(response.data)) {
         return res.status(response.statusCode).json({bearerToken: response.data.bearerToken});
       } else if (this.isDtoable(response.data)) {
-        return res.status(response.statusCode).json(response.data.createDto());
+        return res.status(response.statusCode).json(response.data.toDto());
       } else if (this.isDtoableArray(response.data)) {
-        return res.status(response.statusCode).json(response.data.map((item) => item.createDto()));
+        return res.status(response.statusCode).json(response.data.map((item) => item.toDto()));
       } else {
         throw new InternalServerError("Invalid Response Data Type");
       }
@@ -31,12 +31,12 @@ export abstract class AbstractController {
 
   protected abstract process(req: Request, res: Response): Promise<{statusCode: number; data?: Returnable}>;
 
-  private isDtoable(data: any): data is IDtoable {
-    return "createDto" in data;
-  }
-
   private isDtoableArray(data: any): data is IDtoable[] {
     return Array.isArray(data) && data.every((item) => this.isDtoable(item));
+  }
+
+  private isDtoable(data: any): data is IDtoable {
+    return "toDto" in data;
   }
 
   private isBearerData(data: any): data is IBearerData {

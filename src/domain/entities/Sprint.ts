@@ -16,7 +16,7 @@ export class Sprint implements IDtoable {
     this._endOfSprint = sprint.endOfSprint;
   }
 
-  public createDto() {
+  public toDto() {
     return {
       sprintId: this._sprintId,
       sprintName: this._sprintName,

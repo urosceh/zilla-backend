@@ -29,12 +29,12 @@ export class UserProjectAccessRepository implements IUserProjectAccessRepository
     });
 
     if (!userProjectAccess) {
-      throw new NotFound("User Project Access Not Found", {method: this.getAllUsersProjects.name, userId, projectKey});
+      throw new NotFound("User Project Access Not Found", {method: this.getUserProjectAccess.name, userId, projectKey});
     }
     if (!userProjectAccess.project) {
       throw new BadGateway("Project of UserProjectAccess Not Found", {
         userProjectAccess: userProjectAccess.toJSON(),
-        method: this.getAllUsersProjects.name,
+        method: this.getUserProjectAccess.name,
         userId,
         projectKey,
       });

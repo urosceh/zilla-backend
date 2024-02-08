@@ -10,11 +10,19 @@ import {getIssueParamsSchema, getIssueQuerySchema} from "./get.issue/get.issue.v
 import {GetProjectIssuesController} from "./get.project.issues/get.project.issues.controller";
 import {getProjectIssuesQuerySchema} from "./get.project.issues/get.project.issues.validation";
 
+const getProjectIssuesController = new GetProjectIssuesController(issueService);
 const createIssueController = new CreateIssueController(issueService);
 const getIssueController = new GetIssueController(issueService);
-const getProjectIssuesController = new GetProjectIssuesController(issueService);
 
 const issueRouter = express.Router();
+
+issueRouter.get(
+  "/project/:projectKey",
+  AccessValidationMiddleware.middleware,
+  JoiValidator.paramsSchemaValidationMiddleware(getIssuesParamsSchema),
+  JoiValidator.querySchemaValidationMiddleware(getProjectIssuesQuerySchema),
+  getProjectIssuesController.handle.bind(getProjectIssuesController)
+);
 
 issueRouter.get(
   "/:issueId",
@@ -29,14 +37,6 @@ issueRouter.post(
   AccessValidationMiddleware.middleware,
   JoiValidator.bodySchemaValidationMiddleware(createIssueBodySchema),
   createIssueController.handle.bind(createIssueController)
-);
-
-issueRouter.get(
-  "/project/:projectKey",
-  AccessValidationMiddleware.middleware,
-  JoiValidator.paramsSchemaValidationMiddleware(getIssuesParamsSchema),
-  JoiValidator.querySchemaValidationMiddleware(getProjectIssuesQuerySchema),
-  getProjectIssuesController.handle.bind(getProjectIssuesController)
 );
 
 export default issueRouter;
