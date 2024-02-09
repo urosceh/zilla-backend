@@ -120,11 +120,12 @@ paths:
             schema:
               type: object
               properties:
-                emails:
+                users:
                   type: array
                   items:
-                    type: string
-                    format: email
+                    $ref: "schemas/create.user.schema.yaml"
+                
+              
       responses:
         "201":
           description: Created

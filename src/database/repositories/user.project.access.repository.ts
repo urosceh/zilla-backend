@@ -1,8 +1,9 @@
 import {Op} from "sequelize";
-import {Project} from "../../domain/entities/Project";
+import {ProjectWithManager} from "../../domain/entities/ProjectWithManager";
 import {UserProjectAccess} from "../../domain/entities/UserProjectAccess";
 import {BadGateway, NotFound} from "../../domain/errors/errors.index";
 import ProjectModel from "../models/project.model";
+import UserModel from "../models/user.model";
 import UserProjectAccessModel from "../models/user.project.access.model";
 
 export interface IUserProjectAccessRepository {
@@ -10,7 +11,7 @@ export interface IUserProjectAccessRepository {
   insertAccess(userIds: string[], projectKey: string): Promise<void>;
   deleteAccess(userIds: string[], projectKey: string): Promise<void>;
   hasAccess(userId: string, projectKey: string): Promise<boolean>;
-  getAllUsersProjects(userId: string, options: {limit: number; offset: number; search?: string}): Promise<Project[]>;
+  getAllUsersProjects(userId: string, options: {limit: number; offset: number; search?: string}): Promise<ProjectWithManager[]>;
 }
 
 export class UserProjectAccessRepository implements IUserProjectAccessRepository {
@@ -80,7 +81,10 @@ export class UserProjectAccessRepository implements IUserProjectAccessRepository
     return !!access;
   }
 
-  public async getAllUsersProjects(userId: string, options: {limit: number; offset: number; search?: string}): Promise<Project[]> {
+  public async getAllUsersProjects(
+    userId: string,
+    options: {limit: number; offset: number; search?: string}
+  ): Promise<ProjectWithManager[]> {
     const whereCondition = options.search
       ? {
           [Op.or]: {
@@ -105,10 +109,16 @@ export class UserProjectAccessRepository implements IUserProjectAccessRepository
           model: ProjectModel,
           as: "project",
           where: whereCondition,
+          include: [
+            {
+              model: UserModel,
+              as: "manager",
+            },
+          ],
         },
       ],
     });
 
-    return userProjectAccesses.map((upa) => new Project(upa.project!));
+    return userProjectAccesses.map((upa) => new ProjectWithManager(upa.project!));
   }
 }

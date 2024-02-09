@@ -1,4 +1,4 @@
-import {Request, Response} from "express";
+import {Request} from "express";
 import {ProjectWithManager} from "../../../domain/entities/ProjectWithManager";
 import {IDtoable} from "../../../domain/interfaces/IReturnable";
 import {ProjectService} from "../../../domain/services/project.service";
@@ -10,7 +10,7 @@ export class GetProjectController extends AbstractController {
     super();
   }
 
-  protected async process(req: Request, res: Response): Promise<{statusCode: number; data: IDtoable}> {
+  protected async process(req: Request): Promise<{statusCode: number; data: IDtoable}> {
     const request = new GetProjectRequest(req);
 
     const project: ProjectWithManager = await this._projectService.getProjectByProjectKey(request.projectKey);

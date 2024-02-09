@@ -6,7 +6,7 @@ import {AbstractRequest} from "../../abstract/abstract.request";
 export class GetProjectIssuesRequest extends AbstractRequest {
   private _projectKey: string;
   private assigneeIds: string[] | undefined;
-  private reportedIds: string[] | undefined;
+  private reporterIds: string[] | undefined;
   private issueStatuses: IssueStatus[] | undefined;
   private sprintIds: number[] | undefined;
   private _search: string | undefined;
@@ -21,7 +21,7 @@ export class GetProjectIssuesRequest extends AbstractRequest {
 
     this._projectKey = request.params.projectKey;
 
-    this.reportedIds = request.query.reportedIds as string[];
+    this.reporterIds = request.query.reporterIds as string[];
     this.assigneeIds = request.query.assigneeIds as string[];
     this.issueStatuses = request.query.issueStatuses as unknown as IssueStatus[];
     this.sprintIds = request.query.sprintIds as unknown as number[];
@@ -39,7 +39,7 @@ export class GetProjectIssuesRequest extends AbstractRequest {
   public get options(): IProjectIssueSearch {
     return {
       assigneeIds: this.assigneeIds,
-      reportedIds: this.reportedIds,
+      reporterIds: this.reporterIds,
       sprintIds: this.sprintIds,
       issueStatuses: this.issueStatuses,
       search: this._search,

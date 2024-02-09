@@ -1,15 +1,16 @@
 import {Request} from "express";
+import {IUser} from "../../../domain/interfaces/IUser";
 import {AbstractRequest} from "../../abstract/abstract.request";
 
 export class CreateUsersRequest extends AbstractRequest {
-  private _emails: string[];
+  private _users: IUser[];
 
-  constructor(requset: Request) {
-    super(requset);
-    this._emails = requset.body.emails;
+  constructor(request: Request) {
+    super(request);
+    this._users = request.body.users;
   }
 
-  public get emails(): string[] {
-    return this._emails;
+  public get users(): IUser[] {
+    return this._users;
   }
 }

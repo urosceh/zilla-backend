@@ -1,4 +1,4 @@
-import {Request, Response} from "express";
+import {Request} from "express";
 import {UserProjectAccessService} from "../../../domain/services/user.project.access.service";
 import {AbstractController} from "../../abstract/abstract.controller";
 import {ManageAccessRequest} from "./manage.access.request";
@@ -8,7 +8,7 @@ export class RevokeAccessController extends AbstractController {
     super();
   }
 
-  protected async process(req: Request, res: Response): Promise<{statusCode: number}> {
+  protected async process(req: Request): Promise<{statusCode: number}> {
     const request = new ManageAccessRequest(req);
 
     await this._userProjectAccessService.revokeProjectAccessFromUsers(request.userIds, request.projectKey);

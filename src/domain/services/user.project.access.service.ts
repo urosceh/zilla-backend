@@ -1,5 +1,5 @@
 import {IUserProjectAccessRepository} from "../../database/repositories/user.project.access.repository";
-import {Project} from "../entities/Project";
+import {ProjectWithManager} from "../entities/ProjectWithManager";
 import {UserProjectAccess} from "../entities/UserProjectAccess";
 
 export class UserProjectAccessService {
@@ -21,7 +21,10 @@ export class UserProjectAccessService {
     return this._userProjectAccessRepository.hasAccess(userId, projectKey);
   }
 
-  public async getAllAccessableProjects(userId: string, options: {limit: number; offset: number; search?: string}): Promise<Project[]> {
+  public async getAllAccessableProjects(
+    userId: string,
+    options: {limit: number; offset: number; search?: string}
+  ): Promise<ProjectWithManager[]> {
     return this._userProjectAccessRepository.getAllUsersProjects(userId, options);
   }
 }

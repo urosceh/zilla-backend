@@ -1,4 +1,4 @@
-import {Request, Response} from "express";
+import {Request} from "express";
 import {Sprint} from "../../../domain/entities/Sprint";
 import {IDtoable} from "../../../domain/interfaces/IReturnable";
 import {SprintService} from "../../../domain/services/sprint.service";
@@ -10,7 +10,7 @@ export class CreateSprintController extends AbstractController {
     super();
   }
 
-  protected async process(req: Request, res: Response): Promise<{statusCode: number; data: IDtoable}> {
+  protected async process(req: Request): Promise<{statusCode: number; data: IDtoable}> {
     const request = new CreateSprintRequest(req);
 
     const sprint: Sprint = await this._sprintService.createSprint(request.sprint);

@@ -61,7 +61,7 @@ export class IssueRepository implements IIssueRepository {
       [Op.and]: [
         {projectKey},
         options.sprintIds ? {sprintId: {[Op.in]: options.sprintIds}} : {},
-        options.reportedIds ? {reporterId: {[Op.in]: options.reportedIds}} : {},
+        options.reporterIds ? {reporterId: {[Op.in]: options.reporterIds}} : {},
         options.assigneeIds ? {assigneeId: {[Op.in]: options.assigneeIds}} : {},
         options.issueStatuses ? {issueStatus: {[Op.in]: options.issueStatuses}} : {},
         options.search ? {summary: {[Op.iLike]: `%${options.search}%`}} : {},

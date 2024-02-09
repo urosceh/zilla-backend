@@ -7,14 +7,17 @@ import {AdminUser} from "../entities/AdminUser";
 import {User} from "../entities/User";
 import {DomainError} from "../errors/BaseError";
 import {BadRequest, InternalServerError} from "../errors/errors.index";
+import {IUser} from "../interfaces/IUser";
 
 export class UserService {
   constructor(private _userRepository: IUserRepository, private _mailClient: IMailClient) {}
 
-  public async createUsers(emails: string[]): Promise<User[]> {
-    const userCredentials: UserCreationAttributes[] = emails.map((email) => {
+  public async createUsers(users: IUser[]): Promise<User[]> {
+    const userCredentials: UserCreationAttributes[] = users.map((user) => {
       return {
-        email,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
         password: Math.random().toString(36).slice(-10),
       };
     });

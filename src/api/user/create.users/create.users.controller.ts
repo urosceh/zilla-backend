@@ -1,4 +1,4 @@
-import {Request, Response} from "express";
+import {Request} from "express";
 import {User} from "../../../domain/entities/User";
 import {IDtoable} from "../../../domain/interfaces/IReturnable";
 import {UserService} from "../../../domain/services/user.service";
@@ -10,10 +10,10 @@ export class CreateUsersController extends AbstractController {
     super();
   }
 
-  protected async process(req: Request, res: Response): Promise<{statusCode: number; data: IDtoable[]}> {
+  protected async process(req: Request): Promise<{statusCode: number; data: IDtoable[]}> {
     const request = new CreateUsersRequest(req);
 
-    const users: User[] = await this._userService.createUsers(request.emails);
+    const users: User[] = await this._userService.createUsers(request.users);
 
     return {
       statusCode: 201,

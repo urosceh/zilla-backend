@@ -1,4 +1,4 @@
-import {Request, Response} from "express";
+import {Request} from "express";
 import {User} from "../../../domain/entities/User";
 import {IDtoable} from "../../../domain/interfaces/IReturnable";
 import {AdminUserService} from "../../../domain/services/admin.user.service";
@@ -10,7 +10,7 @@ export class MakeAdminController extends AbstractController {
     super();
   }
 
-  protected async process(req: Request, res: Response): Promise<{statusCode: number; data: IDtoable}> {
+  protected async process(req: Request): Promise<{statusCode: number; data: IDtoable}> {
     const request = new MakeAdminRequest(req);
 
     const user: User = await this._adminUserService.createAdmin(request.userId);

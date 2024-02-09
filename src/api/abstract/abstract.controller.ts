@@ -6,7 +6,7 @@ import {Returnable} from "../../domain/types/Returnable";
 export abstract class AbstractController {
   public async handle(req: Request, res: Response, next: NextFunction) {
     try {
-      const response = await this.process(req, res);
+      const response = await this.process(req);
 
       if (!response.data) {
         return res.status(response.statusCode).send();
@@ -29,7 +29,7 @@ export abstract class AbstractController {
     }
   }
 
-  protected abstract process(req: Request, res: Response): Promise<{statusCode: number; data?: Returnable}>;
+  protected abstract process(req: Request): Promise<{statusCode: number; data?: Returnable}>;
 
   private isDtoableArray(data: any): data is IDtoable[] {
     return Array.isArray(data) && data.every((item) => this.isDtoable(item));

@@ -1,4 +1,4 @@
-import {Request, Response} from "express";
+import {Request} from "express";
 import crypto from "node:crypto";
 import {UserService} from "../../../domain/services/user.service";
 import {IRedisClient} from "../../../external/redis/redis.client";
@@ -10,7 +10,7 @@ export class ForgottenPasswordController extends AbstractController {
     super();
   }
 
-  protected async process(req: Request, res: Response): Promise<{statusCode: number}> {
+  protected async process(req: Request): Promise<{statusCode: number}> {
     const request = new ForgottenPasswordRequest(req);
 
     const secret = crypto.randomBytes(20).toString("hex");

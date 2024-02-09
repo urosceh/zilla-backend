@@ -6,6 +6,7 @@ import UserProjectAccessModel from "../src/database/models/user.project.access.m
 import {Project} from "../src/domain/entities/Project";
 import {seedProjects} from "./data/projects";
 import {seedSprints} from "./data/sprints";
+import {seedUsers} from "./data/users";
 
 const adminEmail: string = process.env.ADMIN_EMAL || "";
 const adminPassword: string = process.env.ADMIN_PASSWORD || "";
@@ -77,29 +78,8 @@ class Seed {
   }
 
   private async createUsersBatch(): Promise<string[]> {
-    const emails = [
-      "john.doe@gmail.com",
-      "alice.smith@hotmail.com",
-      "bob.johnson@gmail.com",
-      "eva.anderson@hotmail.com",
-      "chris.taylor@gmail.com",
-      "sophia.brown@outlook.com",
-      "leo.miller@gmail.com",
-      "emma.clark@hotmail.com",
-      "daniel.jones@gmail.com",
-      "olivia.moore@outlook.com",
-      "liam.white@gmail.com",
-      "ava.harris@hotmail.com",
-      "mia.lee@gmail.com",
-      "noah.johnson@outlook.com",
-      "isabella.turner@gmail.com",
-      "lucas.davis@hotmail.com",
-      "mia.jackson@gmail.com",
-      "ethan.smith@outlook.com",
-      "amelia.martin@gmail.com",
-      "william.jones@hotmail.com",
-    ];
-    const users = await this._axios.post("/user/create-batch", {emails});
+    const usersForCreate = seedUsers;
+    const users = await this._axios.post("/user/create-batch", {users: usersForCreate});
 
     console.log("Users created, check ./scripts/passwords.txt for passwords");
 
@@ -132,7 +112,7 @@ class Seed {
     issueData: {projectKey: string; userId: string}[]
   ): Promise<void> {
     const data: {projectKey: string; userId: string}[] = projectKeys.flatMap((projectKey) =>
-      Array.from({length: Math.floor(Math.random() * 6) + 5}, () => {
+      Array.from({length: Math.floor(Math.random() * 11) + 15}, () => {
         const userId = userIds[Math.floor(Math.random() * userIds.length)];
         return {projectKey, userId};
       })
