@@ -1,6 +1,7 @@
 import {Op} from "sequelize";
 import {Issue} from "../../domain/entities/Issue";
 import {NotFound} from "../../domain/errors/errors.index";
+import {IIssue} from "../../domain/interfaces/IIssue";
 import {IProjectIssueSearch} from "../../domain/interfaces/IIssueSearch";
 import IssueModel, {IssueCreationAttributes} from "../models/issue.model";
 import ProjectModel from "../models/project.model";
@@ -10,6 +11,7 @@ import UserModel from "../models/user.model";
 export interface IIssueRepository {
   createIssue(issue: IssueCreationAttributes): Promise<Issue>;
   getIssue(issueId: string, projectKey: string): Promise<Issue>;
+  updateIssue(issueId: string, issue: Partial<IIssue>): Promise<Issue>;
   getAllProjectIssues(projectKey: string, options: IProjectIssueSearch): Promise<Issue[]>;
 }
 
@@ -51,6 +53,44 @@ export class IssueRepository implements IIssueRepository {
     }
 
     return new Issue(issue);
+  }
+
+  public async updateIssue(issueId: string, issue: Partial<IIssue>): Promise<Issue> {
+    const [updatedRowsCount] = await IssueModel.update(issue, {
+      where: {
+        issueId,
+      },
+    });
+
+    if (updatedRowsCount === 0) {
+      throw new NotFound("Issue Not Found", {method: this.updateIssue.name, issueId});
+    }
+
+    const updatedIssue = await IssueModel.findOne({
+      where: {
+        issueId,
+      },
+      include: [
+        {
+          model: UserModel,
+          as: "reporter",
+        },
+        {
+          model: UserModel,
+          as: "assignee",
+        },
+        {
+          model: SprintModel,
+          as: "sprint",
+        },
+        {
+          model: ProjectModel,
+          as: "project",
+        },
+      ],
+    });
+
+    return new Issue(updatedIssue!);
   }
 
   public async getAllProjectIssues(projectKey: string, options: IProjectIssueSearch): Promise<Issue[]> {
