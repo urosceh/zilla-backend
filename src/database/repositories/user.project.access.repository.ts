@@ -1,7 +1,9 @@
 import {Op} from "sequelize";
 import {ProjectWithManager} from "../../domain/entities/ProjectWithManager";
+import {User} from "../../domain/entities/User";
 import {UserProjectAccess} from "../../domain/entities/UserProjectAccess";
 import {BadGateway, NotFound} from "../../domain/errors/errors.index";
+import {IPaginatable} from "../../domain/interfaces/IPaginatable";
 import ProjectModel from "../models/project.model";
 import UserModel from "../models/user.model";
 import UserProjectAccessModel from "../models/user.project.access.model";
@@ -12,6 +14,7 @@ export interface IUserProjectAccessRepository {
   deleteAccess(userIds: string[], projectKey: string): Promise<void>;
   hasAccess(userId: string, projectKey: string): Promise<boolean>;
   getAllUsersProjects(userId: string, options: {limit: number; offset: number; search?: string}): Promise<ProjectWithManager[]>;
+  getAllUsersOnProject(projectKey: string, options: IPaginatable): Promise<User[]>;
 }
 
 export class UserProjectAccessRepository implements IUserProjectAccessRepository {
@@ -120,5 +123,23 @@ export class UserProjectAccessRepository implements IUserProjectAccessRepository
     });
 
     return userProjectAccesses.map((upa) => new ProjectWithManager(upa.project!));
+  }
+
+  public async getAllUsersOnProject(projectKey: string, options: IPaginatable): Promise<User[]> {
+    const acesses = await UserProjectAccessModel.findAll({
+      limit: options.limit,
+      offset: options.offset,
+      where: {
+        projectKey,
+      },
+      include: [
+        {
+          model: UserModel,
+          as: "user",
+        },
+      ],
+    });
+
+    return acesses.map((access) => new User(access.user!));
   }
 }

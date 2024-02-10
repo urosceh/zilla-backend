@@ -7,6 +7,7 @@ import {AdminUser} from "../entities/AdminUser";
 import {User} from "../entities/User";
 import {DomainError} from "../errors/BaseError";
 import {BadRequest, InternalServerError} from "../errors/errors.index";
+import {IPaginatable} from "../interfaces/IPaginatable";
 import {IUser} from "../interfaces/IUser";
 
 export class UserService {
@@ -45,6 +46,12 @@ export class UserService {
     const user = await this._userRepository.updateUser(userId, {firstName, lastName});
 
     return user;
+  }
+
+  public async getAllUsers(options: IPaginatable): Promise<User[]> {
+    const users = await this._userRepository.getAllUsers(options);
+
+    return users;
   }
 
   public async updatePassword(userId: string, passwordData: {oldPassword: string; newPassword: string}): Promise<string> {
