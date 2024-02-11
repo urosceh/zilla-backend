@@ -7,6 +7,7 @@ import SprintModel, {SprintCreationAttributes} from "../models/sprint.model";
 
 export interface ISprintRepository {
   createSprint(sprint: SprintCreationAttributes): Promise<Sprint>;
+  getProjectSprints(projectKey: string): Promise<Sprint[]>;
   getCurrentSprintIssues(projectId: string): Promise<SprintWithIssues>;
 }
 
@@ -15,6 +16,16 @@ export class SprintRepository implements ISprintRepository {
     const sprintModel = await SprintModel.create(sprint);
 
     return new Sprint(sprintModel);
+  }
+
+  public async getProjectSprints(projectKey: string): Promise<Sprint[]> {
+    const sprints = await SprintModel.findAll({
+      where: {
+        projectKey,
+      },
+    });
+
+    return sprints.map((sprint) => new Sprint(sprint));
   }
 
   public async getCurrentSprintIssues(projectId: string): Promise<SprintWithIssues> {

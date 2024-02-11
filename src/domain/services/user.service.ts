@@ -7,14 +7,18 @@ import {AdminUser} from "../entities/AdminUser";
 import {User} from "../entities/User";
 import {DomainError} from "../errors/BaseError";
 import {BadRequest, InternalServerError} from "../errors/errors.index";
+import {IPaginatable} from "../interfaces/IPaginatable";
+import {IUser} from "../interfaces/IUser";
 
 export class UserService {
   constructor(private _userRepository: IUserRepository, private _mailClient: IMailClient) {}
 
-  public async createUsers(emails: string[]): Promise<User[]> {
-    const userCredentials: UserCreationAttributes[] = emails.map((email) => {
+  public async createUsers(users: IUser[]): Promise<User[]> {
+    const userCredentials: UserCreationAttributes[] = users.map((user) => {
       return {
-        email,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
         password: Math.random().toString(36).slice(-10),
       };
     });
@@ -42,6 +46,12 @@ export class UserService {
     const user = await this._userRepository.updateUser(userId, {firstName, lastName});
 
     return user;
+  }
+
+  public async getAllUsers(options: IPaginatable): Promise<User[]> {
+    const users = await this._userRepository.getAllUsers(options);
+
+    return users;
   }
 
   public async updatePassword(userId: string, passwordData: {oldPassword: string; newPassword: string}): Promise<string> {

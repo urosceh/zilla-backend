@@ -17,4 +17,8 @@ export class IssueService {
   public async getAllProjectIssues(projectKey: string, options: IProjectIssueSearch): Promise<Issue[]> {
     return this._issueRepository.getAllProjectIssues(projectKey, options);
   }
+
+  public async updateIssue(issueId: string, issue: Partial<IIssue>): Promise<Issue> {
+    return this._issueRepository.updateIssue(issueId, issue);
+  }
 }

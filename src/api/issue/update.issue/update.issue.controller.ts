@@ -1,22 +1,21 @@
 import {Request} from "express";
-import {Issue} from "../../../domain/entities/Issue";
 import {IDtoable} from "../../../domain/interfaces/IReturnable";
 import {IssueService} from "../../../domain/services/issue.service";
 import {AbstractController} from "../../abstract/abstract.controller";
-import {CreateIssueRequest} from "./create.issue.request";
+import {UpdateIssueRequest} from "./update.issue.request";
 
-export class CreateIssueController extends AbstractController {
+export class UpdateIssueController extends AbstractController {
   constructor(private _issueService: IssueService) {
     super();
   }
 
   protected async process(req: Request): Promise<{statusCode: number; data: IDtoable}> {
-    const request = new CreateIssueRequest(req);
+    const request = new UpdateIssueRequest(req);
 
-    const issue: Issue = await this._issueService.createIssue(request.issue);
+    const issue = await this._issueService.updateIssue(request.issueId, request.issue);
 
     return {
-      statusCode: 201,
+      statusCode: 200,
       data: issue,
     };
   }

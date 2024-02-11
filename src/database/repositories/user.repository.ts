@@ -2,6 +2,7 @@ import {compareSync} from "bcrypt";
 import {AdminUser} from "../../domain/entities/AdminUser";
 import {User} from "../../domain/entities/User";
 import {NotFound, UnauthorizedAccess} from "../../domain/errors/errors.index";
+import {IPaginatable} from "../../domain/interfaces/IPaginatable";
 import AdminUserModel from "../models/admin.user.model";
 import UserModel, {UserCreationAttributes, UserUpdateAttributes} from "../models/user.model";
 
@@ -10,6 +11,7 @@ export interface IUserRepository {
   createBatch(users: UserCreationAttributes[]): Promise<User[]>;
   loginUser(credentials: {email: string; password: string}): Promise<AdminUser>;
   updateUser(userId: string, updates: UserUpdateAttributes): Promise<User>;
+  getAllUsers(options: IPaginatable): Promise<User[]>;
   updatePassword(userId: string, data: {oldPassword: string; newPassword: string}): Promise<User>;
   updateForgottenPassword(email: string, newPassword: string): Promise<User>;
 }
@@ -77,6 +79,16 @@ export class UserRepository implements IUserRepository {
     }
 
     return new User(updatedUsers[1][0]);
+  }
+
+  public async getAllUsers(options: IPaginatable): Promise<User[]> {
+    const users = await UserModel.findAll({
+      limit: options.limit,
+      offset: options.offset,
+      order: [[options.orderCol, options.orderDir]],
+    });
+
+    return users.map((user) => new User(user));
   }
 
   public async updatePassword(userId: string, data: {oldPassword: string; newPassword: string}): Promise<User> {

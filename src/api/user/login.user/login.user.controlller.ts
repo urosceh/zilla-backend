@@ -1,4 +1,4 @@
-import {Request, Response} from "express";
+import {Request} from "express";
 import {AdminBearerToken} from "../../../domain/entities/AdminBearerToken";
 import {IDtoable} from "../../../domain/interfaces/IReturnable";
 import {UserService} from "../../../domain/services/user.service";
@@ -10,7 +10,7 @@ export class LoginUserController extends AbstractController {
     super();
   }
 
-  protected async process(req: Request, res: Response): Promise<{statusCode: number; data: IDtoable}> {
+  protected async process(req: Request): Promise<{statusCode: number; data: IDtoable}> {
     const request = new LoginUserRequest(req);
 
     const roleBearerToken: AdminBearerToken = await this._userService.loginUser(request.credentials);

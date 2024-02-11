@@ -16,6 +16,7 @@ export class ProjectWithManager extends Project implements IDtoable {
     const response = {
       ...super.toDto(),
       manager: this._manager?.toDto(),
+      isManager: this._isManager,
     };
 
     if (this._isManager) {

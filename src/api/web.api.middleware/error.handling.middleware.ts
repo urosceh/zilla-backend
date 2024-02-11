@@ -7,6 +7,7 @@ export class ErrorHandlingMiddleware {
       console.warn(err.message, err.details);
       res.status(err.statusCode).json(err.message);
     } else {
+      console.error(err.message, err.stack);
       res.status(500).json({error: err.message || "Unknown Error"});
     }
   };

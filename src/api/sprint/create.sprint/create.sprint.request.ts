@@ -1,4 +1,5 @@
 import {Request} from "express";
+import {ISprint} from "../../../domain/interfaces/ISprint";
 import {AbstractRequest} from "../../abstract/abstract.request";
 
 export class CreateSprintRequest extends AbstractRequest {
@@ -15,7 +16,7 @@ export class CreateSprintRequest extends AbstractRequest {
     this._endOfSprint = request.body.endOfSprint;
   }
 
-  get sprint(): {projectKey: string; sprintName: string; startOfSprint: Date; endOfSprint: Date} {
+  get sprint(): ISprint {
     return {
       projectKey: this._projectKey,
       sprintName: this._sprintName,

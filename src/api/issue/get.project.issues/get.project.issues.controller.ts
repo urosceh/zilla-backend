@@ -1,4 +1,4 @@
-import {Request, Response} from "express";
+import {Request} from "express";
 import {IDtoable} from "../../../domain/interfaces/IReturnable";
 import {IssueService} from "../../../domain/services/issue.service";
 import {AbstractController} from "../../abstract/abstract.controller";
@@ -9,7 +9,7 @@ export class GetProjectIssuesController extends AbstractController {
     super();
   }
 
-  protected async process(req: Request, res: Response): Promise<{statusCode: number; data: IDtoable[]}> {
+  protected async process(req: Request): Promise<{statusCode: number; data: IDtoable[]}> {
     const request = new GetProjectIssuesRequest(req);
 
     const issues = await this._issueService.getAllProjectIssues(request.projectKey, request.options);

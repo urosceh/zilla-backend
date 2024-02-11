@@ -8,6 +8,6 @@ export interface IIssueSearch extends IPaginatable {
 
 export interface IProjectIssueSearch extends IIssueSearch {
   assigneeIds?: string[];
-  reportedIds?: string[];
+  reporterIds?: string[];
   sprintIds?: number[];
 }

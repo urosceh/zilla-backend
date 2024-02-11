@@ -1,4 +1,4 @@
-import {Request, Response} from "express";
+import {Request} from "express";
 import {IDtoable} from "../../../domain/interfaces/IReturnable";
 import {UserService} from "../../../domain/services/user.service";
 import {AbstractController} from "../../abstract/abstract.controller";
@@ -9,7 +9,7 @@ export class UpdateUserController extends AbstractController {
     super();
   }
 
-  protected async process(req: Request, res: Response): Promise<{statusCode: number; data: IDtoable}> {
+  protected async process(req: Request): Promise<{statusCode: number; data: IDtoable}> {
     const request = new UpdateUserRequest(req);
 
     const user = await this._userService.updateUser(request.accessUserId, request.updates);

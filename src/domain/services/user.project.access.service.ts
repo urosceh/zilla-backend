@@ -1,6 +1,8 @@
 import {IUserProjectAccessRepository} from "../../database/repositories/user.project.access.repository";
-import {Project} from "../entities/Project";
+import {ProjectWithManager} from "../entities/ProjectWithManager";
+import {User} from "../entities/User";
 import {UserProjectAccess} from "../entities/UserProjectAccess";
+import {IPaginatable} from "../interfaces/IPaginatable";
 
 export class UserProjectAccessService {
   constructor(private _userProjectAccessRepository: IUserProjectAccessRepository) {}
@@ -21,7 +23,14 @@ export class UserProjectAccessService {
     return this._userProjectAccessRepository.hasAccess(userId, projectKey);
   }
 
-  public async getAllAccessableProjects(userId: string, options: {limit: number; offset: number; search?: string}): Promise<Project[]> {
+  public async getAllAccessableProjects(
+    userId: string,
+    options: {limit: number; offset: number; search?: string}
+  ): Promise<ProjectWithManager[]> {
     return this._userProjectAccessRepository.getAllUsersProjects(userId, options);
+  }
+
+  public async getAllUsersOnProject(projectKey: string, options: IPaginatable): Promise<User[]> {
+    return this._userProjectAccessRepository.getAllUsersOnProject(projectKey, options);
   }
 }

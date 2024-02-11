@@ -1,4 +1,4 @@
-import {Request, Response} from "express";
+import {Request} from "express";
 import {IBearerData} from "../../../domain/interfaces/IReturnable";
 import {UserService} from "../../../domain/services/user.service";
 import {AbstractController} from "../../abstract/abstract.controller";
@@ -9,7 +9,7 @@ export class ChangePasswordController extends AbstractController {
     super();
   }
 
-  protected async process(req: Request, res: Response): Promise<{statusCode: number; data: IBearerData}> {
+  protected async process(req: Request): Promise<{statusCode: number; data: IBearerData}> {
     const request = new ChangePasswordRequest(req);
 
     const bearerToken: string = await this._userService.updatePassword(request.accessUserId, request.passwordData);

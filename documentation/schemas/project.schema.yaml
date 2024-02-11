@@ -18,3 +18,5 @@ properties:
     format: date-time
   manager:
     $ref: 'user.schema.yaml'
+  isManager:
+    type: boolean

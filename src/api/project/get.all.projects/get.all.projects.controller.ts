@@ -1,4 +1,5 @@
-import {Request, Response} from "express";
+import {Request} from "express";
+import {ProjectWithManager} from "../../../domain/entities/ProjectWithManager";
 import {IDtoable} from "../../../domain/interfaces/IReturnable";
 import {UserProjectAccessService} from "../../../domain/services/user.project.access.service";
 import {AbstractController} from "../../abstract/abstract.controller";
@@ -9,10 +10,17 @@ export class GetAllProjectsController extends AbstractController {
     super();
   }
 
-  protected async process(req: Request, res: Response): Promise<{statusCode: number; data: IDtoable[]}> {
+  protected async process(req: Request): Promise<{statusCode: number; data: IDtoable[]}> {
     const request = new GetAllProjectsRequest(req);
 
-    const projects = await this._userProjectAccessService.getAllAccessableProjects(request.accessUserId, request.options);
+    const projects: ProjectWithManager[] = await this._userProjectAccessService.getAllAccessableProjects(
+      request.accessUserId,
+      request.options
+    );
+
+    projects.forEach((project) => {
+      project.isManager = project.manager?.userId === request.accessUserId;
+    });
 
     return {
       statusCode: 200,

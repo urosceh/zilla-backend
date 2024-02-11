@@ -8,8 +8,8 @@ export class GetAllProjectsRequest extends AbstractRequest {
 
   constructor(request: Request) {
     super(request);
-    this._limit = parseInt(request.query.limit as string, 10) as number;
-    this._offset = parseInt(request.query.offset as string, 10) as number;
+    this._limit = request.query.limit as unknown as number;
+    this._offset = request.query.offset as unknown as number;
     this._search = request.query.search as string;
   }
 

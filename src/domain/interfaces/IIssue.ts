@@ -1,7 +1,6 @@
 import {IssueStatus} from "../enums/IssueStatus";
-import {ITimestampable} from "./ITimestampable";
 
-export interface IIssue extends ITimestampable {
+export interface IIssue {
   projectKey: string;
   reporterId: string;
   issueStatus: IssueStatus;

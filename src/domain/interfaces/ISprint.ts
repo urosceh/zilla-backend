@@ -1,7 +1,6 @@
 export interface ISprint {
-  sprintId?: number;
   sprintName: string;
-  projectId: string;
+  projectKey: string;
   startOfSprint: Date;
   endOfSprint: Date;
 }

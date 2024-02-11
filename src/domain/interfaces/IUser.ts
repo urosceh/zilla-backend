@@ -1,9 +1,5 @@
-import {ITimestampable} from "./ITimestampable";
-
-export interface IUser extends ITimestampable {
-  userId?: string;
+export interface IUser {
   email: string;
-  password?: string;
-  firstName?: string;
-  lastName?: string;
+  firstName: string;
+  lastName: string;
 }
