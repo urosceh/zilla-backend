@@ -5,7 +5,7 @@ export const createIssueBodySchema = Joi.object({
   projectKey: projectKeySchema.required(),
   issueStatus: issueStatusSchema.required(),
   summary: Joi.string().required(),
-  assigneeId: Joi.string().uuid().optional(),
-  details: Joi.string().optional(),
-  sprintId: Joi.number().optional(),
+  assigneeId: Joi.string().uuid().allow(null).optional(),
+  details: Joi.string().allow(null).optional(),
+  sprintId: Joi.number().allow(null).optional(),
 });

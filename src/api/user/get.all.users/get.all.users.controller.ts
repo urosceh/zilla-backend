@@ -37,15 +37,6 @@ export class GetAllUsersController extends AbstractController {
         data: users,
       };
     } else {
-      const isAdmin = await this._adminUserService.isAdmin(request.accessUserId);
-
-      if (!isAdmin) {
-        throw new ForbiddenAccess("You don't have access to this resource", {
-          user: request.accessUserId,
-          message: "/user/all as admin",
-        });
-      }
-
       const users = await this._userService.getAllUsers(request.options);
 
       return {
