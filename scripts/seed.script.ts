@@ -4,6 +4,8 @@ import ProjectModel from "../src/database/models/project.model";
 import SprintModel from "../src/database/models/sprint.model";
 import UserProjectAccessModel from "../src/database/models/user.project.access.model";
 import {Project} from "../src/domain/entities/Project";
+import {Sprint} from "../src/domain/entities/Sprint";
+import {IssueStatus} from "../src/domain/enums/IssueStatus";
 import {seedProjects} from "./data/projects";
 import {seedSprints} from "./data/sprints";
 import {seedUsers} from "./data/users";
@@ -49,26 +51,23 @@ class Seed {
 
     const projects = await this.createProjects(userIds);
 
-    await this.createSprints(projects);
+    const sprints = await this.createSprints(projects);
 
-    const issueData: {projectKey: string; reporterId: string; summary: string}[] = projects.flatMap((project) => {
-      let i = 1;
-      return Array.from({length: Math.floor(Math.random() * 11) + 15}, () => {
-        const projectKey = project.projectKey;
-        const reporterId = userIds[Math.floor(Math.random() * userIds.length)];
-        const summary = `${project.projectKey}: issue ${i++}`;
-
-        return {projectKey, reporterId, summary};
-      });
-    });
-
-    await this.createUserProjectAccess(
-      projects.map((project) => project.projectKey),
-      userIds,
-      issueData.map((data) => ({projectKey: data.projectKey, userId: data.reporterId}))
+    const userAccessData: {projectKey: string; userId: string}[] = projects.flatMap((project) =>
+      // 7 to 10 users per project (random user)
+      Array.from({length: Math.floor(Math.random() * 4) + 7}, () => {
+        const userId = userIds[Math.floor(Math.random() * userIds.length)];
+        return {projectKey: project.projectKey, userId};
+      })
     );
 
-    await this.createIssues(issueData);
+    await this.createUserProjectAccess(userAccessData);
+
+    await this.createIssues(
+      userAccessData,
+      projects.map((project) => project.projectKey),
+      sprints
+    );
   }
 
   private async login() {
@@ -96,28 +95,41 @@ class Seed {
     return createdProjects.map((project) => new Project(project));
   }
 
-  private async createSprints(projects: Project[]): Promise<void> {
+  private async createSprints(projects: Project[]): Promise<Sprint[]> {
     const sprints = seedSprints(projects);
 
     const createdSprints = await SprintModel.bulkCreate(sprints);
+
+    return createdSprints.map((s) => new Sprint(s));
   }
 
-  private async createIssues(data: {projectKey: string; reporterId: string; summary: string}[]): Promise<void> {
-    await IssueModel.bulkCreate(data, {ignoreDuplicates: true});
-  }
-
-  private async createUserProjectAccess(
+  private async createIssues(
+    userAccessData: {projectKey: string; userId: string}[],
     projectKeys: string[],
-    userIds: string[],
-    issueData: {projectKey: string; userId: string}[]
+    sprints: Sprint[]
   ): Promise<void> {
-    const data: {projectKey: string; userId: string}[] = projectKeys.flatMap((projectKey) =>
-      Array.from({length: Math.floor(Math.random() * 11) + 15}, () => {
-        const userId = userIds[Math.floor(Math.random() * userIds.length)];
-        return {projectKey, userId};
-      })
-    );
+    // 15 to 25 issues per project (random reporter, assignee (can be undefined), summary, status)
+    const data = projectKeys.flatMap((projectKey) => {
+      const projectSprintIds: number[] = sprints.filter((s) => s.projectKey === projectKey).map((s) => s.sprintId);
+      let i = 1;
+      const userIds = userAccessData.filter((access) => access.projectKey === projectKey).map((access) => access.userId);
+      return Array.from({length: Math.floor(Math.random() * 11) + 15}, () => {
+        const assigneeId = userIds[Math.floor(Math.random() * userIds.length) * 2];
+        const reporterId = userIds[Math.floor(Math.random() * userIds.length)];
+        const summary = ` Test ${projectKey} issue ${i++}`;
+        const issueStatus = assigneeId
+          ? Object.values(IssueStatus)[Math.floor(Math.random() * Object.values(IssueStatus).length)]
+          : IssueStatus.BACKLOG;
+        const sprintId = projectSprintIds[Math.floor(Math.random() * projectSprintIds.length) * 2];
 
+        return {projectKey, reporterId, summary, issueStatus, assigneeId, sprintId};
+      });
+    });
+
+    const issues = await IssueModel.bulkCreate(data, {ignoreDuplicates: true});
+  }
+
+  private async createUserProjectAccess(data: {projectKey: string; userId: string}[]): Promise<void> {
     await UserProjectAccessModel.bulkCreate(data, {ignoreDuplicates: true});
   }
 }

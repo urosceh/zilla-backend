@@ -4,7 +4,6 @@ run-dev:
 	docker-compose up --build --no-deps migrations
 	npm run init
 	npm run start
-	npm run seed
 
 prepare-test:
 	docker-compose -f ./test/docker-compose.test.yml up -d postgres-test

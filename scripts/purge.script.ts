@@ -12,7 +12,7 @@ if (process.env.NODE_ENV !== "test") {
   process.exit(1);
 }
 
-class Purge {
+export class Purge {
   constructor() {
     console.log("Purging database. Date", new Date().toString());
     this.purge()

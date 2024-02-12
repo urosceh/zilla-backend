@@ -82,7 +82,7 @@ export class MailClient implements IMailClient {
       const email = body.Messages[0].To[0].Email;
       const password = body.Messages[0].TextPart.split("Your password is ")[1];
 
-      const data = `${email}: ${password}\n`;
+      const data = `${email} ${password}\n`;
 
       fs.appendFileSync(`./passwords.txt`, data);
 

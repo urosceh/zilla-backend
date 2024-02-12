@@ -25,4 +25,12 @@ export class Sprint implements IDtoable {
       endOfSprint: this._endOfSprint,
     };
   }
+
+  public get sprintId(): number {
+    return this._sprintId;
+  }
+
+  public get projectKey(): string {
+    return this._projectKey;
+  }
 }
