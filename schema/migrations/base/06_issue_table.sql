@@ -24,3 +24,10 @@ CREATE TABLE IF NOT EXISTS "issue" (
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   deleted_at TIMESTAMP NULL
 );
+
+-- changeset uros:create-issue-table-indexes
+CREATE INDEX IF NOT EXISTS "idx_issue_project_key" ON "issue"(project_key);
+CREATE INDEX IF NOT EXISTS "idx_issue_assignee_id" ON "issue"(assignee_id);
+CREATE INDEX IF NOT EXISTS "idx_issue_reporter_id" ON "issue"(reporter_id);
+CREATE INDEX IF NOT EXISTS "idx_issue_sprint_id" ON "issue"(sprint_id);
+CREATE INDEX IF NOT EXISTS "idx_issue_issue_status" ON "issue"(issue_status);

@@ -7,14 +7,14 @@ export type UserAttributes = {
   userId: string;
   email: string;
   password: string;
-  firstName: string | null;
-  lastName: string | null;
+  firstName: string;
+  lastName: string;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
 };
 
-export type UserCreationAttributes = Pick<UserAttributes, "email" | "password">;
+export type UserCreationAttributes = Pick<UserAttributes, "email" | "password" | "firstName" | "lastName">;
 
 export type UserUpdateAttributes = Partial<Pick<UserAttributes, "firstName" | "lastName">>;
 
