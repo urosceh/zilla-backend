@@ -22,8 +22,8 @@ class UserModel extends Model<UserAttributes, UserCreationAttributes> {
   declare userId: string;
   declare email: string;
   declare password: string;
-  declare firstName: string | null;
-  declare lastName: string | null;
+  declare firstName: string;
+  declare lastName: string;
   declare createdAt: Date;
   declare updatedAt: Date;
   declare deletedAt: Date | null;
@@ -57,12 +57,12 @@ UserModel.init(
     firstName: {
       type: DataTypes.TEXT,
       field: "first_name",
-      allowNull: true,
+      allowNull: false,
     },
     lastName: {
       type: DataTypes.TEXT,
       field: "last_name",
-      allowNull: true,
+      allowNull: false,
     },
     createdAt: {
       type: DataTypes.DATE,
