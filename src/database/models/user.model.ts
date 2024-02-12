@@ -7,14 +7,14 @@ export type UserAttributes = {
   userId: string;
   email: string;
   password: string;
-  firstName: string | null;
-  lastName: string | null;
+  firstName: string;
+  lastName: string;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
 };
 
-export type UserCreationAttributes = Pick<UserAttributes, "email" | "password">;
+export type UserCreationAttributes = Pick<UserAttributes, "email" | "password" | "firstName" | "lastName">;
 
 export type UserUpdateAttributes = Partial<Pick<UserAttributes, "firstName" | "lastName">>;
 
@@ -22,8 +22,8 @@ class UserModel extends Model<UserAttributes, UserCreationAttributes> {
   declare userId: string;
   declare email: string;
   declare password: string;
-  declare firstName: string | null;
-  declare lastName: string | null;
+  declare firstName: string;
+  declare lastName: string;
   declare createdAt: Date;
   declare updatedAt: Date;
   declare deletedAt: Date | null;
@@ -57,12 +57,12 @@ UserModel.init(
     firstName: {
       type: DataTypes.TEXT,
       field: "first_name",
-      allowNull: true,
+      allowNull: false,
     },
     lastName: {
       type: DataTypes.TEXT,
       field: "last_name",
-      allowNull: true,
+      allowNull: false,
     },
     createdAt: {
       type: DataTypes.DATE,

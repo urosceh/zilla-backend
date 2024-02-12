@@ -9,3 +9,8 @@ CREATE TABLE IF NOT EXISTS "project" (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP
 );
+
+-- changeset uros:create-project-table-indexes
+CREATE INDEX IF NOT EXISTS "idx_project_project_name" ON "project"(project_name);
+CREATE INDEX IF NOT EXISTS "idx_project_project_key" ON "project"(project_key);
+CREATE INDEX IF NOT EXISTS "idx_project_manager_id" ON "project"(manager_id);

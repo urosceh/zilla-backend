@@ -5,8 +5,8 @@ export class User implements IDtoable {
   private _userId: string;
   private _email: string;
   private _password: string;
-  private _firstName: string | null;
-  private _lastName: string | null;
+  private _firstName: string;
+  private _lastName: string;
   private _createdAt: Date;
   private _updatedAt: Date;
   private _deletedAt: Date | null;

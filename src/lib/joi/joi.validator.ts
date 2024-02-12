@@ -1,12 +1,13 @@
 import {NextFunction, Request, Response} from "express";
 import Joi from "joi";
+import {BadRequest} from "../../domain/errors/errors.index";
 
 export class JoiValidator {
   public static bodySchemaValidationMiddleware(schema: Joi.Schema) {
     return (request: Request, response: Response, next: NextFunction) => {
       const result = this.checkSchema(request.body, schema);
       if (result.errors || !result.value) {
-        return result.errors ? next(result.errors) : next(new Error("Invalid body"));
+        return result.errors ? next(new BadRequest(JSON.stringify(result.errors))) : next(new BadRequest("Invalid body"));
       }
       request.body = result.value;
       return next();
@@ -17,7 +18,7 @@ export class JoiValidator {
     return (request: Request, response: Response, next: NextFunction) => {
       const result = this.checkSchema(request.params, schema);
       if (result.errors || !result.value) {
-        return result.errors ? next(result.errors) : next(new Error("Invalid params"));
+        return result.errors ? next(new BadRequest(JSON.stringify(result.errors))) : next(new BadRequest("Invalid params"));
       }
       request.params = result.value;
       return next();
@@ -28,7 +29,7 @@ export class JoiValidator {
     return (request: Request, response: Response, next: NextFunction) => {
       const result = this.checkSchema(request.query, schema);
       if (result.errors || !result.value) {
-        return result.errors ? next(result.errors) : next(new Error("Invalid query"));
+        return result.errors ? next(new BadRequest(JSON.stringify(result.errors))) : next(new BadRequest("Invalid query"));
       }
       request.query = result.value;
       return next();
