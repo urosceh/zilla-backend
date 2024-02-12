@@ -16,7 +16,7 @@ if (!adminEmail || !adminPassword) {
   const user = await UserModel.findOne({where: {email: adminEmail}});
 
   if (!user) {
-    const user = await UserModel.create({email: adminEmail, password: adminPassword});
+    const user = await UserModel.create({email: adminEmail, password: adminPassword, firstName: "Admin", lastName: "User"});
     await AdminUserModel.create({userId: user.userId});
     console.log("Admin user created");
   }
