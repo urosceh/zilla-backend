@@ -1,5 +1,4 @@
 import fs from "fs";
-import Client from "node-mailjet";
 import {MailClientConfig} from "../../config/mail.client.config";
 import {BadGateway} from "../../domain/errors/errors.index";
 
@@ -10,13 +9,10 @@ export interface IMailClient {
 
 export class MailClient implements IMailClient {
   private static _instance: MailClient;
-  private _client: Client;
+  private _client: any;
 
   private constructor() {
-    this._client = new Client({
-      apiKey: MailClientConfig.apiKey,
-      apiSecret: MailClientConfig.apiSecret,
-    });
+    this._client = {} as any;
   }
 
   public static getInstance(): IMailClient {
@@ -78,16 +74,25 @@ export class MailClient implements IMailClient {
   }
 
   private async sendMail(body: any): Promise<void> {
+    const email = body.Messages[0].To[0].Email;
+    const password = body.Messages[0].TextPart.split("Your password is ")[1];
+
     if (process.env.NODE_ENV === "test") {
-      const email = body.Messages[0].To[0].Email;
-      const password = body.Messages[0].TextPart.split("Your password is ")[1];
-
-      const data = `${email} ${password}\n`;
-
-      fs.appendFileSync(`./passwords.txt`, data);
-
-      return;
+      return this.writeToFile(email, password);
+    } else {
+      try {
+        await this._client.post("send", {version: "v3.1"}).request(body);
+      } catch (error) {
+        console.error(`Failed to send email to ${body.Messages[0].To[0].Email}`);
+        console.error(error);
+        this.writeToFile(email, password);
+      }
     }
-    await this._client.post("send", {version: "v3.1"}).request(body);
+  }
+
+  private writeToFile(email: string, password: string): void {
+    const data = `${email} ${password}\n`;
+
+    return fs.appendFileSync(`./passwords.txt`, data);
   }
 }

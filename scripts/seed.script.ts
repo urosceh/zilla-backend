@@ -1,7 +1,9 @@
 import axios from "axios";
+import AdminUserModel from "../src/database/models/admin.user.model";
 import IssueModel from "../src/database/models/issue.model";
 import ProjectModel from "../src/database/models/project.model";
 import SprintModel from "../src/database/models/sprint.model";
+import UserModel from "../src/database/models/user.model";
 import UserProjectAccessModel from "../src/database/models/user.project.access.model";
 import {Project} from "../src/domain/entities/Project";
 import {Sprint} from "../src/domain/entities/Sprint";
@@ -45,7 +47,7 @@ class Seed {
   }
 
   public async seed() {
-    await this.login();
+    await this.loginOrCreateAdmin();
 
     const userIds = await this.createUsersBatch();
 
@@ -68,6 +70,35 @@ class Seed {
       projects.map((project) => project.projectKey),
       sprints
     );
+  }
+
+  private async loginOrCreateAdmin() {
+    try {
+      await this.login();
+    } catch (error: any) {
+      if (error.response.status === 404) {
+        await this.createAdmin();
+        await this.login();
+      } else {
+        throw error;
+      }
+    }
+  }
+
+  private async createAdmin() {
+    const adminUser = await UserModel.create(
+      {
+        email: adminEmail,
+        password: adminPassword,
+        firstName: "Admin",
+        lastName: "Admin",
+      },
+      {
+        returning: true,
+      }
+    );
+
+    await AdminUserModel.create({userId: adminUser.userId});
   }
 
   private async login() {

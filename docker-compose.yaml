@@ -1,10 +1,7 @@
 version: "3"
 services:
   postgres:
-    build:
-      context: .
-      dockerfile: ./config/Dockerfile
-    image: zilla/postgres
+    image: postgres:14-alpine
     container_name: zilla-postgres
     restart: always
     ports:
@@ -39,3 +36,47 @@ services:
     command: update
     depends_on:
       - postgres
+
+  zilla-backend:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: zilla-backend
+    image: zilla-backend
+    restart: always
+    command: ["npm", "run", "start:prod"]
+    ports:
+      - "3000:3000"
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5450
+      - DB_NAME=zilla
+      - DB_USERNAME=user
+      - DB_PASSWORD=pass
+      - JWT_SECRET=secret
+      - JWT_EXPIRES_IN_IN_SECONDS=100000
+      - NODE_ENV=test
+      - ADMIN_EMAL=urosvceh@gmail.com
+      - ADMIN_PASSWORD=pass123!
+    depends_on:
+      - postgres
+      - redis
+
+  zilla-backend-pull:
+    image: hatch33/zilla-backend:pull
+    container_name: zilla-backend-pull
+    restart: always
+    command: ["npm", "run", "start:prod"]
+    ports:
+      - "3000:3000"
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5450
+      - DB_NAME=zilla
+      - DB_USERNAME=user
+      - DB_PASSWORD=pass
+      - JWT_SECRET=secret
+      - JWT_EXPIRES_IN_IN_SECONDS=100000
+      - NODE_ENV=test
+      - ADMIN_EMAL=urosvceh@gmail.com
+      - ADMIN_PASSWORD=pass123!
