@@ -1,4 +1,4 @@
-FROM node:20.10-alpine3.19 AS base
+FROM node:20-alpine3.19 AS base
 
 RUN mkdir -p /home/node/zilla-backend && chown -R node:node /home/node/zilla-backend
 
@@ -14,7 +14,7 @@ COPY --chown=node:node tsconfig.json /home/node/zilla-backend/
 
 RUN npm run build
 
-FROM node:20.10-alpine3.19
+FROM node:20-alpine3.19
 
 RUN mkdir -p /home/node/zilla-backend && chown -R node:node /home/node/zilla-backend
 

@@ -34,7 +34,15 @@ export class Purge {
     await this.deleteProjects();
     await this.deleteUsers();
 
-    truncateSync("./passwords.txt");
+    try {
+      truncateSync("./passwords.txt");
+    } catch (error) {
+      if (error.code === "ENOENT") {
+        console.log("Passwords file not found");
+      } else {
+        throw error;
+      }
+    }
     console.log("Passwords file truncated");
   }
 
