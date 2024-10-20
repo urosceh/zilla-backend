@@ -15,7 +15,10 @@
     "typescript": "4.9.4"
   },
   "scripts": {
+    "build": "tsc -p ./",
     "start": "node --require ts-node/register --env-file .env --inspect=0.0.0.0:9234 ./src/index.ts",
+    "start:prod": "node --env-file .env ./build/index.js",
+    "start:prod-local": "node  ./build/index.js",
     "test": "ts-node ./test/ node --import tsx --test $(find ./test -name \"*.itest.ts\")",
     "test-all": "ts-node ./test/test.index.ts",
     "init": "node --require ts-node/register --env-file .env ./scripts/insert.admin.script.ts",
@@ -23,12 +26,12 @@
     "reseed": "node --require ts-node/register --env-file .env ./scripts/purge.script.ts && node --require ts-node/register --env-file .env ./scripts/seed.script.ts"
   },
   "dependencies": {
+    "@sendgrid/mail": "^8.1.4",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "joi": "^17.12.0",
     "jsonwebtoken": "^9.0.2",
-    "node-mailjet": "^6.0.5",
     "pg": "^8.11.3",
     "pg-hstore": "^2.3.4",
     "redis": "^4.6.12",

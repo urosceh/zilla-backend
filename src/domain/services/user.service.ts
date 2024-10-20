@@ -1,6 +1,6 @@
 import {UserCreationAttributes} from "../../database/models/user.model";
 import {IUserRepository} from "../../database/repositories/user.repository";
-import {IMailClient} from "../../external/mail.client/mail.client";
+import {IMailClient} from "../../external/mail.client/mail.client.interface";
 import {JwtGenerator} from "../../lib/jwt/jwt.generator";
 import {AdminBearerToken} from "../entities/AdminBearerToken";
 import {AdminUser} from "../entities/AdminUser";
