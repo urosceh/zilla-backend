@@ -48,6 +48,13 @@
       "request": "launch",
       "args": ["--require", "ts-node/register", "${workspaceFolder}/scripts/purge.script.ts"],
       "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "name": "Insert Admin",
+      "type": "node",
+      "request": "launch",
+      "args": ["--require", "ts-node/register", "${workspaceFolder}/scripts/insert.admin.script.ts"],
+      "envFile": "${workspaceFolder}/.prod.env"
     }
   ]
 }
