@@ -1,7 +1,7 @@
 import {compareSync} from "bcrypt";
 import {AdminUser} from "../../domain/entities/AdminUser";
 import {User} from "../../domain/entities/User";
-import {NotFound, UnauthorizedAccess} from "../../domain/errors/errors.index";
+import {BadRequest, NotFound, UnauthorizedAccess} from "../../domain/errors/errors.index";
 import {IPaginatable} from "../../domain/interfaces/IPaginatable";
 import AdminUserModel from "../models/admin.user.model";
 import UserModel, {UserCreationAttributes, UserUpdateAttributes} from "../models/user.model";
@@ -32,9 +32,17 @@ export class UserRepository implements IUserRepository {
   }
 
   public async createBatch(users: UserCreationAttributes[]): Promise<User[]> {
-    const createdUsers = await UserModel.bulkCreate(users, {returning: true, ignoreDuplicates: true});
+    try {
+      const createdUsers = await UserModel.bulkCreate(users, {returning: true, ignoreDuplicates: false});
 
-    return createdUsers.map((user) => new User(user));
+      return createdUsers.map((user) => new User(user));
+    } catch (error: any) {
+      if (error.name === "SequelizeUniqueConstraintError") {
+        throw new BadRequest("Email already exists", {method: this.createBatch.name});
+      } else {
+        throw error;
+      }
+    }
   }
 
   public async loginUser(credentials: {email: string; password: string}): Promise<AdminUser> {
