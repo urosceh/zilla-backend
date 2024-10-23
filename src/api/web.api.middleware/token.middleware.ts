@@ -19,11 +19,16 @@ export class TokenMiddleware {
 
       const token = bearerToken ? bearerToken.replace("Bearer ", "") : null;
 
-      if ((req.method === "POST" && req.path === "/user/login") || (req.method === "POST" && req.path === "/user/set-forgotten-password")) {
+      if (
+        (req.method === "POST" && req.path === "/user/login") ||
+        (req.method === "POST" && req.path === "/user/set-forgotten-password") ||
+        (req.method === "GET" && req.path === "/health")
+      ) {
         return next();
       }
 
       if (!token) {
+        console.warn("Token is required", req.method, req.path);
         return next(new UnauthorizedAccess("Unauthorized Access", {message: "Token is required"}));
       }
 
