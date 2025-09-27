@@ -1,5 +1,4 @@
 import Client from "@sendgrid/mail";
-import fs from "fs";
 import {SendgridMailClientConfig} from "../../../config/mail.client.config";
 import {BadGateway} from "../../../domain/errors/errors.index";
 import {IMailClient} from "../mail.client.interface";

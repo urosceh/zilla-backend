@@ -6,7 +6,7 @@ import {
   userProjectAccessRepository,
   userRepository,
 } from "../database/repositories.index";
-import {mailClient} from "../external/mail.client/mail.client.interface";
+import {mailClient} from "../external/mail/mail.client.interface";
 import {AdminUserService} from "./services/admin.user.service";
 import {IssueService} from "./services/issue.service";
 import {ProjectService} from "./services/project.service";
