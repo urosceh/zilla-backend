@@ -1,5 +1,4 @@
 import {NextFunction, Request, Response} from "express";
-import {UserProjectAccess} from "../../domain/entities/UserProjectAccess";
 import {BadRequest, ForbiddenAccess, UnauthorizedAccess} from "../../domain/errors/errors.index";
 import {userProjectAccessService} from "../../domain/services.index";
 import {Middleware} from "../../domain/types/Middleware";
@@ -21,11 +20,7 @@ export class AccessValidationMiddleware {
 
       if (projectKey) {
         try {
-          const userProjectAccess: UserProjectAccess = await userProjectAccessService.getUserProjectAccess(
-            userId,
-            projectKey,
-            tenantSchemaName
-          );
+          await userProjectAccessService.getUserProjectAccess(userId, projectKey, tenantSchemaName);
 
           return next();
         } catch (error) {
