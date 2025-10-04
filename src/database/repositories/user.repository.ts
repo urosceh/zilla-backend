@@ -1,4 +1,5 @@
 import {compareSync} from "bcrypt";
+import {Transaction} from "sequelize";
 import {AdminUser} from "../../domain/entities/AdminUser";
 import {User} from "../../domain/entities/User";
 import {BadRequest, NotFound, UnauthorizedAccess} from "../../domain/errors/errors.index";
@@ -7,21 +8,22 @@ import AdminUserModel from "../models/admin.user.model";
 import UserModel, {UserCreationAttributes, UserUpdateAttributes} from "../models/user.model";
 
 export interface IUserRepository {
-  getUserByEmail(email: string): Promise<User>;
-  createBatch(users: UserCreationAttributes[]): Promise<User[]>;
-  loginUser(credentials: {email: string; password: string}): Promise<AdminUser>;
-  updateUser(userId: string, updates: UserUpdateAttributes): Promise<User>;
-  getAllUsers(options: IPaginatable): Promise<User[]>;
-  updatePassword(userId: string, data: {oldPassword: string; newPassword: string}): Promise<User>;
-  updateForgottenPassword(email: string, newPassword: string): Promise<User>;
+  getUserByEmail(email: string, transaction: Transaction): Promise<User>;
+  createBatch(users: UserCreationAttributes[], transaction: Transaction): Promise<User[]>;
+  loginUser(credentials: {email: string; password: string}, transaction: Transaction): Promise<AdminUser>;
+  updateUser(userId: string, updates: UserUpdateAttributes, transaction: Transaction): Promise<User>;
+  getAllUsers(options: IPaginatable, transaction: Transaction): Promise<User[]>;
+  updatePassword(userId: string, data: {oldPassword: string; newPassword: string}, transaction: Transaction): Promise<User>;
+  updateForgottenPassword(email: string, newPassword: string, transaction: Transaction): Promise<User>;
 }
 
 export class UserRepository implements IUserRepository {
-  public async getUserByEmail(email: string): Promise<User> {
+  public async getUserByEmail(email: string, transaction: Transaction): Promise<User> {
     const user = await UserModel.findOne({
       where: {
         email,
       },
+      transaction,
     });
 
     if (!user) {
@@ -31,9 +33,13 @@ export class UserRepository implements IUserRepository {
     return new User(user);
   }
 
-  public async createBatch(users: UserCreationAttributes[]): Promise<User[]> {
+  public async createBatch(users: UserCreationAttributes[], transaction: Transaction): Promise<User[]> {
     try {
-      const createdUsers = await UserModel.bulkCreate(users, {returning: true, ignoreDuplicates: false});
+      const createdUsers = await UserModel.bulkCreate(users, {
+        returning: true,
+        ignoreDuplicates: false,
+        transaction,
+      });
 
       return createdUsers.map((user) => new User(user));
     } catch (error: any) {
@@ -45,7 +51,7 @@ export class UserRepository implements IUserRepository {
     }
   }
 
-  public async loginUser(credentials: {email: string; password: string}): Promise<AdminUser> {
+  public async loginUser(credentials: {email: string; password: string}, transaction: Transaction): Promise<AdminUser> {
     const user = await UserModel.findOne({
       where: {
         email: credentials.email,
@@ -56,6 +62,7 @@ export class UserRepository implements IUserRepository {
           as: "admin",
         },
       ],
+      transaction,
     });
 
     if (!user) {
@@ -71,7 +78,7 @@ export class UserRepository implements IUserRepository {
     return new AdminUser(user);
   }
 
-  public async updateUser(userId: string, updates: UserUpdateAttributes): Promise<User> {
+  public async updateUser(userId: string, updates: UserUpdateAttributes, transaction: Transaction): Promise<User> {
     const updatedUsers = await UserModel.update(
       {...updates},
       {
@@ -79,6 +86,7 @@ export class UserRepository implements IUserRepository {
           userId,
         },
         returning: true,
+        transaction,
       }
     );
 
@@ -89,21 +97,23 @@ export class UserRepository implements IUserRepository {
     return new User(updatedUsers[1][0]);
   }
 
-  public async getAllUsers(options: IPaginatable): Promise<User[]> {
+  public async getAllUsers(options: IPaginatable, transaction: Transaction): Promise<User[]> {
     const users = await UserModel.findAll({
       limit: options.limit,
       offset: options.offset,
       order: [[options.orderCol, options.orderDir]],
+      transaction,
     });
 
     return users.map((user) => new User(user));
   }
 
-  public async updatePassword(userId: string, data: {oldPassword: string; newPassword: string}): Promise<User> {
+  public async updatePassword(userId: string, data: {oldPassword: string; newPassword: string}, transaction: Transaction): Promise<User> {
     const user = await UserModel.findOne({
       where: {
         userId,
       },
+      transaction,
     });
 
     if (!user) {
@@ -122,17 +132,19 @@ export class UserRepository implements IUserRepository {
         where: {
           userId,
         },
+        transaction,
       }
     );
 
     return new User(user);
   }
 
-  public async updateForgottenPassword(email: string, newPassword: string): Promise<User> {
+  public async updateForgottenPassword(email: string, newPassword: string, transaction: Transaction): Promise<User> {
     const user = await UserModel.findOne({
       where: {
         email,
       },
+      transaction,
     });
 
     if (!user) {
@@ -145,6 +157,7 @@ export class UserRepository implements IUserRepository {
         where: {
           email,
         },
+        transaction,
       }
     );
 

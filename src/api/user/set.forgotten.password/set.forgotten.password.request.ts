@@ -1,11 +1,13 @@
 import {Request} from "express";
 import {BadRequest} from "../../../domain/errors/errors.index";
+import {AbstractRequest} from "../../abstract/abstract.request";
 
-export class SetForgottenPasswordRequest {
+export class SetForgottenPasswordRequest extends AbstractRequest {
   private _securityCode: string;
   private _newPassword: string;
 
   constructor(request: Request) {
+    super(request);
     this._securityCode = request.body.securityCode;
     this._newPassword = request.body.newPassword;
 

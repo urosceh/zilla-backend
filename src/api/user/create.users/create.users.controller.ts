@@ -13,7 +13,7 @@ export class CreateUsersController extends AbstractController {
   protected async process(req: Request): Promise<{statusCode: number; data: IDtoable[]}> {
     const request = new CreateUsersRequest(req);
 
-    const users: User[] = await this._userService.createUsers(request.users);
+    const users: User[] = await this._userService.createUsers(request);
 
     return {
       statusCode: 201,

@@ -12,7 +12,7 @@ export class ChangePasswordController extends AbstractController {
   protected async process(req: Request): Promise<{statusCode: number; data: IBearerData}> {
     const request = new ChangePasswordRequest(req);
 
-    const bearerToken: string = await this._userService.updatePassword(request.accessUserId, request.passwordData);
+    const bearerToken: string = await this._userService.updatePassword(request);
 
     return {
       statusCode: 200,

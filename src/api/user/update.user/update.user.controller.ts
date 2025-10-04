@@ -12,7 +12,7 @@ export class UpdateUserController extends AbstractController {
   protected async process(req: Request): Promise<{statusCode: number; data: IDtoable}> {
     const request = new UpdateUserRequest(req);
 
-    const user = await this._userService.updateUser(request.accessUserId, request.updates);
+    const user = await this._userService.updateUser(request);
 
     return {
       statusCode: 200,

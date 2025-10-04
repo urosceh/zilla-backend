@@ -13,7 +13,7 @@ export class LoginUserController extends AbstractController {
   protected async process(req: Request): Promise<{statusCode: number; data: IDtoable}> {
     const request = new LoginUserRequest(req);
 
-    const roleBearerToken: AdminBearerToken = await this._userService.loginUser(request.credentials);
+    const roleBearerToken: AdminBearerToken = await this._userService.loginUser(request);
 
     return {
       statusCode: 200,

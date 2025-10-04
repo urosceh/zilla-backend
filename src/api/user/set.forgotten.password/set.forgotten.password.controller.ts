@@ -16,19 +16,19 @@ export class SetForgottenPasswordController extends AbstractController {
 
     const {email, token} = JwtGenerator.decodeForgottenPasswordToken(request.securityCode);
 
-    const forgottenPasswordToken = await this._redisClient.getForgottenPasswordToken(email);
+    const forgottenPasswordToken = await this._redisClient.getForgottenPasswordToken(request.redisDb, email);
 
     if (!forgottenPasswordToken || forgottenPasswordToken !== token) {
-      await this._redisClient.deleteForgottenPasswordToken(email);
+      await this._redisClient.deleteForgottenPasswordToken(request.redisDb, email);
 
       return {
         statusCode: 401,
       };
     }
 
-    const bearerToken = await this._userService.updateForgottenPassword(email, request.newPassword);
+    const bearerToken = await this._userService.updateForgottenPassword(email, request);
 
-    await this._redisClient.deleteForgottenPasswordToken(email);
+    await this._redisClient.deleteForgottenPasswordToken(request.redisDb, email);
 
     return {
       statusCode: 200,

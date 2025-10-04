@@ -2,14 +2,22 @@ import {JwtPayload, sign, verify} from "jsonwebtoken";
 import {JwtConfig} from "../../config/jwt.config";
 import {UnprocessableContent} from "../../domain/errors/errors.index";
 
+export interface TokenPayload {
+  userId: string;
+  tenantId: string;
+}
+
 export class JwtGenerator {
-  public static generateUserBearerToken(userId: string): string {
+  public static generateUserBearerToken(userId: string, tenantId: string): string {
     const expiresIn = JwtConfig.expiresIn;
     const secret = JwtConfig.secret;
 
     const token = sign(
       {
-        data: userId,
+        data: {
+          userId,
+          tenantId,
+        },
       },
       secret,
       {
@@ -23,13 +31,34 @@ export class JwtGenerator {
   }
 
   public static getUserIdFromToken(token: string): string {
+    const payload = this.getTokenPayload(token);
+    return payload.userId;
+  }
+
+  public static getTenantIdFromToken(token: string): string {
+    const payload = this.getTokenPayload(token);
+    return payload.tenantId;
+  }
+
+  public static getTokenPayload(token: string): TokenPayload {
     const result: JwtPayload = verify(token, JwtConfig.secret) as JwtPayload;
 
     if (!result || !result.data) {
-      throw new UnprocessableContent("Unprocessable Content", {message: "Invalid JWT userId token"});
+      throw new UnprocessableContent("Unprocessable Content", {message: "Invalid JWT token"});
     }
 
-    return result.data as string;
+    // Handle backward compatibility with old tokens that only had userId
+    if (typeof result.data === "string") {
+      throw new UnprocessableContent("Unprocessable Content", {message: "Token format is outdated, please login again"});
+    }
+
+    const {userId, tenantId} = result.data;
+
+    if (!userId || !tenantId) {
+      throw new UnprocessableContent("Unprocessable Content", {message: "Invalid JWT token payload"});
+    }
+
+    return {userId, tenantId};
   }
 
   public static generateForgottenPasswordToken(email: string, token: string): string {

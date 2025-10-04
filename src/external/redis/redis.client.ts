@@ -1,36 +1,22 @@
-import {createClient, RedisClientType} from "redis";
+import {createClient} from "redis";
 import {RedisConfig} from "../../config/redis.config";
 
 export interface IRedisClient {
-  getForgottenPasswordToken(email: string): Promise<string | null>;
-  isBlacklistedToken(token: string): Promise<boolean>;
+  getForgottenPasswordToken(redisDb: number, email: string): Promise<string | null>;
+  isBlacklistedToken(redisDb: number, token: string): Promise<boolean>;
 
-  setForgottenPasswordToken(email: string, secret: string): Promise<void>;
-  setBlacklistedToken(token: string): Promise<void>;
+  setForgottenPasswordToken(redisDb: number, email: string, secret: string): Promise<void>;
+  setBlacklistedToken(redisDb: number, token: string): Promise<void>;
 
-  deleteForgottenPasswordToken(email: string): Promise<void>;
+  deleteForgottenPasswordToken(redisDb: number, email: string): Promise<void>;
 }
 
 export class RedisClient implements IRedisClient {
   private static _instance: RedisClient;
-  private _redisClient: RedisClientType;
+  private _redisClients: Map<number, any> = new Map();
 
   private constructor() {
-    const redisUrl = `redis://${RedisConfig.host}:${RedisConfig.port}/${RedisConfig.db}`;
-
-    this._redisClient = createClient({
-      url: redisUrl,
-      password: RedisConfig.password,
-    });
-
-    this._redisClient
-      .connect()
-      .then(() => {
-        console.log("Connected to Redis");
-      })
-      .catch((error) => {
-        console.error("Error connecting to Redis", error);
-      });
+    // Initialize connections will be done lazily when needed
   }
 
   public static getInstance(): IRedisClient {
@@ -40,37 +26,77 @@ export class RedisClient implements IRedisClient {
     return RedisClient._instance;
   }
 
-  public async getForgottenPasswordToken(email: string): Promise<string | null> {
-    return this._redisClient.get(`${RedisConfig.passwordForgottenFlag}${email}`);
+  /**
+   * Get or create a Redis client for a specific database
+   */
+  private async getRedisClient(dbNumber: number): Promise<any> {
+    if (this._redisClients.has(dbNumber)) {
+      return this._redisClients.get(dbNumber)!;
+    }
+
+    const redisUrl = `redis://${RedisConfig.host}:${RedisConfig.port}/${dbNumber}`;
+
+    const client = createClient({
+      url: redisUrl,
+      password: RedisConfig.password,
+    });
+
+    try {
+      await client.connect();
+      console.log(`Connected to Redis DB ${dbNumber}`);
+      this._redisClients.set(dbNumber, client);
+      return client;
+    } catch (error) {
+      console.error(`Error connecting to Redis DB ${dbNumber}:`, error);
+      throw error;
+    }
   }
 
-  public async isBlacklistedToken(token: string): Promise<boolean> {
-    const result = await this._redisClient.get(token);
+  public async getForgottenPasswordToken(redisDb: number, email: string): Promise<string | null> {
+    const client = await this.getRedisClient(redisDb);
+    return client.get(`${RedisConfig.passwordForgottenFlag}${email}`);
+  }
 
+  public async isBlacklistedToken(redisDb: number, token: string): Promise<boolean> {
+    const client = await this.getRedisClient(redisDb);
+    const result = await client.get(token);
     return result === "blacklist";
   }
 
-  public async setForgottenPasswordToken(email: string, secret: string): Promise<void> {
-    await this._redisClient.set(`${RedisConfig.passwordForgottenFlag}${email}`, secret);
+  public async setForgottenPasswordToken(redisDb: number, email: string, secret: string): Promise<void> {
+    const client = await this.getRedisClient(redisDb);
+    await client.set(`${RedisConfig.passwordForgottenFlag}${email}`, secret);
   }
 
-  public async setBlacklistedToken(token: string): Promise<void> {
-    await this._redisClient.set(token, "blacklist");
+  public async setBlacklistedToken(redisDb: number, token: string): Promise<void> {
+    const client = await this.getRedisClient(redisDb);
+    await client.set(token, "blacklist");
   }
 
-  public async deleteForgottenPasswordToken(email: string): Promise<void> {
-    await this._redisClient.del(`${RedisConfig.passwordForgottenFlag}${email}`);
+  public async deleteForgottenPasswordToken(redisDb: number, email: string): Promise<void> {
+    const client = await this.getRedisClient(redisDb);
+    await client.del(`${RedisConfig.passwordForgottenFlag}${email}`);
   }
 
-  private async set(key: string, value: string): Promise<void> {
-    this._redisClient.set(key, value);
+  /**
+   * Delete all data for a specific Redis database
+   * Useful for tenant cleanup/removal
+   */
+  public async flushDatabase(redisDb: number): Promise<void> {
+    const client = await this.getRedisClient(redisDb);
+    await client.flushDb();
   }
 
-  private async get(key: string): Promise<string | null> {
-    return this._redisClient.get(key);
-  }
-
-  private async del(key: string): Promise<void> {
-    this._redisClient.del(key);
+  /**
+   * Close a specific Redis database connection
+   * Useful for tenant cleanup/removal
+   */
+  public async closeConnection(redisDb: number): Promise<void> {
+    const client = this._redisClients.get(redisDb);
+    if (client) {
+      await client.quit();
+      this._redisClients.delete(redisDb);
+      console.log(`Closed Redis connection for DB ${redisDb}`);
+    }
   }
 }

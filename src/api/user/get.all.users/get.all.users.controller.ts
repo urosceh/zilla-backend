@@ -1,5 +1,4 @@
 import {Request} from "express";
-import {ForbiddenAccess} from "../../../domain/errors/errors.index";
 import {IDtoable} from "../../../domain/interfaces/IReturnable";
 import {AdminUserService} from "../../../domain/services/admin.user.service";
 import {UserProjectAccessService} from "../../../domain/services/user.project.access.service";
@@ -20,24 +19,14 @@ export class GetAllUsersController extends AbstractController {
     const request = new GetAllUsersRequest(req);
 
     if (request.projectKey) {
-      const hasAccess = this._userProjectAccessService.hasAccessToProject(request.accessUserId, request.projectKey);
-
-      if (!hasAccess) {
-        throw new ForbiddenAccess("You don't have access to this project", {
-          user: request.accessUserId,
-          project: request.projectKey,
-          message: "/user/all",
-        });
-      }
-
-      const users = await this._userProjectAccessService.getAllUsersOnProject(request.projectKey, request.options);
+      const users = await this._userProjectAccessService.getAllUsersOnProject(request);
 
       return {
         statusCode: 200,
         data: users,
       };
     } else {
-      const users = await this._userService.getAllUsers(request.options);
+      const users = await this._userService.getAllUsers(request);
 
       return {
         statusCode: 200,
