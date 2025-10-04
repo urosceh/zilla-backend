@@ -13,7 +13,7 @@ export class MakeAdminController extends AbstractController {
   protected async process(req: Request): Promise<{statusCode: number; data: IDtoable}> {
     const request = new MakeAdminRequest(req);
 
-    const user: User = await this._adminUserService.createAdmin(request.userId);
+    const user: User = await this._adminUserService.createAdmin(request);
 
     return {
       statusCode: 201,
