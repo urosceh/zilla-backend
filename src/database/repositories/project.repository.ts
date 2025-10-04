@@ -1,3 +1,4 @@
+import {Transaction} from "sequelize";
 import {Project} from "../../domain/entities/Project";
 import {ProjectWithManager} from "../../domain/entities/ProjectWithManager";
 import {NotFound} from "../../domain/errors/errors.index";
@@ -6,14 +7,14 @@ import UserModel from "../models/user.model";
 import UserProjectAccessModel from "../models/user.project.access.model";
 
 export interface IProjectRepository {
-  getProjectById(projectId: string): Promise<ProjectWithManager>;
-  getProjectByProjectKey(projectKey: string, options?: {withManager: boolean}): Promise<ProjectWithManager>;
-  createProject(project: ProjectCreationAttributes): Promise<Project>;
-  getAllProjects(options: {limit: number; offset: number}): Promise<ProjectWithManager[]>;
+  getProjectById(projectId: string, transaction: Transaction): Promise<ProjectWithManager>;
+  getProjectByProjectKey(projectKey: string, options: {withManager: boolean}, transaction: Transaction): Promise<ProjectWithManager>;
+  createProject(project: ProjectCreationAttributes, transaction: Transaction): Promise<Project>;
+  getAllProjects(options: {limit: number; offset: number}, transaction: Transaction): Promise<ProjectWithManager[]>;
 }
 
 export class ProjectRepository implements IProjectRepository {
-  public async getProjectById(projectId: string): Promise<ProjectWithManager> {
+  public async getProjectById(projectId: string, transaction: Transaction): Promise<ProjectWithManager> {
     const project = await ProjectModel.findOne({
       where: {
         projectId,
@@ -24,6 +25,7 @@ export class ProjectRepository implements IProjectRepository {
           as: "manager",
         },
       ],
+      transaction,
     });
 
     if (!project) {
@@ -33,8 +35,12 @@ export class ProjectRepository implements IProjectRepository {
     return new ProjectWithManager(project);
   }
 
-  public async getProjectByProjectKey(projectKey: string, options?: {withManager: boolean}): Promise<ProjectWithManager> {
-    const include = options?.withManager
+  public async getProjectByProjectKey(
+    projectKey: string,
+    options: {withManager: boolean},
+    transaction: Transaction
+  ): Promise<ProjectWithManager> {
+    const include = options.withManager
       ? [
           {
             model: UserModel,
@@ -48,6 +54,7 @@ export class ProjectRepository implements IProjectRepository {
         projectKey,
       },
       include,
+      transaction,
     });
 
     if (!project) {
@@ -57,31 +64,23 @@ export class ProjectRepository implements IProjectRepository {
     return new ProjectWithManager(project);
   }
 
-  public async createProject(project: ProjectCreationAttributes): Promise<Project> {
-    const transaction = await ProjectModel.sequelize!.transaction();
+  public async createProject(project: ProjectCreationAttributes, transaction: Transaction): Promise<Project> {
+    const newProject = await ProjectModel.create(project, {
+      transaction,
+    });
 
-    try {
-      const newProject = await ProjectModel.create(project, {
-        transaction,
-      });
+    await UserProjectAccessModel.create(
+      {
+        userId: project.managerId,
+        projectKey: newProject.projectKey,
+      },
+      {transaction}
+    );
 
-      await UserProjectAccessModel.create(
-        {
-          userId: project.managerId,
-          projectKey: newProject.projectKey,
-        },
-        {transaction}
-      );
-
-      await transaction.commit();
-      return new Project(newProject);
-    } catch (error) {
-      await transaction.rollback();
-      throw error;
-    }
+    return new Project(newProject);
   }
 
-  public async getAllProjects(options: {limit: number; offset: number}): Promise<ProjectWithManager[]> {
+  public async getAllProjects(options: {limit: number; offset: number}, transaction: Transaction): Promise<ProjectWithManager[]> {
     const projects = await ProjectModel.findAll({
       limit: options.limit,
       offset: options.offset,
@@ -92,6 +91,7 @@ export class ProjectRepository implements IProjectRepository {
         },
       ],
       order: [["updatedAt", "DESC"]],
+      transaction,
     });
 
     return projects.map((project) => new ProjectWithManager(project));

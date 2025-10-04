@@ -1,5 +1,7 @@
+import {GetAllProjectsRequest} from "../../api/project/get.all.projects/get.all.projects.request";
 import {GetAllUsersRequest} from "../../api/user/get.all.users/get.all.users.request";
 import {IUserProjectAccessRepository} from "../../database/repositories/user.project.access.repository";
+import {TransactionManager} from "../../database/transaction.manager";
 import {ProjectWithManager} from "../entities/ProjectWithManager";
 import {User} from "../entities/User";
 import {UserProjectAccess} from "../entities/UserProjectAccess";
@@ -20,11 +22,10 @@ export class UserProjectAccessService {
     return this._userProjectAccessRepository.deleteAccess(userIds, projectKey);
   }
 
-  public async getAllAccessableProjects(
-    userId: string,
-    options: {limit: number; offset: number; search?: string}
-  ): Promise<ProjectWithManager[]> {
-    return this._userProjectAccessRepository.getAllUsersProjects(userId, options);
+  public async getAllAccessableProjects(request: GetAllProjectsRequest): Promise<ProjectWithManager[]> {
+    const transaction = await TransactionManager.createTenantTransaction(request.tenantSchemaName);
+
+    return this._userProjectAccessRepository.getAllUsersProjects(request.accessUserId, request.options, transaction);
   }
 
   public async getAllUsersOnProject(request: GetAllUsersRequest): Promise<User[]> {

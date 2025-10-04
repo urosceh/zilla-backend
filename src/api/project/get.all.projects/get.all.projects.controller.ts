@@ -13,10 +13,7 @@ export class GetAllProjectsController extends AbstractController {
   protected async process(req: Request): Promise<{statusCode: number; data: IDtoable[]}> {
     const request = new GetAllProjectsRequest(req);
 
-    const projects: ProjectWithManager[] = await this._userProjectAccessService.getAllAccessableProjects(
-      request.accessUserId,
-      request.options
-    );
+    const projects: ProjectWithManager[] = await this._userProjectAccessService.getAllAccessableProjects(request);
 
     projects.forEach((project) => {
       project.isManager = project.manager?.userId === request.accessUserId;

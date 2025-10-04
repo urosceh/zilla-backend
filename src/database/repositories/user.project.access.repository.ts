@@ -1,4 +1,4 @@
-import {Op} from "sequelize";
+import {Op, Transaction} from "sequelize";
 import {ProjectWithManager} from "../../domain/entities/ProjectWithManager";
 import {User} from "../../domain/entities/User";
 import {UserProjectAccess} from "../../domain/entities/UserProjectAccess";
@@ -13,7 +13,11 @@ export interface IUserProjectAccessRepository {
   insertAccess(userIds: string[], projectKey: string): Promise<void>;
   deleteAccess(userIds: string[], projectKey: string): Promise<void>;
   hasAccess(userId: string, projectKey: string): Promise<boolean>;
-  getAllUsersProjects(userId: string, options: {limit: number; offset: number; search?: string}): Promise<ProjectWithManager[]>;
+  getAllUsersProjects(
+    userId: string,
+    options: {limit: number; offset: number; search?: string},
+    transaction: Transaction
+  ): Promise<ProjectWithManager[]>;
   getAllUsersOnProject(projectKey: string, options: IPaginatable): Promise<User[]>;
 }
 
@@ -86,7 +90,8 @@ export class UserProjectAccessRepository implements IUserProjectAccessRepository
 
   public async getAllUsersProjects(
     userId: string,
-    options: {limit: number; offset: number; search?: string}
+    options: {limit: number; offset: number; search?: string},
+    transaction: Transaction
   ): Promise<ProjectWithManager[]> {
     const whereCondition = options.search
       ? {
@@ -120,6 +125,7 @@ export class UserProjectAccessRepository implements IUserProjectAccessRepository
           ],
         },
       ],
+      transaction,
     });
 
     return userProjectAccesses.map((upa) => new ProjectWithManager(upa.project!));

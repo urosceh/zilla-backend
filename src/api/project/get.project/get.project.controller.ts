@@ -13,7 +13,7 @@ export class GetProjectController extends AbstractController {
   protected async process(req: Request): Promise<{statusCode: number; data: IDtoable}> {
     const request = new GetProjectRequest(req);
 
-    const project: ProjectWithManager = await this._projectService.getProjectByProjectKey(request.projectKey);
+    const project: ProjectWithManager = await this._projectService.getProjectByProjectKey(request);
 
     if (project.managerId === request.accessUserId) {
       project.isManager = true;
