@@ -11,7 +11,7 @@ export class GiveAccessController extends AbstractController {
   protected async process(req: Request): Promise<{statusCode: number}> {
     const request = new ManageAccessRequest(req);
 
-    await this._userProjectAccessService.giveProjectAccessToUsers(request.userIds, request.projectKey);
+    await this._userProjectAccessService.giveProjectAccessToUsers(request);
 
     return {
       statusCode: 201,

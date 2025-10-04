@@ -12,7 +12,7 @@ export class GetProjectSprintsController extends AbstractController {
   protected async process(req: Request): Promise<{statusCode: number; data: IDtoable[]}> {
     const request = new GetProjectSprintsRequest(req);
 
-    const sprints = await this._sprintService.getProjectSprints(request.projectKey);
+    const sprints = await this._sprintService.getProjectSprints(request);
 
     return {
       statusCode: 200,

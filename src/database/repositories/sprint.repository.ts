@@ -1,4 +1,4 @@
-import {Op} from "sequelize";
+import {Op, Transaction} from "sequelize";
 import {Sprint} from "../../domain/entities/Sprint";
 import {SprintWithIssues} from "../../domain/entities/SprintWithIssues";
 import {NotFound} from "../../domain/errors/errors.index";
@@ -6,29 +6,30 @@ import IssueModel from "../models/issue.model";
 import SprintModel, {SprintCreationAttributes} from "../models/sprint.model";
 
 export interface ISprintRepository {
-  createSprint(sprint: SprintCreationAttributes): Promise<Sprint>;
-  getProjectSprints(projectKey: string): Promise<Sprint[]>;
-  getCurrentSprintIssues(projectId: string): Promise<SprintWithIssues>;
+  createSprint(sprint: SprintCreationAttributes, transaction: Transaction): Promise<Sprint>;
+  getProjectSprints(projectKey: string, transaction: Transaction): Promise<Sprint[]>;
+  getCurrentSprintIssues(projectId: string, transaction: Transaction): Promise<SprintWithIssues>;
 }
 
 export class SprintRepository implements ISprintRepository {
-  public async createSprint(sprint: SprintCreationAttributes): Promise<Sprint> {
-    const sprintModel = await SprintModel.create(sprint);
+  public async createSprint(sprint: SprintCreationAttributes, transaction: Transaction): Promise<Sprint> {
+    const sprintModel = await SprintModel.create(sprint, {transaction});
 
     return new Sprint(sprintModel);
   }
 
-  public async getProjectSprints(projectKey: string): Promise<Sprint[]> {
+  public async getProjectSprints(projectKey: string, transaction: Transaction): Promise<Sprint[]> {
     const sprints = await SprintModel.findAll({
       where: {
         projectKey,
       },
+      transaction,
     });
 
     return sprints.map((sprint) => new Sprint(sprint));
   }
 
-  public async getCurrentSprintIssues(projectId: string): Promise<SprintWithIssues> {
+  public async getCurrentSprintIssues(projectId: string, transaction: Transaction): Promise<SprintWithIssues> {
     const sprintWithIssues = await SprintModel.findOne({
       where: {
         [Op.and]: {
@@ -49,6 +50,7 @@ export class SprintRepository implements ISprintRepository {
           as: "issues",
         },
       ],
+      transaction,
     });
 
     if (!sprintWithIssues) {

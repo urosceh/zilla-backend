@@ -13,7 +13,7 @@ export class CreateSprintController extends AbstractController {
   protected async process(req: Request): Promise<{statusCode: number; data: IDtoable}> {
     const request = new CreateSprintRequest(req);
 
-    const sprint: Sprint = await this._sprintService.createSprint(request.sprint);
+    const sprint: Sprint = await this._sprintService.createSprint(request);
 
     return {
       statusCode: 201,

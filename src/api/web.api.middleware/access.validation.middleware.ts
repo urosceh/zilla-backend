@@ -8,15 +8,24 @@ export class AccessValidationMiddleware {
   public static get middleware(): Middleware {
     return async (req: Request, res: Response, next: NextFunction) => {
       const userId = req.headers.userId as string;
+      const tenantSchemaName = req.headers.tenantSchemaName as string;
       const projectKey = (req.query.projectKey as string) || (req.body.projectKey as string) || (req.params.projectKey as string);
 
       if (!userId) {
         return next(new UnauthorizedAccess("Unauthorized Access", {message: "User Id is required"}));
       }
 
+      if (!tenantSchemaName) {
+        return next(new UnauthorizedAccess("Unauthorized Access", {message: "Tenant schema name is required"}));
+      }
+
       if (projectKey) {
         try {
-          const userProjectAccess: UserProjectAccess = await userProjectAccessService.getUserProjectAccess(userId, projectKey);
+          const userProjectAccess: UserProjectAccess = await userProjectAccessService.getUserProjectAccess(
+            userId,
+            projectKey,
+            tenantSchemaName
+          );
 
           return next();
         } catch (error) {

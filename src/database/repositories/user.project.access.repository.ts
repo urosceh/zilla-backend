@@ -9,20 +9,20 @@ import UserModel from "../models/user.model";
 import UserProjectAccessModel from "../models/user.project.access.model";
 
 export interface IUserProjectAccessRepository {
-  getUserProjectAccess(userId: string, projectKey: string): Promise<UserProjectAccess>;
-  insertAccess(userIds: string[], projectKey: string): Promise<void>;
-  deleteAccess(userIds: string[], projectKey: string): Promise<void>;
-  hasAccess(userId: string, projectKey: string): Promise<boolean>;
+  getUserProjectAccess(userId: string, projectKey: string, transaction: Transaction): Promise<UserProjectAccess>;
+  insertAccess(userIds: string[], projectKey: string, transaction: Transaction): Promise<void>;
+  deleteAccess(userIds: string[], projectKey: string, transaction: Transaction): Promise<void>;
+  hasAccess(userId: string, projectKey: string, transaction: Transaction): Promise<boolean>;
   getAllUsersProjects(
     userId: string,
     options: {limit: number; offset: number; search?: string},
     transaction: Transaction
   ): Promise<ProjectWithManager[]>;
-  getAllUsersOnProject(projectKey: string, options: IPaginatable): Promise<User[]>;
+  getAllUsersOnProject(projectKey: string, options: IPaginatable, transaction: Transaction): Promise<User[]>;
 }
 
 export class UserProjectAccessRepository implements IUserProjectAccessRepository {
-  public async getUserProjectAccess(userId: string, projectKey: string): Promise<UserProjectAccess> {
+  public async getUserProjectAccess(userId: string, projectKey: string, transaction: Transaction): Promise<UserProjectAccess> {
     const userProjectAccess = await UserProjectAccessModel.findOne({
       where: {
         userId,
@@ -34,6 +34,7 @@ export class UserProjectAccessRepository implements IUserProjectAccessRepository
           as: "project",
         },
       ],
+      transaction,
     });
 
     if (!userProjectAccess) {
@@ -51,18 +52,18 @@ export class UserProjectAccessRepository implements IUserProjectAccessRepository
     return new UserProjectAccess(userProjectAccess);
   }
 
-  public async insertAccess(userIds: string[], projectKey: string): Promise<void> {
+  public async insertAccess(userIds: string[], projectKey: string, transaction: Transaction): Promise<void> {
     const acessess = userIds.map((userId) => ({
       userId,
       projectKey,
     }));
 
-    await UserProjectAccessModel.bulkCreate(acessess, {ignoreDuplicates: true});
+    await UserProjectAccessModel.bulkCreate(acessess, {ignoreDuplicates: true, transaction});
 
     return;
   }
 
-  public async deleteAccess(userIds: string[], projectKey: string): Promise<void> {
+  public async deleteAccess(userIds: string[], projectKey: string, transaction: Transaction): Promise<void> {
     await UserProjectAccessModel.destroy({
       where: {
         [Op.and]: {
@@ -72,17 +73,19 @@ export class UserProjectAccessRepository implements IUserProjectAccessRepository
           projectKey,
         },
       },
+      transaction,
     });
 
     return;
   }
 
-  public async hasAccess(userId: string, projectKey: string): Promise<boolean> {
+  public async hasAccess(userId: string, projectKey: string, transaction: Transaction): Promise<boolean> {
     const access = await UserProjectAccessModel.findOne({
       where: {
         userId,
         projectKey,
       },
+      transaction,
     });
 
     return !!access;
@@ -131,7 +134,7 @@ export class UserProjectAccessRepository implements IUserProjectAccessRepository
     return userProjectAccesses.map((upa) => new ProjectWithManager(upa.project!));
   }
 
-  public async getAllUsersOnProject(projectKey: string, options: IPaginatable): Promise<User[]> {
+  public async getAllUsersOnProject(projectKey: string, options: IPaginatable, transaction: Transaction): Promise<User[]> {
     const acesses = await UserProjectAccessModel.findAll({
       limit: options.limit,
       offset: options.offset,
@@ -144,6 +147,7 @@ export class UserProjectAccessRepository implements IUserProjectAccessRepository
           as: "user",
         },
       ],
+      transaction,
     });
 
     return acesses.map((access) => new User(access.user!));

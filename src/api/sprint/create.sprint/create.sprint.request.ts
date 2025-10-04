@@ -1,5 +1,5 @@
 import {Request} from "express";
-import {ISprint} from "../../../domain/interfaces/ISprint";
+import {SprintCreationAttributes} from "../../../database/models/sprint.model";
 import {AbstractRequest} from "../../abstract/abstract.request";
 
 export class CreateSprintRequest extends AbstractRequest {
@@ -16,7 +16,7 @@ export class CreateSprintRequest extends AbstractRequest {
     this._endOfSprint = request.body.endOfSprint;
   }
 
-  get sprint(): ISprint {
+  get sprint(): SprintCreationAttributes {
     return {
       projectKey: this._projectKey,
       sprintName: this._sprintName,
