@@ -12,7 +12,7 @@ export class UpdateIssueController extends AbstractController {
   protected async process(req: Request): Promise<{statusCode: number; data: IDtoable}> {
     const request = new UpdateIssueRequest(req);
 
-    const issue = await this._issueService.updateIssue(request.issueId, request.issue);
+    const issue = await this._issueService.updateIssue(request);
 
     return {
       statusCode: 200,

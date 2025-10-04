@@ -1,24 +1,63 @@
+import {CreateIssueRequest} from "../../api/issue/create.issue/create.issue.request";
+import {GetIssueRequest} from "../../api/issue/get.issue/get.issue.request";
+import {GetProjectIssuesRequest} from "../../api/issue/get.project.issues/get.project.issues.request";
+import {UpdateIssueRequest} from "../../api/issue/update.issue/update.issue.request";
 import {IIssueRepository} from "../../database/repositories/issue.repository";
+import {TransactionManager} from "../../database/transaction.manager";
 import {Issue} from "../entities/Issue";
-import {IIssue} from "../interfaces/IIssue";
-import {IProjectIssueSearch} from "../interfaces/IIssueSearch";
 
 export class IssueService {
   constructor(private _issueRepository: IIssueRepository) {}
 
-  public async createIssue(issue: IIssue): Promise<Issue> {
-    return this._issueRepository.createIssue(issue);
+  public async createIssue(request: CreateIssueRequest): Promise<Issue> {
+    const transaction = await TransactionManager.createTenantTransaction(request.tenantSchemaName);
+
+    try {
+      const issue = await this._issueRepository.createIssue(request.issue, transaction);
+      await transaction.commit();
+      return issue;
+    } catch (error) {
+      await transaction.rollback();
+      throw error;
+    }
   }
 
-  public async getIssue(issueId: string, projectKey: string): Promise<Issue> {
-    return this._issueRepository.getIssue(issueId, projectKey);
+  public async getIssue(request: GetIssueRequest): Promise<Issue> {
+    const transaction = await TransactionManager.createTenantTransaction(request.tenantSchemaName);
+
+    try {
+      const issue = await this._issueRepository.getIssue(request.issueId, request.projectKey, transaction);
+      await transaction.commit();
+      return issue;
+    } catch (error) {
+      await transaction.rollback();
+      throw error;
+    }
   }
 
-  public async getAllProjectIssues(projectKey: string, options: IProjectIssueSearch): Promise<Issue[]> {
-    return this._issueRepository.getAllProjectIssues(projectKey, options);
+  public async getAllProjectIssues(request: GetProjectIssuesRequest): Promise<Issue[]> {
+    const transaction = await TransactionManager.createTenantTransaction(request.tenantSchemaName);
+
+    try {
+      const issues = await this._issueRepository.getAllProjectIssues(request.projectKey, request.options, transaction);
+      await transaction.commit();
+      return issues;
+    } catch (error) {
+      await transaction.rollback();
+      throw error;
+    }
   }
 
-  public async updateIssue(issueId: string, issue: Partial<IIssue>): Promise<Issue> {
-    return this._issueRepository.updateIssue(issueId, issue);
+  public async updateIssue(request: UpdateIssueRequest): Promise<Issue> {
+    const transaction = await TransactionManager.createTenantTransaction(request.tenantSchemaName);
+
+    try {
+      const issue = await this._issueRepository.updateIssue(request.issueId, request.issue, transaction);
+      await transaction.commit();
+      return issue;
+    } catch (error) {
+      await transaction.rollback();
+      throw error;
+    }
   }
 }

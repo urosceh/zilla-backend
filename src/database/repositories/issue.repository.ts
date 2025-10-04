@@ -1,4 +1,4 @@
-import {Op} from "sequelize";
+import {Op, Transaction} from "sequelize";
 import {Issue} from "../../domain/entities/Issue";
 import {NotFound} from "../../domain/errors/errors.index";
 import {IIssue} from "../../domain/interfaces/IIssue";
@@ -9,20 +9,20 @@ import SprintModel from "../models/sprint.model";
 import UserModel from "../models/user.model";
 
 export interface IIssueRepository {
-  createIssue(issue: IssueCreationAttributes): Promise<Issue>;
-  getIssue(issueId: string, projectKey: string): Promise<Issue>;
-  updateIssue(issueId: string, issue: Partial<IIssue>): Promise<Issue>;
-  getAllProjectIssues(projectKey: string, options: IProjectIssueSearch): Promise<Issue[]>;
+  createIssue(issue: IssueCreationAttributes, transaction: Transaction): Promise<Issue>;
+  getIssue(issueId: string, projectKey: string, transaction: Transaction): Promise<Issue>;
+  updateIssue(issueId: string, issue: Partial<IIssue>, transaction: Transaction): Promise<Issue>;
+  getAllProjectIssues(projectKey: string, options: IProjectIssueSearch, transaction: Transaction): Promise<Issue[]>;
 }
 
 export class IssueRepository implements IIssueRepository {
-  public async createIssue(issue: IssueCreationAttributes): Promise<Issue> {
-    const createdIssue = await IssueModel.create(issue);
+  public async createIssue(issue: IssueCreationAttributes, transaction: Transaction): Promise<Issue> {
+    const createdIssue = await IssueModel.create(issue, {transaction});
 
     return new Issue(createdIssue);
   }
 
-  public async getIssue(issueId: string, projectKey: string): Promise<Issue> {
+  public async getIssue(issueId: string, projectKey: string, transaction: Transaction): Promise<Issue> {
     const issue = await IssueModel.findOne({
       where: {
         issueId,
@@ -46,6 +46,7 @@ export class IssueRepository implements IIssueRepository {
           as: "project",
         },
       ],
+      transaction,
     });
 
     if (!issue) {
@@ -55,11 +56,12 @@ export class IssueRepository implements IIssueRepository {
     return new Issue(issue);
   }
 
-  public async updateIssue(issueId: string, issue: Partial<IIssue>): Promise<Issue> {
+  public async updateIssue(issueId: string, issue: Partial<IIssue>, transaction: Transaction): Promise<Issue> {
     const [updatedRowsCount] = await IssueModel.update(issue, {
       where: {
         issueId,
       },
+      transaction,
     });
 
     if (updatedRowsCount === 0) {
@@ -88,12 +90,13 @@ export class IssueRepository implements IIssueRepository {
           as: "project",
         },
       ],
+      transaction,
     });
 
     return new Issue(updatedIssue!);
   }
 
-  public async getAllProjectIssues(projectKey: string, options: IProjectIssueSearch): Promise<Issue[]> {
+  public async getAllProjectIssues(projectKey: string, options: IProjectIssueSearch, transaction: Transaction): Promise<Issue[]> {
     const orderCol = ["createdAt", "updatedAt"].includes(options.orderCol) ? options.orderCol : "updatedAt";
     const orderDir = ["ASC", "DESC"].includes(options.orderDir) ? options.orderDir : "ASC";
 
@@ -127,6 +130,7 @@ export class IssueRepository implements IIssueRepository {
           as: "sprint",
         },
       ],
+      transaction,
     });
 
     return issues.map((issue) => new Issue(issue));
