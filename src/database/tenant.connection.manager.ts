@@ -5,23 +5,6 @@ import {TenantService} from "../config/tenant.config";
 export class TenantConnectionManager {
   private static connections: Map<string, Sequelize> = new Map();
 
-  public static getTenantConnection(tenantId: string): Sequelize {
-    if (!this.connections.has(tenantId)) {
-      const credentials = TenantService.getTenantDatabaseCredentials(tenantId);
-
-      const sequelizeInstance = new Sequelize(DatabaseConfig.database, credentials.username, credentials.password, {
-        host: DatabaseConfig.host,
-        port: DatabaseConfig.port,
-        dialect: "postgres",
-        logging: false,
-      });
-
-      this.connections.set(tenantId, sequelizeInstance);
-    }
-
-    return this.connections.get(tenantId)!;
-  }
-
   public static async createTenantTransaction(tenantId: string): Promise<Transaction> {
     const connection = this.getTenantConnection(tenantId);
     const tenant = TenantService.getTenantById(tenantId);
@@ -45,5 +28,22 @@ export class TenantConnectionManager {
 
   public static getConnectionCount(): number {
     return this.connections.size;
+  }
+
+  private static getTenantConnection(tenantId: string): Sequelize {
+    if (!this.connections.has(tenantId)) {
+      const credentials = TenantService.getTenantDatabaseCredentials(tenantId);
+
+      const sequelizeInstance = new Sequelize(DatabaseConfig.database, credentials.username, credentials.password, {
+        host: DatabaseConfig.host,
+        port: DatabaseConfig.port,
+        dialect: "postgres",
+        logging: false,
+      });
+
+      this.connections.set(tenantId, sequelizeInstance);
+    }
+
+    return this.connections.get(tenantId)!;
   }
 }
