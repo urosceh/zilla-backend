@@ -1,5 +1,4 @@
 import dotenv from "dotenv";
-import {TenantService} from "../src/config/tenant.config";
 import AdminUserModel from "../src/database/models/admin.user.model";
 import UserModel from "../src/database/models/user.model";
 import {TransactionManager} from "../src/database/transaction.manager";
@@ -21,9 +20,7 @@ if (!tenant) {
 }
 
 (async () => {
-  const schemaName = TenantService.getTenantById(tenant).schemaName;
-
-  const transaction = await TransactionManager.createTenantTransaction(schemaName);
+  const transaction = await TransactionManager.createTenantTransaction(tenant);
 
   try {
     const user = await UserModel.findOne({where: {email: adminEmail}, transaction});

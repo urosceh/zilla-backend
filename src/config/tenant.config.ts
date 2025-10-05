@@ -4,6 +4,8 @@ export interface TenantConfig {
   displayName: string;
   redisDb: number;
   isActive: boolean;
+  dbUsername: string;
+  dbPassword: string;
 }
 
 // This configuration maps tenant IDs to schema names
@@ -15,6 +17,8 @@ export const TenantConfigurations: Record<string, TenantConfig> = {
     displayName: "Test",
     redisDb: 0,
     isActive: true,
+    dbUsername: process.env.DB_USER_TEST || "",
+    dbPassword: process.env.DB_PASS_TEST || "",
   },
   tenant1: {
     tenantId: "tenant1",
@@ -22,6 +26,8 @@ export const TenantConfigurations: Record<string, TenantConfig> = {
     displayName: "Tenant 1",
     redisDb: 1,
     isActive: true,
+    dbUsername: process.env.DB_USER_TENANT1 || "",
+    dbPassword: process.env.DB_PASS_TENANT1 || "",
   },
   tenant2: {
     tenantId: "tenant2",
@@ -29,6 +35,8 @@ export const TenantConfigurations: Record<string, TenantConfig> = {
     displayName: "Tenant 2",
     redisDb: 2,
     isActive: true,
+    dbUsername: process.env.DB_USER_TENANT2 || "",
+    dbPassword: process.env.DB_PASS_TENANT2 || "",
   },
 };
 
@@ -45,5 +53,15 @@ export class TenantService {
     }
 
     return tenant;
+  }
+
+  public static getTenantDatabaseCredentials(tenantId: string): {username: string; password: string; schema: string} {
+    const tenant = this.getTenantById(tenantId);
+
+    return {
+      username: tenant.dbUsername,
+      password: tenant.dbPassword,
+      schema: tenant.schemaName,
+    };
   }
 }

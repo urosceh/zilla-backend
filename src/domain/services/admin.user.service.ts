@@ -11,8 +11,8 @@ interface AdminValidationRequest {
 export class AdminUserService {
   constructor(private _adminUserRepository: IAdminUserRepository) {}
 
-  public async isAdmin(userId: string, tenantSchemaName: string): Promise<boolean> {
-    const transaction = await TransactionManager.createTenantTransaction(tenantSchemaName);
+  public async isAdmin(userId: string, tenantId: string): Promise<boolean> {
+    const transaction = await TransactionManager.createTenantTransaction(tenantId);
 
     try {
       const result = await this._adminUserRepository.isAdmin(userId, transaction);
@@ -25,7 +25,7 @@ export class AdminUserService {
   }
 
   public async createAdmin(request: MakeAdminRequest): Promise<User> {
-    const transaction = await TransactionManager.createTenantTransaction(request.tenantSchemaName);
+    const transaction = await TransactionManager.createTenantTransaction(request.tenantId);
 
     try {
       const user = await this._adminUserRepository.createAdmin(request.userId, transaction);

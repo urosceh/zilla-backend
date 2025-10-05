@@ -1,6 +1,5 @@
 import axios from "axios";
 import {Transaction} from "sequelize";
-import {TenantService} from "../src/config/tenant.config";
 import AdminUserModel from "../src/database/models/admin.user.model";
 import IssueModel from "../src/database/models/issue.model";
 import ProjectModel from "../src/database/models/project.model";
@@ -56,15 +55,13 @@ class Seed {
   }
 
   public async seed() {
-    const schemaName = TenantService.getTenantById(tenant).schemaName;
+    await this.loginOrCreateAdmin();
 
-    const transaction = await TransactionManager.createTenantTransaction(schemaName);
+    const userIds = await this.createUsersBatch();
+
+    const transaction = await TransactionManager.createTenantTransaction(tenant);
 
     try {
-      await this.loginOrCreateAdmin(schemaName);
-
-      const userIds = await this.createUsersBatch();
-
       const projects = await this.createProjects(userIds, transaction);
 
       const sprints = await this.createSprints(projects, transaction);
@@ -93,12 +90,12 @@ class Seed {
     }
   }
 
-  private async loginOrCreateAdmin(schemaName: string) {
+  private async loginOrCreateAdmin() {
     try {
       await this.login();
     } catch (error: any) {
       if (error.response.status === 404) {
-        await this.createAdmin(schemaName);
+        await this.createAdmin();
         await this.login();
       } else {
         throw error;
@@ -106,8 +103,8 @@ class Seed {
     }
   }
 
-  private async createAdmin(schemaName: string) {
-    const transaction = await TransactionManager.createTenantTransaction(schemaName);
+  private async createAdmin() {
+    const transaction = await TransactionManager.createTenantTransaction(tenant);
 
     try {
       const adminUser = await UserModel.create(

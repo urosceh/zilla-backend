@@ -25,7 +25,6 @@ export class RedisClient implements IRedisClient {
       .catch((error) => {
         console.error("Error verifying Redis connection:", error);
       });
-    // Initialize connections will be done lazily when needed
   }
 
   public static getInstance(): IRedisClient {

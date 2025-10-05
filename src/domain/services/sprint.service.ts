@@ -8,7 +8,7 @@ export class SprintService {
   constructor(private _sprintRepository: ISprintRepository) {}
 
   public async createSprint(request: CreateSprintRequest): Promise<Sprint> {
-    const transaction = await TransactionManager.createTenantTransaction(request.tenantSchemaName);
+    const transaction = await TransactionManager.createTenantTransaction(request.tenantId);
 
     try {
       const sprint = await this._sprintRepository.createSprint(request.sprint, transaction);
@@ -21,7 +21,7 @@ export class SprintService {
   }
 
   public async getProjectSprints(request: GetProjectSprintsRequest): Promise<Sprint[]> {
-    const transaction = await TransactionManager.createTenantTransaction(request.tenantSchemaName);
+    const transaction = await TransactionManager.createTenantTransaction(request.tenantId);
 
     try {
       const sprints = await this._sprintRepository.getProjectSprints(request.projectKey, transaction);

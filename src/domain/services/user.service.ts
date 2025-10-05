@@ -20,7 +20,7 @@ export class UserService {
   constructor(private _userRepository: IUserRepository, private _mailClient: IMailClient) {}
 
   public async createUsers(request: CreateUsersRequest): Promise<User[]> {
-    const transaction = await TransactionManager.createTenantTransaction(request.tenantSchemaName);
+    const transaction = await TransactionManager.createTenantTransaction(request.tenantId);
 
     try {
       const userCredentials: UserCreationAttributes[] = request.users.map((user) => {
@@ -47,7 +47,7 @@ export class UserService {
   }
 
   public async loginUser(request: LoginUserRequest): Promise<AdminBearerToken> {
-    const transaction = await TransactionManager.createTenantTransaction(request.tenantSchemaName);
+    const transaction = await TransactionManager.createTenantTransaction(request.tenantId);
 
     try {
       const user: AdminUser = await this._userRepository.loginUser(request.credentials, transaction);
@@ -63,7 +63,7 @@ export class UserService {
   }
 
   public async updateUser(request: UpdateUserRequest): Promise<User> {
-    const transaction = await TransactionManager.createTenantTransaction(request.tenantSchemaName);
+    const transaction = await TransactionManager.createTenantTransaction(request.tenantId);
 
     try {
       const {firstName, lastName} = request.updates;
@@ -79,7 +79,7 @@ export class UserService {
   }
 
   public async getAllUsers(request: GetAllUsersRequest): Promise<User[]> {
-    const transaction = await TransactionManager.createTenantTransaction(request.tenantSchemaName);
+    const transaction = await TransactionManager.createTenantTransaction(request.tenantId);
 
     try {
       const users = await this._userRepository.getAllUsers(request.options, transaction);
@@ -101,7 +101,7 @@ export class UserService {
       throw new BadRequest("Old and New Password are required");
     }
 
-    const transaction = await TransactionManager.createTenantTransaction(request.tenantSchemaName);
+    const transaction = await TransactionManager.createTenantTransaction(request.tenantId);
 
     try {
       const user = await this._userRepository.updatePassword(request.accessUserId, {oldPassword, newPassword}, transaction);
@@ -114,7 +114,7 @@ export class UserService {
   }
 
   public async updateForgottenPassword(email: string, request: SetForgottenPasswordRequest): Promise<string> {
-    const transaction = await TransactionManager.createTenantTransaction(request.tenantSchemaName);
+    const transaction = await TransactionManager.createTenantTransaction(request.tenantId);
 
     try {
       const user = await this._userRepository.updateForgottenPassword(email, request.newPassword, transaction);
@@ -127,7 +127,7 @@ export class UserService {
   }
 
   public async sendForgottenPasswordEmail(request: ForgottenPasswordRequest, secret: string): Promise<void> {
-    const transaction = await TransactionManager.createTenantTransaction(request.tenantSchemaName);
+    const transaction = await TransactionManager.createTenantTransaction(request.tenantId);
 
     try {
       const user = await this._userRepository.getUserByEmail(request.email, transaction);

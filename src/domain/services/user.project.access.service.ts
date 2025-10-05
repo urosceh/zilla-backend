@@ -12,7 +12,7 @@ export class UserProjectAccessService {
   constructor(private _userProjectAccessRepository: IUserProjectAccessRepository) {}
 
   public async giveProjectAccessToUsers(request: ManageAccessRequest): Promise<void> {
-    const transaction = await TransactionManager.createTenantTransaction(request.tenantSchemaName);
+    const transaction = await TransactionManager.createTenantTransaction(request.tenantId);
 
     try {
       await this._userProjectAccessRepository.insertAccess(request.userIds, request.projectKey, transaction);
@@ -24,7 +24,7 @@ export class UserProjectAccessService {
   }
 
   public async revokeProjectAccessFromUsers(request: ManageAccessRequest): Promise<void> {
-    const transaction = await TransactionManager.createTenantTransaction(request.tenantSchemaName);
+    const transaction = await TransactionManager.createTenantTransaction(request.tenantId);
 
     try {
       await this._userProjectAccessRepository.deleteAccess(request.userIds, request.projectKey, transaction);
@@ -36,7 +36,7 @@ export class UserProjectAccessService {
   }
 
   public async getAllAccessableProjects(request: GetAllProjectsRequest): Promise<ProjectWithManager[]> {
-    const transaction = await TransactionManager.createTenantTransaction(request.tenantSchemaName);
+    const transaction = await TransactionManager.createTenantTransaction(request.tenantId);
 
     try {
       const projects = await this._userProjectAccessRepository.getAllUsersProjects(request.accessUserId, request.options, transaction);
@@ -48,8 +48,8 @@ export class UserProjectAccessService {
     }
   }
 
-  public async getUserProjectAccess(userId: string, projectKey: string, tenantSchemaName: string): Promise<UserProjectAccess> {
-    const transaction = await TransactionManager.createTenantTransaction(tenantSchemaName);
+  public async getUserProjectAccess(userId: string, projectKey: string, tenantId: string): Promise<UserProjectAccess> {
+    const transaction = await TransactionManager.createTenantTransaction(tenantId);
 
     try {
       const userProjectAccess = await this._userProjectAccessRepository.getUserProjectAccess(userId, projectKey, transaction);
@@ -62,7 +62,7 @@ export class UserProjectAccessService {
   }
 
   public async getAllUsersOnProject(request: GetAllUsersRequest): Promise<User[]> {
-    const transaction = await TransactionManager.createTenantTransaction(request.tenantSchemaName);
+    const transaction = await TransactionManager.createTenantTransaction(request.tenantId);
 
     try {
       const projectKey = request.projectKey;

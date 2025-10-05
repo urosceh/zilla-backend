@@ -10,7 +10,7 @@ export class ProjectService {
   constructor(private _projectRepository: IProjectRepository) {}
 
   public async getProjectByProjectKey(request: GetProjectRequest): Promise<ProjectWithManager> {
-    const transaction = await TransactionManager.createTenantTransaction(request.tenantSchemaName);
+    const transaction = await TransactionManager.createTenantTransaction(request.tenantId);
 
     try {
       const project = await this._projectRepository.getProjectByProjectKey(request.projectKey, {withManager: true}, transaction);
@@ -23,7 +23,7 @@ export class ProjectService {
   }
 
   public async getAllProjects(request: GetAllProjectsRequest): Promise<ProjectWithManager[]> {
-    const transaction = await TransactionManager.createTenantTransaction(request.tenantSchemaName);
+    const transaction = await TransactionManager.createTenantTransaction(request.tenantId);
 
     try {
       const projects = await this._projectRepository.getAllProjects(request.options, transaction);
@@ -36,7 +36,7 @@ export class ProjectService {
   }
 
   public async createProject(request: CreateProjectRequest): Promise<Project> {
-    const transaction = await TransactionManager.createTenantTransaction(request.tenantSchemaName);
+    const transaction = await TransactionManager.createTenantTransaction(request.tenantId);
 
     try {
       const project = {

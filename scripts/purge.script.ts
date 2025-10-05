@@ -1,6 +1,5 @@
 import {truncateSync} from "fs";
 import {Transaction} from "sequelize";
-import {TenantService} from "../src/config/tenant.config";
 import sequelize from "../src/database/sequelize";
 import {TransactionManager} from "../src/database/transaction.manager";
 
@@ -37,9 +36,10 @@ export class Purge {
   }
 
   public async purge() {
-    const schemaName = TenantService.getTenantById(tenant).schemaName;
+    const transaction = await TransactionManager.createTenantTransaction(tenant);
 
-    const transaction = await TransactionManager.createTenantTransaction(schemaName);
+    // test
+    const test = await sequelize.query("SELECT * FROM test.zilla_user", {transaction});
 
     try {
       await this.deleteIssues(transaction);

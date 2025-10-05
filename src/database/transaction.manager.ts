@@ -1,36 +1,22 @@
 import {QueryTypes, Transaction} from "sequelize";
 import sequelize from "./sequelize";
+import {TenantConnectionManager} from "./tenant.connection.manager";
 
 export class TransactionManager {
   /**
    * Create a transaction with tenant schema context
-   * This sets the search_path for the entire transaction
+   * This uses tenant-specific database credentials when available
    */
-  public static async createTenantTransaction(schemaName: string): Promise<Transaction> {
-    const transaction = await sequelize.transaction();
-
-    try {
-      // Set the search path for this transaction to the tenant's schema
-      await sequelize.query(`SET LOCAL search_path TO "${schemaName}"`, {
-        transaction,
-      });
-
-      console.log(`Transaction created with schema: ${schemaName}`);
-      return transaction;
-    } catch (error) {
-      // If setting schema fails, rollback the transaction
-      await transaction.rollback();
-      console.error(`Failed to set schema ${schemaName} for transaction:`, error);
-      throw error;
-    }
+  public static async createTenantTransaction(tenantId: string): Promise<Transaction> {
+    return await TenantConnectionManager.createTenantTransaction(tenantId);
   }
 
   /**
    * Execute a function within a tenant transaction context
    * Automatically handles transaction creation, schema setting, and cleanup
    */
-  public static async executeInTenantTransaction<T>(schemaName: string, operation: (transaction: Transaction) => Promise<T>): Promise<T> {
-    const transaction = await this.createTenantTransaction(schemaName);
+  public static async executeInTenantTransaction<T>(tenant: string, operation: (transaction: Transaction) => Promise<T>): Promise<T> {
+    const transaction = await this.createTenantTransaction(tenant);
 
     try {
       const result = await operation(transaction);

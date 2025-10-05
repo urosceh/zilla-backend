@@ -10,7 +10,7 @@ export class IssueService {
   constructor(private _issueRepository: IIssueRepository) {}
 
   public async createIssue(request: CreateIssueRequest): Promise<Issue> {
-    const transaction = await TransactionManager.createTenantTransaction(request.tenantSchemaName);
+    const transaction = await TransactionManager.createTenantTransaction(request.tenantId);
 
     try {
       const issue = await this._issueRepository.createIssue(request.issue, transaction);
@@ -23,7 +23,7 @@ export class IssueService {
   }
 
   public async getIssue(request: GetIssueRequest): Promise<Issue> {
-    const transaction = await TransactionManager.createTenantTransaction(request.tenantSchemaName);
+    const transaction = await TransactionManager.createTenantTransaction(request.tenantId);
 
     try {
       const issue = await this._issueRepository.getIssue(request.issueId, request.projectKey, transaction);
@@ -36,7 +36,7 @@ export class IssueService {
   }
 
   public async getAllProjectIssues(request: GetProjectIssuesRequest): Promise<Issue[]> {
-    const transaction = await TransactionManager.createTenantTransaction(request.tenantSchemaName);
+    const transaction = await TransactionManager.createTenantTransaction(request.tenantId);
 
     try {
       const issues = await this._issueRepository.getAllProjectIssues(request.projectKey, request.options, transaction);
@@ -49,7 +49,7 @@ export class IssueService {
   }
 
   public async updateIssue(request: UpdateIssueRequest): Promise<Issue> {
-    const transaction = await TransactionManager.createTenantTransaction(request.tenantSchemaName);
+    const transaction = await TransactionManager.createTenantTransaction(request.tenantId);
 
     try {
       const issue = await this._issueRepository.updateIssue(request.issueId, request.issue, transaction);
