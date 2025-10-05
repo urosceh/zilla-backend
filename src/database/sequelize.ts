@@ -5,7 +5,6 @@ const sequelize = new Sequelize(DatabaseConfig.database, DatabaseConfig.username
   host: DatabaseConfig.host,
   port: DatabaseConfig.port,
   dialect: "postgres",
-  schema: DatabaseConfig.schema,
 });
 
 export default sequelize;

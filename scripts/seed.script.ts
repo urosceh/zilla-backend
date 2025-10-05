@@ -1,10 +1,13 @@
 import axios from "axios";
+import {Transaction} from "sequelize";
+import {TenantService} from "../src/config/tenant.config";
 import AdminUserModel from "../src/database/models/admin.user.model";
 import IssueModel from "../src/database/models/issue.model";
 import ProjectModel from "../src/database/models/project.model";
 import SprintModel from "../src/database/models/sprint.model";
 import UserModel from "../src/database/models/user.model";
 import UserProjectAccessModel from "../src/database/models/user.project.access.model";
+import {TransactionManager} from "../src/database/transaction.manager";
 import {Project} from "../src/domain/entities/Project";
 import {Sprint} from "../src/domain/entities/Sprint";
 import {IssueStatus} from "../src/domain/enums/IssueStatus";
@@ -14,6 +17,7 @@ import {seedUsers} from "./data/users";
 
 const adminEmail: string = process.env.ADMIN_EMAL || "";
 const adminPassword: string = process.env.ADMIN_PASSWORD || "";
+const tenant: string = process.env.TENANT || "";
 
 if (!adminEmail || !adminPassword) {
   console.error("ADMIN_EMAL and ADMIN_PASSWORD not found in .env");
@@ -23,12 +27,17 @@ if (process.env.NODE_ENV !== "test") {
   console.error("NODE_ENV must equal 'test'. Add it to .env file.");
   process.exit(1);
 }
+if (!tenant) {
+  console.error("TENANT not found in .env");
+  process.exit(1);
+}
 
 class Seed {
   private _axios = axios.create({
     baseURL: "http://localhost:3000/api",
     headers: {
       "Content-Type": "application/json",
+      "tenant": tenant,
     },
   });
 
@@ -47,37 +56,49 @@ class Seed {
   }
 
   public async seed() {
-    await this.loginOrCreateAdmin();
+    const schemaName = TenantService.getTenantById(tenant).schemaName;
 
-    const userIds = await this.createUsersBatch();
+    const transaction = await TransactionManager.createTenantTransaction(schemaName);
 
-    const projects = await this.createProjects(userIds);
+    try {
+      await this.loginOrCreateAdmin(schemaName);
 
-    const sprints = await this.createSprints(projects);
+      const userIds = await this.createUsersBatch();
 
-    const userAccessData: {projectKey: string; userId: string}[] = projects.flatMap((project) =>
-      // 7 to 10 users per project (random user)
-      Array.from({length: Math.floor(Math.random() * 4) + 7}, () => {
-        const userId = userIds[Math.floor(Math.random() * userIds.length)];
-        return {projectKey: project.projectKey, userId};
-      })
-    );
+      const projects = await this.createProjects(userIds, transaction);
 
-    await this.createUserProjectAccess(userAccessData);
+      const sprints = await this.createSprints(projects, transaction);
 
-    await this.createIssues(
-      userAccessData,
-      projects.map((project) => project.projectKey),
-      sprints
-    );
+      const userAccessData: {projectKey: string; userId: string}[] = projects.flatMap((project) =>
+        // 7 to 10 users per project (random user)
+        Array.from({length: Math.floor(Math.random() * 4) + 7}, () => {
+          const userId = userIds[Math.floor(Math.random() * userIds.length)];
+          return {projectKey: project.projectKey, userId};
+        })
+      );
+
+      await this.createUserProjectAccess(userAccessData, transaction);
+
+      await this.createIssues(
+        userAccessData,
+        projects.map((project) => project.projectKey),
+        sprints,
+        transaction
+      );
+
+      await transaction.commit();
+    } catch (error) {
+      await transaction.rollback();
+      throw error;
+    }
   }
 
-  private async loginOrCreateAdmin() {
+  private async loginOrCreateAdmin(schemaName: string) {
     try {
       await this.login();
     } catch (error: any) {
       if (error.response.status === 404) {
-        await this.createAdmin();
+        await this.createAdmin(schemaName);
         await this.login();
       } else {
         throw error;
@@ -85,20 +106,30 @@ class Seed {
     }
   }
 
-  private async createAdmin() {
-    const adminUser = await UserModel.create(
-      {
-        email: adminEmail,
-        password: adminPassword,
-        firstName: "Admin",
-        lastName: "Admin",
-      },
-      {
-        returning: true,
-      }
-    );
+  private async createAdmin(schemaName: string) {
+    const transaction = await TransactionManager.createTenantTransaction(schemaName);
 
-    await AdminUserModel.create({userId: adminUser.userId});
+    try {
+      const adminUser = await UserModel.create(
+        {
+          email: adminEmail,
+          password: adminPassword,
+          firstName: "Admin",
+          lastName: "Admin",
+        },
+        {
+          returning: true,
+          transaction,
+        }
+      );
+
+      await AdminUserModel.create({userId: adminUser.userId}, {transaction});
+
+      await transaction.commit();
+    } catch (error) {
+      await transaction.rollback();
+      throw error;
+    }
   }
 
   private async login() {
@@ -118,18 +149,18 @@ class Seed {
     return userIds;
   }
 
-  private async createProjects(userIds: string[]): Promise<Project[]> {
+  private async createProjects(userIds: string[], transaction: Transaction): Promise<Project[]> {
     const projects = seedProjects(userIds);
 
-    const createdProjects = await ProjectModel.bulkCreate(projects);
+    const createdProjects = await ProjectModel.bulkCreate(projects, {transaction});
 
     return createdProjects.map((project) => new Project(project));
   }
 
-  private async createSprints(projects: Project[]): Promise<Sprint[]> {
+  private async createSprints(projects: Project[], transaction: Transaction): Promise<Sprint[]> {
     const sprints = seedSprints(projects);
 
-    const createdSprints = await SprintModel.bulkCreate(sprints);
+    const createdSprints = await SprintModel.bulkCreate(sprints, {transaction});
 
     return createdSprints.map((s) => new Sprint(s));
   }
@@ -137,7 +168,8 @@ class Seed {
   private async createIssues(
     userAccessData: {projectKey: string; userId: string}[],
     projectKeys: string[],
-    sprints: Sprint[]
+    sprints: Sprint[],
+    transaction: Transaction
   ): Promise<void> {
     // 15 to 25 issues per project (random reporter, assignee (can be undefined), summary, status)
     const data = projectKeys.flatMap((projectKey) => {
@@ -157,11 +189,11 @@ class Seed {
       });
     });
 
-    const issues = await IssueModel.bulkCreate(data, {ignoreDuplicates: true});
+    const issues = await IssueModel.bulkCreate(data, {ignoreDuplicates: true, transaction});
   }
 
-  private async createUserProjectAccess(data: {projectKey: string; userId: string}[]): Promise<void> {
-    await UserProjectAccessModel.bulkCreate(data, {ignoreDuplicates: true});
+  private async createUserProjectAccess(data: {projectKey: string; userId: string}[], transaction: Transaction): Promise<void> {
+    await UserProjectAccessModel.bulkCreate(data, {ignoreDuplicates: true, transaction});
   }
 }
 

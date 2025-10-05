@@ -1,5 +1,6 @@
 import {createClient} from "redis";
 import {RedisConfig} from "../../config/redis.config";
+import {TenantService} from "../../config/tenant.config";
 
 export interface IRedisClient {
   getForgottenPasswordToken(redisDb: number, email: string): Promise<string | null>;
@@ -16,6 +17,14 @@ export class RedisClient implements IRedisClient {
   private _redisClients: Map<number, any> = new Map();
 
   private constructor() {
+    // Initialize only test connection to verify config
+    this.getRedisClient(TenantService.getTenantById("test").redisDb)
+      .then(() => {
+        console.log("Verify Redis connection successful");
+      })
+      .catch((error) => {
+        console.error("Error verifying Redis connection:", error);
+      });
     // Initialize connections will be done lazily when needed
   }
 

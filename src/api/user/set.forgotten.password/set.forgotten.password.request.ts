@@ -1,8 +1,8 @@
 import {Request} from "express";
 import {BadRequest} from "../../../domain/errors/errors.index";
-import {AbstractRequest} from "../../abstract/abstract.request";
+import {AbstractPublicRequest} from "../../abstract/abstract.request.public";
 
-export class SetForgottenPasswordRequest extends AbstractRequest {
+export class SetForgottenPasswordRequest extends AbstractPublicRequest {
   private _securityCode: string;
   private _newPassword: string;
 

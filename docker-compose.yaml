@@ -33,7 +33,7 @@ services:
       - LIQUIBASE_LOG_LEVEL=info
     volumes:
       - ./schema:/liquibase/changelog/
-    command: update
+    command: "update --defaultSchemaName=public"
     depends_on:
       - postgres
 

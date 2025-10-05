@@ -49,8 +49,8 @@ export class TokenMiddleware {
 
       // Login and set password routes only need tenant validation
       if (isLoginRoute || isForgottenPasswordRoute) {
-        req.headers.tenantSchemaName = tenantSchemaName;
         req.headers.tenantId = tenantIdHeader;
+        req.headers.tenantSchemaName = tenantSchemaName;
         req.headers.redisDb = redisDb.toString();
         return next();
       }
@@ -90,7 +90,7 @@ export class TokenMiddleware {
 
         // Set user and tenant info in headers for downstream use
         req.headers.userId = userId;
-        req.headers.tenant = tenantId;
+        req.headers.tenantId = tenantId;
         req.headers.tenantSchemaName = tenantSchemaName;
         req.headers.redisDb = redisDb.toString();
 

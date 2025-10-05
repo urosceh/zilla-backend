@@ -1,7 +1,7 @@
 import {Request} from "express";
-import {AbstractRequest} from "../../abstract/abstract.request";
+import {AbstractPublicRequest} from "../../abstract/abstract.request.public";
 
-export class LoginUserRequest extends AbstractRequest {
+export class LoginUserRequest extends AbstractPublicRequest {
   private _email: string;
   private _password: string;
 
