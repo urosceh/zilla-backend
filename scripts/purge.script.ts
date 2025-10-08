@@ -72,17 +72,14 @@ export class Purge {
 
   private async deleteSprints(transaction: Transaction) {
     await sequelize.query("DELETE FROM sprint WHERE true", {transaction});
-    await sequelize.query("ALTER SEQUENCE sprint_sprint_id_seq RESTART WITH 1", {transaction});
   }
 
   private async deleteUserProjectAccess(transaction: Transaction) {
     await sequelize.query("DELETE FROM user_project_access WHERE true", {transaction});
-    await sequelize.query("ALTER SEQUENCE user_project_access_id_seq RESTART WITH 1", {transaction});
   }
 
   private async deleteProjects(transaction: Transaction) {
     await sequelize.query("DELETE FROM project WHERE true", {transaction});
-    await sequelize.query("ALTER SEQUENCE project_project_id_seq RESTART WITH 1", {transaction});
   }
 
   private async deleteUsers(transaction: Transaction) {
