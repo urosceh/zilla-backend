@@ -35,7 +35,7 @@ export class UserService {
       const createdUsers = await this._userRepository.createBatch(userCredentials, transaction);
 
       userCredentials.forEach((credential) => {
-        this._mailClient.sendRegistrationMail(credential.email, credential.password);
+        this._mailClient.sendRegistrationMail(request.tenantId, credential.email, credential.password);
       });
 
       await transaction.commit();
@@ -134,7 +134,7 @@ export class UserService {
 
       const token = JwtGenerator.generateForgottenPasswordToken(request.email, secret);
 
-      await this._mailClient.sendForgottenPasswordMail(user.email, token);
+      await this._mailClient.sendForgottenPasswordMail(request.tenantId, user.email, token);
 
       console.log(`Sent reset password email to ${user.email}`);
 

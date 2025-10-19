@@ -39,7 +39,7 @@ export class Purge {
     const transaction = await TransactionManager.createTenantTransaction(tenant);
 
     // test
-    const test = await sequelize.query("SELECT * FROM test.zilla_user", {transaction});
+    const test = await sequelize.query("SELECT * FROM zilla_user", {transaction});
 
     try {
       await this.deleteIssues(transaction);
@@ -47,6 +47,7 @@ export class Purge {
       await this.deleteUserProjectAccess(transaction);
       await this.deleteProjects(transaction);
       await this.deleteUsers(transaction);
+      await this.resetSequences(transaction);
 
       await transaction.commit();
     } catch (error) {
@@ -55,7 +56,7 @@ export class Purge {
     }
 
     try {
-      truncateSync("./passwords.txt");
+      truncateSync(`./passwords/${tenant}-passwords.txt`);
     } catch (error: any) {
       if (error.code === "ENOENT") {
         console.log("Passwords file not found");
@@ -87,6 +88,13 @@ export class Purge {
       transaction,
     });
     await sequelize.query(`DELETE FROM zilla_user WHERE email != '${adminEmail}'`, {transaction});
+  }
+
+  private async resetSequences(transaction: Transaction) {
+    await sequelize.query("ALTER SEQUENCE admin_user_id_seq RESTART WITH 1", {transaction});
+    await sequelize.query("ALTER SEQUENCE project_project_id_seq RESTART WITH 1", {transaction});
+    await sequelize.query("ALTER SEQUENCE sprint_sprint_id_seq RESTART WITH 1", {transaction});
+    await sequelize.query("ALTER SEQUENCE user_project_access_id_seq RESTART WITH 1", {transaction});
   }
 }
 

@@ -19,12 +19,12 @@ export class SendgridMailClient implements IMailClient {
     return SendgridMailClient._instance;
   }
 
-  public sendRegistrationMail(email: string, password: string): void {
+  public sendRegistrationMail(tenantId: string, email: string, password: string): void {
     const msg = {
       to: email,
       from: SendgridMailClientConfig.senderEmail,
       subject: SendgridMailClientConfig.registerMailSubject,
-      text: `Your zilla account has been created. Use this email to login. Your password is ${password}`,
+      text: `Your zilla account for ${tenantId} has been created. Use this email to login. Your password is ${password}.`,
     };
 
     this._client
@@ -37,12 +37,12 @@ export class SendgridMailClient implements IMailClient {
       });
   }
 
-  public async sendForgottenPasswordMail(email: string, token: string): Promise<void> {
+  public async sendForgottenPasswordMail(tenantId: string, email: string, token: string): Promise<void> {
     const msg = {
       to: email,
       from: SendgridMailClientConfig.senderEmail,
       subject: SendgridMailClientConfig.forgottenPasswordMailSubject,
-      text: `You have requested to reset your password. Use this code to reset your password: ${token}`,
+      text: `Request has been sent to reset your ${tenantId} password. Use this code to reset your password: ${token}`,
     };
 
     await this._client
