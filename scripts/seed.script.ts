@@ -66,13 +66,7 @@ class Seed {
 
       const sprints = await this.createSprints(projects, transaction);
 
-      const userAccessData: {projectKey: string; userId: string}[] = projects.flatMap((project) =>
-        // 7 to 10 users per project (random user)
-        Array.from({length: Math.floor(Math.random() * 4) + 7}, () => {
-          const userId = userIds[Math.floor(Math.random() * userIds.length)];
-          return {projectKey: project.projectKey, userId};
-        })
-      );
+      const userAccessData = this.generateUserProjectAccess(projects, userIds);
 
       await this.createUserProjectAccess(userAccessData, transaction);
 
@@ -191,6 +185,75 @@ class Seed {
 
   private async createUserProjectAccess(data: {projectKey: string; userId: string}[], transaction: Transaction): Promise<void> {
     await UserProjectAccessModel.bulkCreate(data, {ignoreDuplicates: true, transaction});
+  }
+
+  private generateUserProjectAccess(projects: Project[], userIds: string[]): {projectKey: string; userId: string}[] {
+    const userAccessData: {projectKey: string; userId: string}[] = [];
+
+    // Step 1: Ensure all project managers have access to their projects
+    projects.forEach((project) => {
+      userAccessData.push({
+        projectKey: project.projectKey,
+        userId: project.managerId,
+      });
+    });
+
+    // Step 2: Distribute remaining users across projects more evenly
+    const remainingUsers = userIds.filter((userId) => !projects.some((project) => project.managerId === userId));
+
+    // Shuffle remaining users for random distribution
+    const shuffledUsers = [...remainingUsers].sort(() => Math.random() - 0.5);
+
+    projects.forEach((project, projectIndex) => {
+      // Each project gets 5-8 additional users (excluding the manager who is already added)
+      const additionalUsersCount = Math.floor(Math.random() * 4) + 5; // 5 to 8 users
+
+      for (let i = 0; i < additionalUsersCount; i++) {
+        // Use round-robin with some randomness to ensure good distribution
+        const userIndex = (projectIndex * additionalUsersCount + i) % shuffledUsers.length;
+        const userId = shuffledUsers[userIndex];
+
+        // Add some randomness - 80% chance to add this user
+        if (Math.random() < 0.8) {
+          userAccessData.push({
+            projectKey: project.projectKey,
+            userId: userId,
+          });
+        }
+      }
+    });
+
+    // Step 3: Ensure some users are in multiple projects (realistic scenario)
+    const multiProjectUsers = shuffledUsers.slice(0, Math.floor(shuffledUsers.length / 3));
+    multiProjectUsers.forEach((userId) => {
+      // Each multi-project user gets added to 1-2 additional random projects
+      const additionalProjects = Math.floor(Math.random() * 2) + 1;
+      const availableProjects = projects.filter(
+        (p) => !userAccessData.some((access) => access.userId === userId && access.projectKey === p.projectKey)
+      );
+
+      for (let i = 0; i < additionalProjects && i < availableProjects.length; i++) {
+        const randomProject = availableProjects[Math.floor(Math.random() * availableProjects.length)];
+        userAccessData.push({
+          projectKey: randomProject.projectKey,
+          userId: userId,
+        });
+
+        // Remove this project from available projects to avoid duplicates
+        const projectIndex = availableProjects.indexOf(randomProject);
+        availableProjects.splice(projectIndex, 1);
+      }
+    });
+
+    console.log(`Generated user access data: ${userAccessData.length} total assignments`);
+
+    // Log distribution per project for verification
+    projects.forEach((project) => {
+      const projectUsers = userAccessData.filter((access) => access.projectKey === project.projectKey);
+      console.log(`Project ${project.projectKey}: ${projectUsers.length} users (manager: ${project.managerId})`);
+    });
+
+    return userAccessData;
   }
 }
 
