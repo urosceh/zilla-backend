@@ -27,12 +27,13 @@ if (!tenant || !adminEmail || !adminPassword) {
       },
       {
         returning: true,
-        logging: false,
         transaction,
       }
     );
 
-    await AdminUserModel.create({userId: adminUser.userId}, {transaction, logging: false});
+    console.log("Admin user created", adminUser);
+
+    await AdminUserModel.create({userId: adminUser.userId}, {transaction});
   } catch (error) {
     console.error("Error creating admin user:", error);
     process.exit(1);
