@@ -36,7 +36,18 @@ function loadTenantConfigurations(): Record<string, TenantConfig> {
         };
       }
 
-      return configurations;
+      return {
+        test: {
+          tenantId: "test",
+          schemaName: "test",
+          displayName: "Test",
+          redisDb: 0,
+          isActive: true,
+          dbUsername: process.env.DB_USER_TEST || "",
+          dbPassword: process.env.DB_PASS_TEST || "",
+        },
+        ...configurations,
+      };
     }
   } catch (error) {
     console.warn("Failed to load tenant config from ConfigMap, falling back to environment variables:", error);
@@ -44,15 +55,6 @@ function loadTenantConfigurations(): Record<string, TenantConfig> {
 
   // Fallback to hardcoded configuration
   return {
-    test: {
-      tenantId: "test",
-      schemaName: "test",
-      displayName: "Test",
-      redisDb: 0,
-      isActive: true,
-      dbUsername: process.env.DB_USER_TEST || "",
-      dbPassword: process.env.DB_PASS_TEST || "",
-    },
     meta: {
       tenantId: "meta",
       schemaName: "meta",
