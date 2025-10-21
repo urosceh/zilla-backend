@@ -17,6 +17,13 @@ if (!tenant || !adminEmail || !adminPassword) {
 (async () => {
   const transaction = await TransactionManager.createTenantTransaction(tenant);
   try {
+    // if admin user already exists, exit
+    const existingAdmin = await AdminUserModel.findOne({where: {}, transaction});
+    if (existingAdmin) {
+      console.log("Admin user already exists");
+      process.exit(0);
+    }
+
     const adminUser = await UserModel.create(
       {
         email: adminEmail,
