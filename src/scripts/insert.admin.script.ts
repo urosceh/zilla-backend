@@ -15,9 +15,8 @@ if (!tenant || !adminEmail || !adminPassword) {
 }
 
 (async () => {
+  const transaction = await TransactionManager.createTenantTransaction(tenant);
   try {
-    const transaction = await TransactionManager.createTenantTransaction(tenant);
-
     const adminUser = await UserModel.create(
       {
         email: adminEmail,
@@ -34,7 +33,14 @@ if (!tenant || !adminEmail || !adminPassword) {
     console.log("Admin user created", adminUser);
 
     await AdminUserModel.create({userId: adminUser.userId}, {transaction});
+
+    console.log("Admin user created", adminUser);
+
+    await transaction.commit();
+
+    process.exit(0);
   } catch (error) {
+    await transaction.rollback();
     console.error("Error creating admin user:", error);
     process.exit(1);
   }

@@ -96,9 +96,8 @@ function generateEmail(firstName: string, lastName: string, index: number): stri
 }
 
 (async () => {
+  const transaction = await TransactionManager.createTenantTransaction(tenant);
   try {
-    const transaction = await TransactionManager.createTenantTransaction(tenant);
-
     const users = [];
 
     for (let i = 1; i <= amountOfUsers; i++) {
@@ -126,10 +125,13 @@ function generateEmail(firstName: string, lastName: string, index: number): stri
     users.forEach((user) => {
       console.log(`${user.email},${user.password}`);
     });
+
+    await transaction.commit();
+
+    process.exit(0);
   } catch (error) {
+    await transaction.rollback();
     console.error("Error creating users:", error);
     process.exit(1);
   }
-
-  process.exit(0);
 })();
