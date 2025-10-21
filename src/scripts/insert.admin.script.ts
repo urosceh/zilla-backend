@@ -30,11 +30,7 @@ if (!tenant || !adminEmail || !adminPassword) {
       }
     );
 
-    console.log("Admin user created", adminUser);
-
     await AdminUserModel.create({userId: adminUser.userId}, {transaction});
-
-    console.log("Admin user created", adminUser);
 
     await transaction.commit();
 
