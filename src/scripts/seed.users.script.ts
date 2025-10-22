@@ -118,12 +118,12 @@ function generateEmail(firstName: string, lastName: string, index: number): stri
         }
       );
 
-      users.push({email, password});
+      users.push({userId: user.userId, email, password});
     }
 
     // Log only the email and password pairs
     users.forEach((user) => {
-      console.log(`${user.email},${user.password}`);
+      console.log(`${user.userId},${user.email},${user.password}`);
     });
 
     await transaction.commit();
