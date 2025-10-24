@@ -21,6 +21,7 @@ export class TokenMiddleware {
 
       if (
         (req.method === "POST" && req.path === "/user/login") ||
+        (req.method === "GET" && req.path === "/metrics") ||
         (req.method === "POST" && req.path === "/user/set-forgotten-password") ||
         (req.method === "GET" && req.path === "/health")
       ) {
