@@ -8,7 +8,7 @@ const sequelize = new Sequelize(DatabaseConfig.database, DatabaseConfig.username
   schema: DatabaseConfig.schema,
   logging: false,
   pool: {
-    max: 50,
+    max: process.env.DB_POOL_MAX ? parseInt(process.env.DB_POOL_MAX, 10) : 30,
     min: 0,
     acquire: 30000,
     idle: 10000,
