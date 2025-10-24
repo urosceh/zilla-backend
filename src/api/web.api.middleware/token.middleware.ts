@@ -24,6 +24,7 @@ export class TokenMiddleware {
 
       // Routes that don't require authentication but need tenant validation
       const isHealthRoute = req.method === "GET" && req.path === "/health";
+      const isMetricsRoute = req.method === "GET" && req.path === "/metrics";
       const isLoginRoute = req.method === "POST" && req.path === "/user/login";
       const isForgottenPasswordRoute = req.method === "POST" && req.path === "/user/set-forgotten-password";
 

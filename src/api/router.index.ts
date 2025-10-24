@@ -1,9 +1,10 @@
 import cors from "cors";
 import express from "express";
 import adminRouter from "./admin.user/admin.user.router";
-import issueRouter from "./issue/issue.router";
 import healthRouter from "./health/health.router";
+import issueRouter from "./issue/issue.router";
 import issueStatusRouter from "./issueStatus/issue.status.router";
+import metricsRouter from "./metrics/metrics.router";
 import projectRouter from "./project/project.router";
 import sprintRouter from "./sprint/sprint.router";
 import accessRouter from "./user.project.access/user.project.access.router";
@@ -20,6 +21,7 @@ router.use(express.json({limit: "1mb", type: "application/json"}));
 router.use(TokenMiddleware.middleware);
 
 router.use("/health", healthRouter);
+router.use("/metrics", metricsRouter);
 router.use("/user", userRouter);
 router.use("/admin", adminRouter);
 router.use("/project", projectRouter);
