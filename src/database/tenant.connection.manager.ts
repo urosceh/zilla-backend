@@ -39,6 +39,13 @@ export class TenantConnectionManager {
         port: DatabaseConfig.port,
         dialect: "postgres",
         logging: false,
+        pool: {
+          max: parseInt(process.env.DB_POOL_MAX || "10", 10),
+          min: 0,
+          acquire: 30000,
+          idle: 10000,
+          evict: 1000,
+        },
       });
 
       this.connections.set(tenantId, sequelizeInstance);
