@@ -40,7 +40,7 @@ export class TenantConnectionManager {
         dialect: "postgres",
         logging: false,
         pool: {
-          max: parseInt(process.env.DB_POOL_MAX || "10", 10),
+          max: parseInt(process.env.DB_POOL_MAX || "2", 10),
           min: 0,
           acquire: 30000,
           idle: 10000,
