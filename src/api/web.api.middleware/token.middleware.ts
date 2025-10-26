@@ -29,7 +29,7 @@ export class TokenMiddleware {
       const isForgottenPasswordRoute = req.method === "POST" && req.path === "/user/set-forgotten-password";
 
       // Health route doesn't need tenant validation
-      if (isHealthRoute) {
+      if (isHealthRoute || isMetricsRoute) {
         return next();
       }
 
