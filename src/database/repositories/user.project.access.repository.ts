@@ -4,6 +4,7 @@ import {User} from "../../domain/entities/User";
 import {UserProjectAccess} from "../../domain/entities/UserProjectAccess";
 import {BadGateway, NotFound} from "../../domain/errors/errors.index";
 import {IPaginatable} from "../../domain/interfaces/IPaginatable";
+import {Timed} from "../../lib/log/timed.decorator";
 import ProjectModel from "../models/project.model";
 import UserModel from "../models/user.model";
 import UserProjectAccessModel from "../models/user.project.access.model";
@@ -22,6 +23,7 @@ export interface IUserProjectAccessRepository {
 }
 
 export class UserProjectAccessRepository implements IUserProjectAccessRepository {
+  @Timed("userProjectAccess.get")
   public async getUserProjectAccess(userId: string, projectKey: string, transaction: Transaction): Promise<UserProjectAccess> {
     const userProjectAccess = await UserProjectAccessModel.findOne({
       where: {
@@ -52,6 +54,7 @@ export class UserProjectAccessRepository implements IUserProjectAccessRepository
     return new UserProjectAccess(userProjectAccess);
   }
 
+  @Timed("userProjectAccess.insert")
   public async insertAccess(userIds: string[], projectKey: string, transaction: Transaction): Promise<void> {
     const acessess = userIds.map((userId) => ({
       userId,
@@ -63,6 +66,7 @@ export class UserProjectAccessRepository implements IUserProjectAccessRepository
     return;
   }
 
+  @Timed("userProjectAccess.delete")
   public async deleteAccess(userIds: string[], projectKey: string, transaction: Transaction): Promise<void> {
     await UserProjectAccessModel.destroy({
       where: {
@@ -79,6 +83,7 @@ export class UserProjectAccessRepository implements IUserProjectAccessRepository
     return;
   }
 
+  @Timed("userProjectAccess.hasAccess")
   public async hasAccess(userId: string, projectKey: string, transaction: Transaction): Promise<boolean> {
     const access = await UserProjectAccessModel.findOne({
       where: {
@@ -91,6 +96,7 @@ export class UserProjectAccessRepository implements IUserProjectAccessRepository
     return !!access;
   }
 
+  @Timed("userProjectAccess.getAllUsersProjects")
   public async getAllUsersProjects(
     userId: string,
     options: {limit: number; offset: number; search?: string},
@@ -134,6 +140,7 @@ export class UserProjectAccessRepository implements IUserProjectAccessRepository
     return userProjectAccesses.map((upa) => new ProjectWithManager(upa.project!));
   }
 
+  @Timed("userProjectAccess.getAllUsersOnProject")
   public async getAllUsersOnProject(projectKey: string, options: IPaginatable, transaction: Transaction): Promise<User[]> {
     const acesses = await UserProjectAccessModel.findAll({
       limit: options.limit,

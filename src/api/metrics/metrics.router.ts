@@ -1,4 +1,5 @@
 import express from "express";
+import {getRepositoryMetricsSnapshot} from "../../lib/log/timed.decorator";
 
 const router = express.Router();
 
@@ -32,6 +33,11 @@ router.get("/", async (req, res) => {
   };
 
   res.json(metrics);
+});
+
+router.get("/repository", async (req, res) => {
+  const repositoryMetrics = getRepositoryMetricsSnapshot();
+  res.json(repositoryMetrics);
 });
 
 export default router;

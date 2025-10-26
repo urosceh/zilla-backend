@@ -4,6 +4,7 @@ import {AdminUser} from "../../domain/entities/AdminUser";
 import {User} from "../../domain/entities/User";
 import {BadRequest, NotFound, UnauthorizedAccess} from "../../domain/errors/errors.index";
 import {IPaginatable} from "../../domain/interfaces/IPaginatable";
+import {Timed} from "../../lib/log/timed.decorator";
 import AdminUserModel from "../models/admin.user.model";
 import UserModel, {UserCreationAttributes, UserUpdateAttributes} from "../models/user.model";
 
@@ -18,6 +19,7 @@ export interface IUserRepository {
 }
 
 export class UserRepository implements IUserRepository {
+  @Timed("user.getByEmail")
   public async getUserByEmail(email: string, transaction: Transaction): Promise<User> {
     const user = await UserModel.findOne({
       where: {
@@ -33,6 +35,7 @@ export class UserRepository implements IUserRepository {
     return new User(user);
   }
 
+  @Timed("user.createBatch")
   public async createBatch(users: UserCreationAttributes[], transaction: Transaction): Promise<User[]> {
     try {
       const createdUsers = await UserModel.bulkCreate(users, {
@@ -51,6 +54,7 @@ export class UserRepository implements IUserRepository {
     }
   }
 
+  @Timed("user.login")
   public async loginUser(credentials: {email: string; password: string}, transaction: Transaction): Promise<AdminUser> {
     const user = await UserModel.findOne({
       where: {
@@ -78,6 +82,7 @@ export class UserRepository implements IUserRepository {
     return new AdminUser(user);
   }
 
+  @Timed("user.update")
   public async updateUser(userId: string, updates: UserUpdateAttributes, transaction: Transaction): Promise<User> {
     const updatedUsers = await UserModel.update(
       {...updates},
@@ -97,6 +102,7 @@ export class UserRepository implements IUserRepository {
     return new User(updatedUsers[1][0]);
   }
 
+  @Timed("user.getAll")
   public async getAllUsers(options: IPaginatable, transaction: Transaction): Promise<User[]> {
     const users = await UserModel.findAll({
       limit: options.limit,
@@ -108,6 +114,7 @@ export class UserRepository implements IUserRepository {
     return users.map((user) => new User(user));
   }
 
+  @Timed("user.updatePassword")
   public async updatePassword(userId: string, data: {oldPassword: string; newPassword: string}, transaction: Transaction): Promise<User> {
     const user = await UserModel.findOne({
       where: {
@@ -139,6 +146,7 @@ export class UserRepository implements IUserRepository {
     return new User(user);
   }
 
+  @Timed("user.updateForgottenPassword")
   public async updateForgottenPassword(email: string, newPassword: string, transaction: Transaction): Promise<User> {
     const user = await UserModel.findOne({
       where: {

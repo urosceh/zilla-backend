@@ -1,6 +1,7 @@
 import {Transaction} from "sequelize";
 import {User} from "../../domain/entities/User";
 import {NotFound} from "../../domain/errors/errors.index";
+import {Timed} from "../../lib/log/timed.decorator";
 import AdminUserModel from "../models/admin.user.model";
 import UserModel from "../models/user.model";
 
@@ -10,6 +11,7 @@ export interface IAdminUserRepository {
 }
 
 export class AdminUserRepository implements IAdminUserRepository {
+  @Timed("admin.isAdmin")
   public async isAdmin(userId: string, transaction: Transaction): Promise<boolean> {
     const adminUser = await AdminUserModel.findOne({
       where: {
@@ -21,6 +23,7 @@ export class AdminUserRepository implements IAdminUserRepository {
     return !!adminUser;
   }
 
+  @Timed("admin.create")
   public async createAdmin(userId: string, transaction: Transaction): Promise<User> {
     await AdminUserModel.create(
       {

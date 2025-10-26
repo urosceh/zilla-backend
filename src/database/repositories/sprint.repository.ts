@@ -2,6 +2,7 @@ import {Op, Transaction} from "sequelize";
 import {Sprint} from "../../domain/entities/Sprint";
 import {SprintWithIssues} from "../../domain/entities/SprintWithIssues";
 import {NotFound} from "../../domain/errors/errors.index";
+import {Timed} from "../../lib/log/timed.decorator";
 import IssueModel from "../models/issue.model";
 import SprintModel, {SprintCreationAttributes} from "../models/sprint.model";
 
@@ -12,12 +13,14 @@ export interface ISprintRepository {
 }
 
 export class SprintRepository implements ISprintRepository {
+  @Timed("sprint.create")
   public async createSprint(sprint: SprintCreationAttributes, transaction: Transaction): Promise<Sprint> {
     const sprintModel = await SprintModel.create(sprint, {transaction});
 
     return new Sprint(sprintModel);
   }
 
+  @Timed("sprint.getProjectSprints")
   public async getProjectSprints(projectKey: string, transaction: Transaction): Promise<Sprint[]> {
     const sprints = await SprintModel.findAll({
       where: {
@@ -29,6 +32,7 @@ export class SprintRepository implements ISprintRepository {
     return sprints.map((sprint) => new Sprint(sprint));
   }
 
+  @Timed("sprint.getCurrentSprintIssues")
   public async getCurrentSprintIssues(projectId: string, transaction: Transaction): Promise<SprintWithIssues> {
     const sprintWithIssues = await SprintModel.findOne({
       where: {

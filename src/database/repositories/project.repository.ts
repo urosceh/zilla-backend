@@ -2,6 +2,7 @@ import {Transaction} from "sequelize";
 import {Project} from "../../domain/entities/Project";
 import {ProjectWithManager} from "../../domain/entities/ProjectWithManager";
 import {NotFound} from "../../domain/errors/errors.index";
+import {Timed} from "../../lib/log/timed.decorator";
 import ProjectModel, {ProjectCreationAttributes} from "../models/project.model";
 import UserModel from "../models/user.model";
 import UserProjectAccessModel from "../models/user.project.access.model";
@@ -14,6 +15,7 @@ export interface IProjectRepository {
 }
 
 export class ProjectRepository implements IProjectRepository {
+  @Timed("project.getById")
   public async getProjectById(projectId: string, transaction: Transaction): Promise<ProjectWithManager> {
     const project = await ProjectModel.findOne({
       where: {
@@ -35,6 +37,7 @@ export class ProjectRepository implements IProjectRepository {
     return new ProjectWithManager(project);
   }
 
+  @Timed("project.getByKey")
   public async getProjectByProjectKey(
     projectKey: string,
     options: {withManager: boolean},
@@ -64,6 +67,7 @@ export class ProjectRepository implements IProjectRepository {
     return new ProjectWithManager(project);
   }
 
+  @Timed("project.create")
   public async createProject(project: ProjectCreationAttributes, transaction: Transaction): Promise<Project> {
     const newProject = await ProjectModel.create(project, {
       transaction,
@@ -80,6 +84,7 @@ export class ProjectRepository implements IProjectRepository {
     return new Project(newProject);
   }
 
+  @Timed("project.getAll")
   public async getAllProjects(options: {limit: number; offset: number}, transaction: Transaction): Promise<ProjectWithManager[]> {
     const projects = await ProjectModel.findAll({
       limit: options.limit,
