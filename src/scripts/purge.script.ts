@@ -1,0 +1,98 @@
+import {truncateSync} from "fs";
+import {Transaction} from "sequelize";
+import {TransactionManager} from "../database/transaction.manager";
+import sequelize from "../database/sequelize";
+
+const adminEmail: string = process.env.ADMIN_EMAL || "";
+const tenant: string = process.env.TENANT || "";
+
+if (!adminEmail) {
+  console.error("ADMIN_EMAL is required");
+  process.exit(1);
+}
+if (process.env.NODE_ENV !== "test") {
+  console.error("NODE_ENV must equal 'test'");
+  process.exit(1);
+}
+if (!tenant) {
+  console.error("TENANT is required");
+  process.exit(1);
+}
+
+export class Purge {
+  constructor() {
+    console.log("Purging database. Date", new Date().toString());
+    this.purge()
+      .then(() => {
+        console.log("Purge completed");
+        process.exit(0);
+      })
+      .catch((error) => {
+        console.error("Purge failed");
+        console.error(error);
+        process.exit(1);
+      });
+  }
+
+  public async purge() {
+    const transaction = await TransactionManager.createTenantTransaction(tenant);
+
+    try {
+      await this.deleteIssues(transaction);
+      await this.deleteSprints(transaction);
+      await this.deleteUserProjectAccess(transaction);
+      await this.deleteProjects(transaction);
+      await this.deleteUsers(transaction);
+      await this.resetSequences(transaction);
+
+      await transaction.commit();
+    } catch (error) {
+      await transaction.rollback();
+      throw error;
+    }
+
+    try {
+      truncateSync(`./passwords/${tenant}-passwords.txt`);
+    } catch (error: any) {
+      if (error.code === "ENOENT") {
+        console.log("Passwords file not found");
+      } else {
+        throw error;
+      }
+    }
+    console.log("Passwords file truncated");
+  }
+
+  private async deleteIssues(transaction: Transaction) {
+    await sequelize.query("DELETE FROM issue WHERE true", {transaction});
+  }
+
+  private async deleteSprints(transaction: Transaction) {
+    await sequelize.query("DELETE FROM sprint WHERE true", {transaction});
+  }
+
+  private async deleteUserProjectAccess(transaction: Transaction) {
+    await sequelize.query("DELETE FROM user_project_access WHERE true", {transaction});
+  }
+
+  private async deleteProjects(transaction: Transaction) {
+    await sequelize.query("DELETE FROM project WHERE true", {transaction});
+  }
+
+  private async deleteUsers(transaction: Transaction) {
+    await sequelize.query(
+      "DELETE FROM admin_user WHERE user_id != (SELECT user_id FROM zilla_user WHERE email = :adminEmail)",
+      {replacements: {adminEmail}, transaction}
+    );
+    await sequelize.query("DELETE FROM zilla_user WHERE email != :adminEmail", {replacements: {adminEmail}, transaction});
+  }
+
+  private async resetSequences(transaction: Transaction) {
+    await sequelize.query("ALTER SEQUENCE admin_user_id_seq RESTART WITH 1", {transaction});
+    await sequelize.query("ALTER SEQUENCE project_project_id_seq RESTART WITH 1", {transaction});
+    await sequelize.query("ALTER SEQUENCE sprint_sprint_id_seq RESTART WITH 1", {transaction});
+    await sequelize.query("ALTER SEQUENCE user_project_access_id_seq RESTART WITH 1", {transaction});
+  }
+}
+
+new Purge();
