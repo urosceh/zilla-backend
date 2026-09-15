@@ -1,6 +1,7 @@
 import {Sequelize, Transaction} from "sequelize";
 import {DatabaseConfig} from "../config/db.config";
 import {TenantService} from "../config/tenant.config";
+import {instrumentSequelize} from "../observability/metrics";
 
 export class TenantConnectionManager {
   private static connections: Map<string, Sequelize> = new Map();
@@ -48,6 +49,7 @@ export class TenantConnectionManager {
         },
       });
 
+      instrumentSequelize(sequelizeInstance, tenantId);
       this.connections.set(tenantId, sequelizeInstance);
     }
 

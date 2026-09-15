@@ -3,7 +3,6 @@ import {Issue} from "../../domain/entities/Issue";
 import {NotFound} from "../../domain/errors/errors.index";
 import {IIssue} from "../../domain/interfaces/IIssue";
 import {IProjectIssueSearch} from "../../domain/interfaces/IIssueSearch";
-import {Timed} from "../../lib/log/timed.decorator";
 import IssueModel, {IssueCreationAttributes} from "../models/issue.model";
 import ProjectModel from "../models/project.model";
 import SprintModel from "../models/sprint.model";
@@ -17,14 +16,12 @@ export interface IIssueRepository {
 }
 
 export class IssueRepository implements IIssueRepository {
-  @Timed("issue.create")
   public async createIssue(issue: IssueCreationAttributes, transaction: Transaction): Promise<Issue> {
     const createdIssue = await IssueModel.create(issue, {transaction});
 
     return new Issue(createdIssue);
   }
 
-  @Timed("issue.get")
   public async getIssue(issueId: string, projectKey: string, transaction: Transaction): Promise<Issue> {
     const issue = await IssueModel.findOne({
       where: {
@@ -59,7 +56,6 @@ export class IssueRepository implements IIssueRepository {
     return new Issue(issue);
   }
 
-  @Timed("issue.update")
   public async updateIssue(issueId: string, issue: Partial<IIssue>, transaction: Transaction): Promise<Issue> {
     const [updatedRowsCount] = await IssueModel.update(issue, {
       where: {
@@ -100,7 +96,6 @@ export class IssueRepository implements IIssueRepository {
     return new Issue(updatedIssue!);
   }
 
-  @Timed("issue.getAllForProject")
   public async getAllProjectIssues(projectKey: string, options: IProjectIssueSearch, transaction: Transaction): Promise<Issue[]> {
     const orderCol = ["createdAt", "updatedAt"].includes(options.orderCol) ? options.orderCol : "updatedAt";
     const orderDir = ["ASC", "DESC"].includes(options.orderDir) ? options.orderDir : "ASC";

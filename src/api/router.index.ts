@@ -10,6 +10,7 @@ import sprintRouter from "./sprint/sprint.router";
 import accessRouter from "./user.project.access/user.project.access.router";
 import userRouter from "./user/user.router";
 import {ErrorHandlingMiddleware} from "./web.api.middleware/error.handling.middleware";
+import {metricsMiddleware} from "./web.api.middleware/metrics.middleware";
 import {TokenMiddleware} from "./web.api.middleware/token.middleware";
 
 const router = express.Router();
@@ -18,6 +19,7 @@ router.use(cors());
 
 router.use(express.json({limit: "1mb", type: "application/json"}));
 
+router.use(metricsMiddleware);
 router.use(TokenMiddleware.middleware);
 
 router.use("/health", healthRouter);

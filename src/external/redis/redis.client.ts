@@ -1,6 +1,11 @@
 import {createClient} from "redis";
 import {RedisConfig} from "../../config/redis.config";
-import {TenantService} from "../../config/tenant.config";
+import {TenantConfigurations, TenantService} from "../../config/tenant.config";
+import {InstrumentedRedisClient} from "./instrumented.redis.client";
+
+function tenantForRedisDb(redisDb: number): string {
+  return Object.values(TenantConfigurations).find((tenant) => tenant.redisDb === redisDb && tenant.isActive)?.tenantId || "unknown";
+}
 
 export interface IRedisClient {
   getForgottenPasswordToken(redisDb: number, email: string): Promise<string | null>;
@@ -14,7 +19,7 @@ export interface IRedisClient {
 
 export class RedisClient implements IRedisClient {
   private static _instance: RedisClient;
-  private _redisClients: Map<number, any> = new Map();
+  private _redisClients: Map<number, InstrumentedRedisClient> = new Map();
 
   private constructor() {
     // Initialize only test connection to verify config
@@ -37,7 +42,7 @@ export class RedisClient implements IRedisClient {
   /**
    * Get or create a Redis client for a specific database
    */
-  private async getRedisClient(dbNumber: number): Promise<any> {
+  private async getRedisClient(dbNumber: number): Promise<InstrumentedRedisClient> {
     if (this._redisClients.has(dbNumber)) {
       return this._redisClients.get(dbNumber)!;
     }
@@ -52,8 +57,9 @@ export class RedisClient implements IRedisClient {
     try {
       await client.connect();
       console.log(`Connected to Redis DB ${dbNumber}`);
-      this._redisClients.set(dbNumber, client);
-      return client;
+      const instrumentedClient = new InstrumentedRedisClient(client, tenantForRedisDb(dbNumber));
+      this._redisClients.set(dbNumber, instrumentedClient);
+      return instrumentedClient;
     } catch (error) {
       console.error(`Error connecting to Redis DB ${dbNumber}:`, error);
       throw error;

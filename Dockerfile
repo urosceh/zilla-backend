@@ -6,6 +6,8 @@ WORKDIR /home/node/zilla-backend
 
 COPY --chown=node:node package*.json ./
 
+RUN apk add --no-cache python3 make g++
+
 USER node
 RUN npm ci
 
@@ -22,8 +24,15 @@ WORKDIR /home/node/zilla-backend
 
 COPY --chown=node:node package*.json ./
 
+RUN apk add --no-cache --virtual .build-deps python3 make g++
+
 USER node
-RUN npm ci --production
+RUN npm ci --omit=dev
+
+USER root
+RUN apk del .build-deps
+
+USER node
 
 COPY --from=base --chown=node:node /home/node/zilla-backend/build /home/node/zilla-backend/build
 
